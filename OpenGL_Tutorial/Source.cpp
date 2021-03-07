@@ -17,22 +17,23 @@ void OnResize(GLFWwindow *window, int width, int height) {
 
 // Работа с устройствами ввода
 void processInput(GLFWwindow *window) {
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-		glfwSetWindowShouldClose(window, true);
-	}
-	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) {
-		background = { 1.f, 0.f, 0.f, 1.f };
-	}
-	if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) {
-		background = { 0.f, 1.f, 0.f, 1.f };
-	}
-	if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS) {
-		background = { 0.f, 0.f, 1.f, 1.f };
-	}
+	// if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+	// 	glfwSetWindowShouldClose(window, true);
+	// }
+	// if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) {
+	// 	background = { 1.f, 0.f, 0.f, 1.f };
+	// }
+	// if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) {
+	// 	background = { 0.f, 1.f, 0.f, 1.f };
+	// }
+	// if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS) {
+	// 	background = { 0.f, 0.f, 1.f, 1.f };
+	// }
 }
 
 int main() {
 	using namespace std;
+	// Настройка glfw
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -59,6 +60,21 @@ int main() {
 	glfwSetFramebufferSizeCallback(win, OnResize);
 
 	glViewport(0, 0, 500, 500);
+	// Конец настройки glfw
+
+	const int numOfVertexes = 3, sizeOfVertex = 6;
+
+	float polygon[numOfVertexes * sizeOfVertex] = {
+			0.5f,	0.0f,	0.0f,			1.0f,	0.0f,	0.0f,
+			0.0f,	0.5f,	0.0f,			0.0f,	1.0f,	0.0f,
+		   -0.5f,	0.0f,	0.0f,			0.0f,	0.0f,	1.0f,
+	};
+
+	unsigned VBO_polygon;  // VBO полигона - хранение данных в видеопамяти
+	glGenBuffers(1, &VBO_polygon);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_polygon);  // Буффер для хранения данных
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * numOfVertexes * sizeOfVertex, polygon, GL_STATIC_DRAW);  // Загружаем данные в видеопамять
+
 
 	while (!glfwWindowShouldClose(win)) {
 		processInput(win);
