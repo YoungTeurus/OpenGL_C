@@ -1,5 +1,8 @@
 // GLAD подключаем ПЕРЕД всеми библиотеками с подключением OpenGL
 #include <glad/glad.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include "Shader.h"
@@ -128,19 +131,25 @@ int main() {
 	basicShader->setInt("uTexture", 0);  // GL_TEXTURE0
 	basicShader->setInt("uTexture2", 1); // GL_TEXTURE1
 
+	// Трансформации:
+	glm::mat4 trans = glm::mat4(1.0f);
+
+	// "Правильный" порядок: перемещение, поворот, изменение размеров
+	trans = glm::translate(trans, glm::vec3(0.5f, 0.5f, 0.5f));  // Передвинуть объект на вектор (0.5, 0.5, 0.5)
+	trans = glm::rotate(trans, glm::radians(30.0f), glm::vec3(0.0f, 0.0f, 1.0f));  // Повернуть объект относительно вектора (0, 0, 1) на 30 градусов
+	trans = glm::scale(trans, glm::vec3(0.5f, 0.5f, 0.5f));  // Увеличить измерения объекта в (0.5, 0.5, 0.5)
+
 	while (!glfwWindowShouldClose(win)) {
 		processInput(win);
 
 		glClearColor(background.r, background.g, background.b, background.a);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		dx = sinf(glfwGetTime()) / 2;
-		dy = cosf(glfwGetTime()) / 2;
-
 		containerTexture->use();
 		basicShader->use();
 		basicShader->setInt("uDrawMode", drawMode);
-		basicShader->setFloatVec3("uRelativePosition", dx, dy, 0.0f);
+		basicShader->setFloatMat4("uTransform", glm::value_ptr(trans));
+
 		glBindVertexArray(VAO_polygon);
 		glDrawElements(GL_TRIANGLES, numOfIndices * 3, GL_UNSIGNED_INT, 0);
 

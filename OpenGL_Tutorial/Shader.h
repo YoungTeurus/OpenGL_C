@@ -23,6 +23,8 @@ public:
 	void setFloatVec3(const std::string& name, float value, float value2, float value3) const;
 	void setFloatVec4(const std::string& name, float value, float value2, float value3, float value4) const;
 
+	void setFloatMat4(const std::string& name, float* mat);
+
 private:
 	unsigned programID;
 };

@@ -100,6 +100,11 @@ void Shader::setFloatVec4(const std::string& name, float value, float value2, fl
 	glUniform4f(glGetUniformLocation(programID, name.c_str()), value, value2, value3, value4);
 }
 
+void Shader::setFloatMat4(const std::string& name, float* mat)
+{
+	glUniformMatrix4fv(glGetUniformLocation(programID, name.c_str()), 1, GL_FALSE, mat);
+}
+
 Shader::~Shader() {
 	glDeleteProgram(programID);
 }
