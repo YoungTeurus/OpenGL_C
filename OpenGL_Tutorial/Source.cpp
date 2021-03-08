@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include "Shader.h"
+#include "Texture.h"
 
 struct Color {
 	float r, g, b, a;
@@ -63,13 +64,15 @@ int main() {
 	glViewport(0, 0, 500, 500);
 	// Конец настройки glfw
 
-	const int numOfVertexes = 4, sizeOfVertex = 7;
+	// Исходные данные:
+	const int numOfVertexes = 4, sizeOfVertex = 9;
 
 	float polygon[numOfVertexes * sizeOfVertex] = {
-			0.5f,	0.0f,   0.0f,			1.0f,	0.0f,	0.0f,	1.0f,
-			0.0f,	0.5f,	0.0f,			0.0f,	1.0f,	0.0f,	1.0f,
-		   -0.5f,	0.0f,	0.0f,			0.0f,	0.0f,	1.0f,	1.0f,
-		    0.0f,  -0.5f,	0.0f,			0.0f,	1.0f,	0.0f,	1.0f,
+		//   X       Y       Z           R       G       B       A		     S       T
+			0.5f,	0.0f,   0.0f,		1.0f,	0.0f,	0.0f,	1.0f,		1.0f,	0.0f,
+			0.0f,	0.5f,	0.0f,		0.0f,	1.0f,	0.0f,	1.0f,		0.5f,	1.0f,
+		   -0.5f,	0.0f,	0.0f,		0.0f,	0.0f,	1.0f,	1.0f,		0.0f,	0.0f,
+		    0.0f,  -0.5f,	0.0f,		0.0f,	1.0f,	0.0f,	1.0f,		0.5f,	1.0f,
 	};
 
 	const int numOfIndices = 2;
@@ -78,6 +81,8 @@ int main() {
 		0, 1, 2,
 		0, 2, 3,
 	};
+
+	// Конец исходных данных
 
 	unsigned VAO_polygon, VBO_polygon, EBO_polygon;
 	// VAO полигона - хранение данных о атрибутах
@@ -104,11 +109,17 @@ int main() {
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeOfVertex * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeOfVertex * sizeof(float), (void*)(7 * sizeof(float)));
+	glEnableVertexAttribArray(2);
 
 	// Сбрасываем VAO:
 	glBindVertexArray(0);
 
-	Shader *basic = new Shader("./shaders/basic.vert", "./shaders/basic.frag");
+	Shader *basicShader = new Shader("./shaders/basic.vert", "./shaders/basic.frag");
+	Texture* containerTexture = new Texture("./textures/container.jpg");
+
+	float dx, dy;
+	int drawMode = 1;  // Контролирует отрисовку: 0 - рисование цветом, 1 - рисование текстурой
 
 	while (!glfwWindowShouldClose(win)) {
 		processInput(win);
@@ -116,9 +127,15 @@ int main() {
 		glClearColor(background.r, background.g, background.b, background.a);
 		glClear(GL_COLOR_BUFFER_BIT);
 
+		dx = sinf(glfwGetTime());
+		dy = cosf(glfwGetTime());
 
+		drawMode = int(glfwGetTime()) % 2 == 0 ? 1 : 0;
 
-		basic->use();
+		containerTexture->use();
+		basicShader->use();
+		basicShader->setInt("uDrawMode", drawMode);
+		basicShader->setFloatVec3("uRelativePosition", dx, dy, 0.0f);
 		glBindVertexArray(VAO_polygon);
 		glDrawElements(GL_TRIANGLES, numOfIndices * 3, GL_UNSIGNED_INT, 0);
 

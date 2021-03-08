@@ -85,6 +85,21 @@ void Shader::setFloat(const std::string& name, float value) const
 	glUniform1f(glGetUniformLocation(programID, name.c_str()), value);
 }
 
+void Shader::setFloatVec2(const std::string& name, float value, float value2) const
+{
+	glUniform2f(glGetUniformLocation(programID, name.c_str()), value, value2);
+}
+
+void Shader::setFloatVec3(const std::string& name, float value, float value2, float value3) const
+{
+	glUniform3f(glGetUniformLocation(programID, name.c_str()), value, value2, value3);
+}
+
+void Shader::setFloatVec4(const std::string& name, float value, float value2, float value3, float value4) const
+{
+	glUniform4f(glGetUniformLocation(programID, name.c_str()), value, value2, value3, value4);
+}
+
 Shader::~Shader() {
 	glDeleteProgram(programID);
 }
