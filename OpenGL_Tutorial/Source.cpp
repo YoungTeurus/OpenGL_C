@@ -117,9 +117,16 @@ int main() {
 
 	Shader *basicShader = new Shader("./shaders/basic.vert", "./shaders/basic.frag");
 	Texture* containerTexture = new Texture("./textures/container.jpg");
+	Texture* pogfaceTexture = new Texture("./textures/awesomeface.png", TextureType::RGBA);
 
 	float dx, dy;
-	int drawMode = 1;  //  онтролирует отрисовку: 0 - рисование цветом, 1 - рисование текстурой
+	int drawMode = 2;  //  онтролирует отрисовку: 0 - рисование цветом, 1 - рисование текстурой, 2 - две текстуры
+
+
+	// ”станавливаем ID-текстур дл€ рисовани€ двух текстур сразу
+	basicShader->use();
+	basicShader->setInt("uTexture", 0);  // GL_TEXTURE0
+	basicShader->setInt("uTexture2", 1); // GL_TEXTURE1
 
 	while (!glfwWindowShouldClose(win)) {
 		processInput(win);
@@ -127,13 +134,19 @@ int main() {
 		glClearColor(background.r, background.g, background.b, background.a);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		dx = sinf(glfwGetTime());
-		dy = cosf(glfwGetTime());
+		dx = sinf(glfwGetTime()) / 2;
+		dy = cosf(glfwGetTime()) / 2;
 
-		drawMode = int(glfwGetTime()) % 2 == 0 ? 1 : 0;
+		// drawMode = int(glfwGetTime()) % 2 == 0 ? 1 : 0;
 
-		containerTexture->use();
+		// containerTexture->use();
 		basicShader->use();
+
+		glActiveTexture(GL_TEXTURE0);
+		containerTexture->use();
+		glActiveTexture(GL_TEXTURE1);
+		pogfaceTexture->use();
+
 		basicShader->setInt("uDrawMode", drawMode);
 		basicShader->setFloatVec3("uRelativePosition", dx, dy, 0.0f);
 		glBindVertexArray(VAO_polygon);

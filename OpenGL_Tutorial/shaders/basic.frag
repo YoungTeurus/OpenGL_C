@@ -6,7 +6,8 @@ in vec4 fColor;
 in vec2 fTexCoord;
 
 uniform sampler2D uTexture;
-uniform int uDrawMode;  // Тип рисования - цветом или текстурой
+uniform sampler2D uTexture2;
+uniform int uDrawMode;  // Тип рисования - цветом, текстурой или двумя текстурами
 
 void main()
 {
@@ -16,6 +17,9 @@ void main()
 			break;
 		case 1:
 			outColor = texture(uTexture, fTexCoord);
+			break;
+		case 2:
+			outColor = mix(texture(uTexture, fTexCoord), texture(uTexture2, fTexCoord), 0.5);
 			break;
 	}
 }

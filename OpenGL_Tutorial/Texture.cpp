@@ -3,9 +3,10 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-Texture::Texture(const char* texturePath)
+Texture::Texture(const char* texturePath, TextureType textureType)
 {
 	int width, height, nrChannels;
+	stbi_set_flip_vertically_on_load(true);
 	unsigned char* texture = stbi_load(texturePath, &width, &height, &nrChannels, 0);
 
 	glGenTextures(1, &textureID);
@@ -21,11 +22,11 @@ Texture::Texture(const char* texturePath)
 		glTexImage2D(
 			GL_TEXTURE_2D,		// Тип текстуры
 			0,					// Уровень мип-мапинга
-			GL_RGB,				// Формат хранимой текстуры
+			GL_RGB,	// Формат хранимой текстуры
 			width,				// Размеры изображения
 			height,				// - ^ - ^ - ^ -
 			0,					// "Legacy stuff"
-			GL_RGB,				// Формат исходного изображения
+			(int)textureType,	// Формат исходного изображения
 			GL_UNSIGNED_BYTE,	// Формат данных исходного изображения
 			texture		// Указатель на массив с изображением
 		);
