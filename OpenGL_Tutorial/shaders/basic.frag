@@ -8,6 +8,7 @@ in vec2 fTexCoord;
 uniform sampler2D uTexture;
 uniform sampler2D uTexture2;
 uniform int uDrawMode;  // Тип рисования - цветом, текстурой или двумя текстурами
+uniform float uMixAmmount;  // Сила смешивания - [0; 1]
 
 void main()
 {
@@ -19,7 +20,7 @@ void main()
 			outColor = texture(uTexture, fTexCoord);
 			break;
 		case 2:
-			outColor = mix(texture(uTexture, fTexCoord), texture(uTexture2, fTexCoord), 0.5);
+			outColor = mix(texture(uTexture, fTexCoord), texture(uTexture2, fTexCoord), uMixAmmount);
 			break;
 	}
 }
