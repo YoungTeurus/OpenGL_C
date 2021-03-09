@@ -16,6 +16,9 @@
     <Filter Include="shaders">
       <UniqueIdentifier>{523184c5-ea10-4f66-9250-1bbe7f857291}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Исходные файлы\classes">
+      <UniqueIdentifier>{bb55530a-8024-496b-b541-fb92f1e51356}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">
@@ -24,11 +27,11 @@
     <ClCompile Include="glad.c">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="Shader.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
     <ClCompile Include="Texture.cpp">
-      <Filter>Исходные файлы</Filter>
+      <Filter>Исходные файлы\classes</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Исходные файлы\classes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
