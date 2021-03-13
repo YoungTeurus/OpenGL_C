@@ -9,12 +9,24 @@
 #include "Texture.h"
 
 float deltaTime = 0.0f;									 // Разница во времени между последним и предпоследним кадрами
-float lastFrameTime = 0.0f;									 // Время последнего кадра
+float lastFrameTime = 0.0f;								 // Время последнего кадра
+
+int windowInitialWidth = 600, windowInitialHeight = 600; // Стартовые размеры окна
+
+float lastCursorX = windowInitialWidth / 2,
+	  lastCursorY = windowInitialHeight / 2;			 // Предыдущее положение курсора (стартовое - по центру окна)
 
 glm::vec3 cameraPos		= glm::vec3(0.0f, 0.0f,	 3.0f);  // Положение камеры
 glm::vec3 cameraFront	= glm::vec3(0.0f, 0.0f, -1.0f);  // Направление взгляда камеры
 glm::vec3 cameraUp		= glm::vec3(0.0f, 1.0f,  0.0f);  // Направление "вверх" для камеры
+
+float cameraYaw = -90.f,  // Рыскание камеры: вращение вокруг оси Y (по часовой стрелке) - влево-вправо
+	  cameraPitch = 0.0f; // Тангаж камеры: вращение вокруг оси X (по часовой стрелке) - вниз-вверх
+
 const float cameraSpeed = 1.0f;							 // Скорость движения камеры
+const float mouseSensitivity = 0.05f;  // Чувствительность мыши
+
+bool firstMouse = true;
 
 struct Color
 {
@@ -36,6 +48,8 @@ void processInput(GLFWwindow* window)
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS){
 		glfwSetWindowShouldClose(window, true);
 	}
+
+	// Изменение цвета фона (для отладки):
 	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS){
 		background = {1.f, 0.f, 0.f, 1.f};
 	}
@@ -62,6 +76,41 @@ void processInput(GLFWwindow* window)
 	}
 }
 
+void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
+	// Обработка первого движения камеры:
+	if (firstMouse) {
+		lastCursorX = xpos;
+		lastCursorY = ypos;
+		firstMouse = false;
+	}
+
+	// Подсчитываем смещение курсора относительно предыдущего кадра:
+	float dx = xpos - lastCursorX,
+		  dy = lastCursorY - ypos;  // Отражаем Y, так как в OpenGl ось Y идёт вверх, а в окнах - вниз
+	lastCursorX = xpos; lastCursorY = ypos;
+
+	dx = dx * mouseSensitivity;
+	dy = dy * mouseSensitivity;
+
+	// Добавляем смещение к рысканию и тангажу:
+	cameraYaw += dx;
+	cameraPitch += dy;
+
+	// Корректируем тангаж:
+	if (cameraPitch > 89.5f)
+		cameraPitch = 89.5f;
+	else if (cameraPitch < -89.5f)
+		cameraPitch = -89.5;
+
+	// Вычисляем вектор направления камеры:
+	glm::vec3 direction;
+	direction.x = cos(glm::radians(cameraYaw)) * cos(glm::radians(cameraPitch));
+	direction.y = sin(glm::radians(cameraPitch));
+	direction.z = sin(glm::radians(cameraYaw)) * cos(glm::radians(cameraPitch));
+
+	cameraFront = glm::normalize(direction);
+}
+
 int main()
 {
 	using namespace std;
@@ -72,9 +121,9 @@ int main()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	int windowWidth = 500, windowHeight = 500;
+	int windowWidth = windowInitialWidth, windowHeight = windowInitialHeight;
 
-	GLFWwindow* win = glfwCreateWindow(500, 500, "OpenGL Window",
+	GLFWwindow* win = glfwCreateWindow(windowWidth, windowHeight, "OpenGL Window",
 	                                   NULL, NULL);
 
 	if (win == NULL)
@@ -93,9 +142,12 @@ int main()
 		return -1;
 	}
 
+	glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_DISABLED);  // Захватываем курсор
+	glfwSetCursorPosCallback(win, mouseCallback);  // Функция, вызываемая при перемещении курсора
+
 	glfwSetFramebufferSizeCallback(win, OnResize);
 
-	glViewport(0, 0, 500, 500);
+	glViewport(0, 0, windowWidth, windowHeight);
 	// Конец настройки glfw
 #pragma endregion
 
