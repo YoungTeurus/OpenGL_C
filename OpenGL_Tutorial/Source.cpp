@@ -19,7 +19,7 @@ float lastCursorX = windowInitialWidth / 2,
 
 bool firstMouse = true;
 
-Camera mainCamera = Camera();
+Camera mainCamera = Camera(glm::vec3(0.0f, 0.0f, 5.0f));
 
 struct Color
 {
@@ -148,52 +148,98 @@ int main()
 #pragma endregion
 
 	// Исходные данные:
-	const int numOfVertexes = 36, sizeOfVertex = 9;
+	const int numOfVertexes_cube = 24, sizeOfVertex_cube = 9;
 
-	float polygon[numOfVertexes * sizeOfVertex] = {
+	float cubeMesh[] = {
 		//   X       Y       Z           R       G       B       A		     S       T
-		-0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
-		0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-		0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-		0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-		-0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
-
-		-0.5f, -0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
-		0.5f, -0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-		0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-		0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-		-0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
-		-0.5f, -0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
-
-		-0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-		-0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
-		-0.5f, -0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
-		-0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-
-		0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-		0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-		0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
-		0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
-		0.5f, -0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
-		0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-
-		-0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
-		0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-		0.5f, -0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-		0.5f, -0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-		-0.5f, -0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
-		-0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
-
-		-0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
-		0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-		0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-		0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-		-0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
-		-0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
+		// Передняя грань (z: +1)
+		    1.0f,   1.0f,   1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       1.0f,   1.0f,  // верхний правый
+		   -1.0f,   1.0f,   1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       0.0f,   1.0f,  // верхний левый
+		   -1.0f,  -1.0f,   1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       0.0f,   0.0f,  // нижний левый
+		    1.0f,  -1.0f,   1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       1.0f,   0.0f,  // нижний правый
+		// Правая грань (x: +1)
+			1.0f,   1.0f,  -1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       1.0f,   1.0f,  // верхний правый
+		    1.0f,   1.0f,   1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       0.0f,   1.0f,  // верхний левый
+		    1.0f,  -1.0f,   1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       0.0f,   0.0f,  // нижний левый
+			1.0f,  -1.0f,  -1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       1.0f,   0.0f,  // нижний правый
+		// Верхняя грань (y: +1)
+			1.0f,   1.0f,  -1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       1.0f,   1.0f,  // верхний правый
+		   -1.0f,   1.0f,  -1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       0.0f,   1.0f,  // верхний левый
+		   -1.0f,   1.0f,   1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       0.0f,   0.0f,  // нижний левый
+			1.0f,   1.0f,   1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       1.0f,   0.0f,  // нижний правый
+		// Левая грань (x: -1)
+		   -1.0f,   1.0f,   1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       1.0f,   1.0f,  // верхний правый
+		   -1.0f,   1.0f,  -1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       0.0f,   1.0f,  // верхний левый
+		   -1.0f,  -1.0f,  -1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       0.0f,   0.0f,  // нижний левый
+		   -1.0f,  -1.0f,   1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       1.0f,   0.0f,  // нижний правый
+		// Нижняя грань (y: -1)
+			1.0f,  -1.0f,   1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       1.0f,   1.0f,  // верхний правый
+		   -1.0f,  -1.0f,   1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       0.0f,   1.0f,  // верхний левый
+		   -1.0f,  -1.0f,  -1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       0.0f,   0.0f,  // нижний левый
+			1.0f,  -1.0f,  -1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       1.0f,   0.0f,  // нижний правый
+		// Задняя грань (z: -1)
+		   -1.0f,   1.0f,  -1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       1.0f,   1.0f,  // верхний правый
+		    1.0f,   1.0f,  -1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       0.0f,   1.0f,  // верхний левый
+		    1.0f,  -1.0f,  -1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       0.0f,   0.0f,  // нижний левый
+		   -1.0f,  -1.0f,  -1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       1.0f,   0.0f,  // нижний правый
 	};
+
+	const int cubeIndicesCount = 12;
+
+	unsigned cubeIndices[cubeIndicesCount * 3] = {
+		// Одна грань - 2 треугольника - 6 точек
+		 0, 1, 2,	 0, 2, 3,
+		 4, 5, 6,	 4, 6, 7,
+		 8, 9,10,	 8,10,11,
+		12,13,14,	12,14,15,
+	    16,17,18,	16,18,19,
+		20,21,22,	20,22,23,
+	};
+
+	// float polygon[numOfVertexes * sizeOfVertex] = {
+	// 	//   X       Y       Z           R       G       B       A		     S       T
+	// 	-0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f,						0.0f, 0.0f,
+	// 	0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f,							1.0f, 0.0f,
+	// 	0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f,							1.0f, 1.0f,
+	// 	0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f,							1.0f, 1.0f,
+	// 	-0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f,							0.0f, 1.0f,
+	// 	-0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f,						0.0f, 0.0f,
+	// 
+	// 	-0.5f, -0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
+	// 	0.5f, -0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+	// 	0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+	// 	0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+	// 	-0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
+	// 	-0.5f, -0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
+	// 
+	// 	-0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+	// 	-0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+	// 	-0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
+	// 	-0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
+	// 	-0.5f, -0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
+	// 	-0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+	// 
+	// 	0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+	// 	0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+	// 	0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
+	// 	0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
+	// 	0.5f, -0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
+	// 	0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+	// 
+	// 	-0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
+	// 	0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+	// 	0.5f, -0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+	// 	0.5f, -0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+	// 	-0.5f, -0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
+	// 	-0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
+	// 
+	// 	-0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
+	// 	0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+	// 	0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+	// 	0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+	// 	-0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
+	// 	-0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
+	// };
 
 	glm::vec3 cubePositions[] = {
 		glm::vec3(0.0f, 0.0f, 0.0f),
@@ -208,54 +254,50 @@ int main()
 		glm::vec3(-1.3f, 1.0f, -1.5f)
 	};
 
-	// const int numOfIndices = 12;
-	// 
-	// unsigned indices[numOfIndices * 3] = {
-	// 	0, 1, 2,
-	// 	1, 2, 3,
-	// 	0, 2, 4,
-	// 	2, 4, 6,
-	// 	0, 4, 1,
-	// 	4, 1, 5,
-	// 	1, 3, 5,
-	// 	3, 5, 7,
-	// 	2, 3, 6,
-	// 	3, 6, 7,
-	// 	4, 5, 6,
-	// 	5, 6, 7
-	// };
+	float cubeScales[] = {
+		0.5f,
+		0.4f,
+		0.6f,
+		0.55f,
+		0.35f,
+		0.75f,
+		0.25f,
+		0.85f,
+		0.6f,
+		0.3f,
+	};
 
 	// Конец исходных данных
 
-	unsigned	VAO_polygon
-				,VBO_polygon
-				// ,EBO_polygon
+	unsigned	 VAO_cube
+				,VBO_cube
+				,EBO_cube
 				;
 	// VAO полигона - хранение данных о атрибутах
 	// VBO полигона - хранение данных в видеопамяти
 	// EBO полигона - ...
-	glGenBuffers(1, &VBO_polygon);
-	// glGenBuffers(1, &EBO_polygon);
-	glGenVertexArrays(1, &VAO_polygon);
+	glGenBuffers(1, &VBO_cube);
+	glGenBuffers(1, &EBO_cube);
+	glGenVertexArrays(1, &VAO_cube);
 
 	// Привязка VAO:
-	glBindVertexArray(VAO_polygon);
+	glBindVertexArray(VAO_cube);
 
 	// Сохраняем в VAO:
-	glBindBuffer(GL_ARRAY_BUFFER, VBO_polygon); // Буффер для хранения данных
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_cube); // Буффер для хранения данных
 	// Читаем данные в VBO:
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * numOfVertexes * sizeOfVertex, polygon, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * numOfVertexes_cube * sizeOfVertex_cube, cubeMesh, GL_STATIC_DRAW);
 
-	// // EBO:
-	// glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO_polygon);
-	// glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(float) * numOfIndices * 3, indices, GL_STATIC_DRAW);
+	// EBO:
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO_cube);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(float) * cubeIndicesCount * 3, cubeIndices, GL_STATIC_DRAW);
 
 	// Сохраняем данные о атрибутах:
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeOfVertex * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeOfVertex_cube * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeOfVertex * sizeof(float), (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeOfVertex_cube * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeOfVertex * sizeof(float), (void*)(7 * sizeof(float)));
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeOfVertex_cube * sizeof(float), (void*)(7 * sizeof(float)));
 	glEnableVertexAttribArray(2);
 
 	// Сбрасываем VAO:
@@ -282,37 +324,7 @@ int main()
 	model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
 	// View matrix: размещение мира относительно камеры:
-
-	// Примитивно:
-	// // Отодвинули мир вперёд (Z+ ось), т.е. отодвинули камеру назад.
-	// glm::mat4 view = glm::mat4(1.0f);
-	// view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-
-	// Через матрицу LookAt:
-	// // Создаём вектор позиции камеры (отодвинут "назад", "из экрана" - Z+):
-	// glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, 3.0f);
-	// // Точка, куда смотрит камера:
-	// glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-	// // Вектор "вверх" для мира:
-	// glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
-	// // (Обратное) направление взгляда камеры:
-	// glm::vec3 cameraDirection = glm::normalize(cameraPosition - cameraTarget); // Направлена в +Z
-	// // Вектор "вправо" для камеры: результат векторного произведения "вверх" и "вперёд" (правило правой руки)
-	// glm::vec3 cameraRight = glm::normalize(glm::cross(worldUp, cameraDirection));
-	// // Вектор "вверх" для камеры:
-	// glm::vec3 cameraUp = glm::cross(cameraRight, cameraDirection);
-	// // Создаём матрицу LookAt...
-
-	const float radius = 10.0f;
-
-	// glm::mat4 view = glm::lookAt(
-	// 	cameraPosition,		// Позиция камеры
-	// 	cameraTarget,		// Направление, куда смотрит камера
-	// 	worldUp				// Направление "вверх" для мира
-	// );
-
 	// Projection matrix: поправка объектов на перспективу и их клиппинг
-	// glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)windowWidth / windowHeight, 0.1f, 100.0f);
 
 	while (!glfwWindowShouldClose(win))
 	{
@@ -331,11 +343,13 @@ int main()
 		// Поправка на FOV камеры:
 		glm::mat4 projection = glm::perspective(glm::radians(mainCamera.FOV), (float)windowWidth / windowHeight, 0.1f, 100.0f);
 
+		int i = 0;
 		for (auto cubPos : cubePositions)
 		{
 			model = glm::mat4(1.0f);
 			model = glm::translate(model, cubPos);
 			model = glm::rotate(model, glm::radians((float)(90.0f * sin(glfwGetTime()))), glm::vec3(0.1f, 0.2f, 0.3f));
+			model = glm::scale(model, glm::vec3(cubeScales[i], cubeScales[i], cubeScales[i]));
 
 			containerTexture->use();
 			basicShader->use();
@@ -344,10 +358,11 @@ int main()
 			basicShader->setFloatMat4("view", glm::value_ptr(view));
 			basicShader->setFloatMat4("projection", glm::value_ptr(projection));
 
-			glBindVertexArray(VAO_polygon);
-			glDrawArrays(GL_TRIANGLES, 0, 36);
+			glBindVertexArray(VAO_cube);
+			glDrawElements(GL_TRIANGLES, cubeIndicesCount * 3, GL_UNSIGNED_INT, 0);
+
+			i++;
 		}
-		// glDrawElements(GL_TRIANGLES, numOfIndices * 3, GL_UNSIGNED_INT, 0);
 
 
 		glfwSwapBuffers(win);
