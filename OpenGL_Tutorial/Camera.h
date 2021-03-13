@@ -4,7 +4,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-enum MovementDirection {
+enum class MovementDirection {
 	FORWARD,
 	BACKWARD,
 	STRAFE_LEFT,

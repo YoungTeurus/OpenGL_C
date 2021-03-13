@@ -14,8 +14,8 @@ float lastFrameTime = 0.0f;								 // ¬рем€ последнего кадра
 
 int windowInitialWidth = 600, windowInitialHeight = 600; // —тартовые размеры окна
 
-float lastCursorX = windowInitialWidth / 2,
-	  lastCursorY = windowInitialHeight / 2;			 // ѕредыдущее положение курсора (стартовое - по центру окна)
+float lastCursorX = (float)windowInitialWidth / 2,
+	  lastCursorY = (float)windowInitialHeight / 2;			 // ѕредыдущее положение курсора (стартовое - по центру окна)
 
 bool firstMouse = true;
 
@@ -55,53 +55,53 @@ void processInput(GLFWwindow* window)
 
 	// ѕеремещение камеры:
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-		mainCamera.handleKeyboard(FORWARD, deltaTime);
+		mainCamera.handleKeyboard(MovementDirection::FORWARD, deltaTime);
 	}
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-		mainCamera.handleKeyboard(BACKWARD, deltaTime);
+		mainCamera.handleKeyboard(MovementDirection::BACKWARD, deltaTime);
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-		mainCamera.handleKeyboard(STRAFE_LEFT, deltaTime);
+		mainCamera.handleKeyboard(MovementDirection::STRAFE_LEFT, deltaTime);
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-		mainCamera.handleKeyboard(STRAFE_RIGHT, deltaTime);
+		mainCamera.handleKeyboard(MovementDirection::STRAFE_RIGHT, deltaTime);
 	}
 
 	// TODO: сделать поворот камеры вокруг оси Z
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
-		mainCamera.handleKeyboard(ROLL_LEFT, deltaTime);
+		mainCamera.handleKeyboard(MovementDirection::ROLL_LEFT, deltaTime);
 	}
 	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
-		mainCamera.handleKeyboard(ROLL_RIGHT, deltaTime);
+		mainCamera.handleKeyboard(MovementDirection::ROLL_RIGHT, deltaTime);
 	}
 
 	// ѕодн€тие-спуск камеры:
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-		mainCamera.handleKeyboard(UP, deltaTime);
+		mainCamera.handleKeyboard(MovementDirection::UP, deltaTime);
 	}
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
-		mainCamera.handleKeyboard(DOWN, deltaTime);
+		mainCamera.handleKeyboard(MovementDirection::DOWN, deltaTime);
 	}
 }
 
 // ќбработка движени€ колЄсика мыши
 void scrollCallback(GLFWwindow* window, double xOffset, double yOffset) {
-	mainCamera.handleMouseScroll(yOffset);
+	mainCamera.handleMouseScroll((float)yOffset);
 }
 
 // ќбработка движени€ мыши
 void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
 	// ќбработка первого движени€ камеры:
 	if (firstMouse) {
-		lastCursorX = xpos;
-		lastCursorY = ypos;
+		lastCursorX = (float)xpos;
+		lastCursorY = (float)ypos;
 		firstMouse = false;
 	}
 
 	// ѕодсчитываем смещение курсора относительно предыдущего кадра:
-	float dx = xpos - lastCursorX,
-		  dy = lastCursorY - ypos;  // ќтражаем Y, так как в OpenGl ось Y идЄт вверх, а в окнах - вниз
-	lastCursorX = xpos; lastCursorY = ypos;
+	float dx = (float)xpos - lastCursorX,
+		  dy = lastCursorY - (float)ypos;  // ќтражаем Y, так как в OpenGl ось Y идЄт вверх, а в окнах - вниз
+	lastCursorX = (float)xpos; lastCursorY = (float)ypos;
 
 	mainCamera.handleMouseMovement(dx, dy);
 }
@@ -154,34 +154,34 @@ int main()
 		//   X       Y       Z           R       G       B       A		     S       T
 		// ѕередн€€ грань (z: +1)
 		    1.0f,   1.0f,   1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       1.0f,   1.0f,  // верхний правый
-		   -1.0f,   1.0f,   1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       0.0f,   1.0f,  // верхний левый
-		   -1.0f,  -1.0f,   1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       0.0f,   0.0f,  // нижний левый
-		    1.0f,  -1.0f,   1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       1.0f,   0.0f,  // нижний правый
+		   -1.0f,   1.0f,   1.0f,       0.0f,   1.0f,   1.0f,   1.0f,       0.0f,   1.0f,  // верхний левый
+		   -1.0f,  -1.0f,   1.0f,       1.0f,   0.0f,   1.0f,   1.0f,       0.0f,   0.0f,  // нижний левый
+		    1.0f,  -1.0f,   1.0f,       0.5f,   0.5f,   0.5f,   1.0f,       1.0f,   0.0f,  // нижний правый
 		// ѕрава€ грань (x: +1)
 			1.0f,   1.0f,  -1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       1.0f,   1.0f,  // верхний правый
-		    1.0f,   1.0f,   1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       0.0f,   1.0f,  // верхний левый
-		    1.0f,  -1.0f,   1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       0.0f,   0.0f,  // нижний левый
-			1.0f,  -1.0f,  -1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       1.0f,   0.0f,  // нижний правый
+			1.0f,   1.0f,   1.0f,       0.0f,   1.0f,   1.0f,   1.0f,       0.0f,   1.0f,  // верхний левый
+			1.0f,  -1.0f,   1.0f,       1.0f,   0.0f,   1.0f,   1.0f,       0.0f,   0.0f,  // нижний левый
+			1.0f,  -1.0f,  -1.0f,       0.5f,   0.5f,   0.5f,   1.0f,       1.0f,   0.0f,  // нижний правый
 		// ¬ерхн€€ грань (y: +1)
 			1.0f,   1.0f,  -1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       1.0f,   1.0f,  // верхний правый
-		   -1.0f,   1.0f,  -1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       0.0f,   1.0f,  // верхний левый
-		   -1.0f,   1.0f,   1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       0.0f,   0.0f,  // нижний левый
-			1.0f,   1.0f,   1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       1.0f,   0.0f,  // нижний правый
+		   -1.0f,   1.0f,  -1.0f,       0.0f,   1.0f,   1.0f,   1.0f,       0.0f,   1.0f,  // верхний левый
+		   -1.0f,   1.0f,   1.0f,       1.0f,   0.0f,   1.0f,   1.0f,       0.0f,   0.0f,  // нижний левый
+			1.0f,   1.0f,   1.0f,       0.5f,   0.5f,   0.5f,   1.0f,       1.0f,   0.0f,  // нижний правый
 		// Ћева€ грань (x: -1)
 		   -1.0f,   1.0f,   1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       1.0f,   1.0f,  // верхний правый
-		   -1.0f,   1.0f,  -1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       0.0f,   1.0f,  // верхний левый
-		   -1.0f,  -1.0f,  -1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       0.0f,   0.0f,  // нижний левый
-		   -1.0f,  -1.0f,   1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       1.0f,   0.0f,  // нижний правый
+		   -1.0f,   1.0f,  -1.0f,       0.0f,   1.0f,   1.0f,   1.0f,       0.0f,   1.0f,  // верхний левый
+		   -1.0f,  -1.0f,  -1.0f,       1.0f,   0.0f,   1.0f,   1.0f,       0.0f,   0.0f,  // нижний левый
+		   -1.0f,  -1.0f,   1.0f,       0.5f,   0.5f,   0.5f,   1.0f,       1.0f,   0.0f,  // нижний правый
 		// Ќижн€€ грань (y: -1)
 			1.0f,  -1.0f,   1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       1.0f,   1.0f,  // верхний правый
-		   -1.0f,  -1.0f,   1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       0.0f,   1.0f,  // верхний левый
-		   -1.0f,  -1.0f,  -1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       0.0f,   0.0f,  // нижний левый
-			1.0f,  -1.0f,  -1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       1.0f,   0.0f,  // нижний правый
+		   -1.0f,  -1.0f,   1.0f,       0.0f,   1.0f,   1.0f,   1.0f,       0.0f,   1.0f,  // верхний левый
+		   -1.0f,  -1.0f,  -1.0f,       1.0f,   0.0f,   1.0f,   1.0f,       0.0f,   0.0f,  // нижний левый
+			1.0f,  -1.0f,  -1.0f,       0.5f,   0.5f,   0.5f,   1.0f,       1.0f,   0.0f,  // нижний правый
 		// «адн€€ грань (z: -1)
 		   -1.0f,   1.0f,  -1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       1.0f,   1.0f,  // верхний правый
-		    1.0f,   1.0f,  -1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       0.0f,   1.0f,  // верхний левый
-		    1.0f,  -1.0f,  -1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       0.0f,   0.0f,  // нижний левый
-		   -1.0f,  -1.0f,  -1.0f,       1.0f,   1.0f,   1.0f,   1.0f,       1.0f,   0.0f,  // нижний правый
+			1.0f,   1.0f,  -1.0f,       0.0f,   1.0f,   1.0f,   1.0f,       0.0f,   1.0f,  // верхний левый
+			1.0f,  -1.0f,  -1.0f,       1.0f,   0.0f,   1.0f,   1.0f,       0.0f,   0.0f,  // нижний левый
+		   -1.0f,  -1.0f,  -1.0f,       0.5f,   0.5f,   0.5f,   1.0f,       1.0f,   0.0f,  // нижний правый
 	};
 
 	const int cubeIndicesCount = 12;
@@ -309,8 +309,7 @@ int main()
 	Texture* containerTexture = new Texture("./textures/container.jpg");
 	Texture* pogfaceTexture = new Texture("./textures/awesomeface.png", TextureType::RGBA);
 
-	float dx, dy;
-	int drawMode = 1; //  онтролирует отрисовку: 0 - рисование цветом, 1 - рисование текстурой, 2 - две текстуры
+	int drawMode = 0; //  онтролирует отрисовку: 0 - рисование цветом, 1 - рисование текстурой, 2 - две текстуры
 
 
 	// ”станавливаем ID-текстур дл€ рисовани€ двух текстур сразу
@@ -328,7 +327,7 @@ int main()
 
 	while (!glfwWindowShouldClose(win))
 	{
-		float currentFrameTime = glfwGetTime();
+		float currentFrameTime = (float)glfwGetTime();
 		deltaTime = currentFrameTime - lastFrameTime;
 		lastFrameTime = currentFrameTime;
 

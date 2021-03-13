@@ -30,27 +30,27 @@ void Camera::handleKeyboard(MovementDirection direction, float deltaTime)
 	float velocity = movementSpeed * deltaTime;
 	switch (direction)
 	{
-	case FORWARD:
+	case MovementDirection::FORWARD:
 		position += front * velocity;
 		break;
-	case BACKWARD:
+	case MovementDirection::BACKWARD:
 		position -= front * velocity;
 		break;
-	case STRAFE_LEFT:
+	case MovementDirection::STRAFE_LEFT:
 		position -= right * velocity;
 		break;
-	case STRAFE_RIGHT:
+	case MovementDirection::STRAFE_RIGHT:
 		position += right * velocity;
 		break;
-	case UP:
+	case MovementDirection::UP:
 		position += up * velocity;
 		break;
-	case DOWN:
+	case MovementDirection::DOWN:
 		position -= up * velocity;
 		break;
-	case ROLL_LEFT:
+	case MovementDirection::ROLL_LEFT:
 		break;
-	case ROLL_RIGHT:
+	case MovementDirection::ROLL_RIGHT:
 		break;
 	}
 }
