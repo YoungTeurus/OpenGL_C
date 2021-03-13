@@ -20,6 +20,8 @@ glm::vec3 cameraPos		= glm::vec3(0.0f, 0.0f,	 3.0f);  // Положение камеры
 glm::vec3 cameraFront	= glm::vec3(0.0f, 0.0f, -1.0f);  // Направление взгляда камеры
 glm::vec3 cameraUp		= glm::vec3(0.0f, 1.0f,  0.0f);  // Направление "вверх" для камеры
 
+glm::vec3 cameraUpReal = cameraUp;		// Действительное направление вверх для камеры
+
 float cameraYaw = -90.f,  // Рыскание камеры: вращение вокруг оси Y (по часовой стрелке) - влево-вправо
 	  cameraPitch = 0.0f; // Тангаж камеры: вращение вокруг оси X (по часовой стрелке) - вниз-вверх
 float cameraFOV = 30.0f;  // Угол зрения камеры
@@ -80,10 +82,10 @@ void processInput(GLFWwindow* window)
 	// TODO: подниматься-спускаться относительно направления взгляда
 	// На данный момент мы имеем cameraDirection, а нужен реальный cameraUp (не [0,1,0] вектор)
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-		cameraPos += glm::vec3(0.0f, 1.0f, 0.0f) * cameraSpeed;
+		cameraPos += cameraUpReal * cameraSpeed;
 	}
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
-		cameraPos -= glm::vec3(0.0f, 1.0f, 0.0f) * cameraSpeed;
+		cameraPos -= cameraUpReal * cameraSpeed;
 	}
 }
 
@@ -128,6 +130,13 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
 	direction.x = cos(glm::radians(cameraYaw)) * cos(glm::radians(cameraPitch));
 	direction.y = sin(glm::radians(cameraPitch));
 	direction.z = sin(glm::radians(cameraYaw)) * cos(glm::radians(cameraPitch));
+
+	glm::vec3 rightDirection;
+	rightDirection.x = cos(glm::radians(cameraYaw + 90.0f));
+	rightDirection.y = 0.0f;
+	rightDirection.z = sin(glm::radians(cameraYaw + 90.0f));
+
+	cameraUpReal = glm::normalize(glm::cross(rightDirection, direction));
 
 	cameraFront = glm::normalize(direction);
 }
