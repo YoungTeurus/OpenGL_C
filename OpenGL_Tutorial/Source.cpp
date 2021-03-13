@@ -75,6 +75,16 @@ void processInput(GLFWwindow* window)
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
 		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 	}
+
+	// Поднятие-спуск камеры:
+	// TODO: подниматься-спускаться относительно направления взгляда
+	// На данный момент мы имеем cameraDirection, а нужен реальный cameraUp (не [0,1,0] вектор)
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+		cameraPos += glm::vec3(0.0f, 1.0f, 0.0f) * cameraSpeed;
+	}
+	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+		cameraPos -= glm::vec3(0.0f, 1.0f, 0.0f) * cameraSpeed;
+	}
 }
 
 // Обработка движения колёсика мыши
