@@ -46,6 +46,7 @@ void processInput(GLFWwindow* window)
 int main()
 {
 	using namespace std;
+#pragma region GLFW INIT
 	// Настройка glfw
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -77,6 +78,7 @@ int main()
 
 	glViewport(0, 0, 500, 500);
 	// Конец настройки glfw
+#pragma endregion
 
 	// Исходные данные:
 	const int numOfVertexes = 36, sizeOfVertex = 9;

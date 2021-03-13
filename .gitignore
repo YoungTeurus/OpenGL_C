@@ -338,3 +338,5 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+/OpenGL_Tutorial/include/glm/out/build/x64-Debug/.cmake/api/v1
+/OpenGL_Tutorial/include/glm/out/build/x64-Debug
