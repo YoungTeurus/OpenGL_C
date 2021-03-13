@@ -240,8 +240,8 @@ int main()
 
 	// glm::mat4 view = glm::lookAt(
 	// 	cameraPosition,		// Позиция камеры
-	// 	cameraTarget,		// Положение камеры
-	// 	worldUp				// Направление вверх для мира
+	// 	cameraTarget,		// Направление, куда смотрит камера
+	// 	worldUp				// Направление "вверх" для мира
 	// );
 
 	// Projection matrix: поправка объектов на перспективу и их клиппинг
