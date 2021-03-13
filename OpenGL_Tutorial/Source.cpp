@@ -6,6 +6,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include "Shader.h"
+#include "Camera.h"
 #include "Texture.h"
 
 float deltaTime = 0.0f;									 // Разница во времени между последним и предпоследним кадрами
@@ -16,20 +17,9 @@ int windowInitialWidth = 600, windowInitialHeight = 600; // Стартовые размеры ок
 float lastCursorX = windowInitialWidth / 2,
 	  lastCursorY = windowInitialHeight / 2;			 // Предыдущее положение курсора (стартовое - по центру окна)
 
-glm::vec3 cameraPos		= glm::vec3(0.0f, 0.0f,	 3.0f);  // Положение камеры
-glm::vec3 cameraFront	= glm::vec3(0.0f, 0.0f, -1.0f);  // Направление взгляда камеры
-glm::vec3 cameraUp		= glm::vec3(0.0f, 1.0f,  0.0f);  // Направление "вверх" для камеры
-
-glm::vec3 cameraUpReal = cameraUp;		// Действительное направление вверх для камеры
-
-float cameraYaw = -90.f,  // Рыскание камеры: вращение вокруг оси Y (по часовой стрелке) - влево-вправо
-	  cameraPitch = 0.0f; // Тангаж камеры: вращение вокруг оси X (по часовой стрелке) - вниз-вверх
-float cameraFOV = 30.0f;  // Угол зрения камеры
-
-const float cameraSpeed = 1.0f;							 // Скорость движения камеры
-const float mouseSensitivity = 0.05f;  // Чувствительность мыши
-
 bool firstMouse = true;
+
+Camera mainCamera = Camera();
 
 struct Color
 {
@@ -64,38 +54,37 @@ void processInput(GLFWwindow* window)
 	}
 
 	// Перемещение камеры:
-	float cameraSpeed = ::cameraSpeed * deltaTime;
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-		cameraPos += cameraSpeed * cameraFront;
+		mainCamera.move(FORWARD, deltaTime);
 	}
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-		cameraPos -= cameraSpeed * cameraFront;
+		mainCamera.move(BACKWARD, deltaTime);
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+		mainCamera.move(LEFT, deltaTime);
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+		mainCamera.move(RIGHT, deltaTime);
+	}
+
+	// TODO: сделать поворот камеры вокруг оси Z
+	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
+	}
+	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
 	}
 
 	// Поднятие-спуск камеры:
-	// TODO: подниматься-спускаться относительно направления взгляда
-	// На данный момент мы имеем cameraDirection, а нужен реальный cameraUp (не [0,1,0] вектор)
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-		cameraPos += cameraUpReal * cameraSpeed;
+		mainCamera.move(UP, deltaTime);
 	}
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
-		cameraPos -= cameraUpReal * cameraSpeed;
+		mainCamera.move(DOWN, deltaTime);
 	}
 }
 
 // Обработка движения колёсика мыши
 void scrollCallback(GLFWwindow* window, double xOffset, double yOffset) {
-	cameraFOV -= (float)yOffset;
-	if (cameraFOV < 1.0f)
-		cameraFOV = 1.0f;
-	else if (cameraFOV > 89.5f)
-		cameraFOV = 89.5f;
+	mainCamera.changeFOV(yOffset);
 }
 
 // Обработка движения мыши
@@ -112,33 +101,7 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
 		  dy = lastCursorY - ypos;  // Отражаем Y, так как в OpenGl ось Y идёт вверх, а в окнах - вниз
 	lastCursorX = xpos; lastCursorY = ypos;
 
-	dx = dx * mouseSensitivity;
-	dy = dy * mouseSensitivity;
-
-	// Добавляем смещение к рысканию и тангажу:
-	cameraYaw += dx;
-	cameraPitch += dy;
-
-	// Корректируем тангаж:
-	if (cameraPitch > 89.5f)
-		cameraPitch = 89.5f;
-	else if (cameraPitch < -89.5f)
-		cameraPitch = -89.5;
-
-	// Вычисляем вектор направления камеры:
-	glm::vec3 direction;
-	direction.x = cos(glm::radians(cameraYaw)) * cos(glm::radians(cameraPitch));
-	direction.y = sin(glm::radians(cameraPitch));
-	direction.z = sin(glm::radians(cameraYaw)) * cos(glm::radians(cameraPitch));
-
-	glm::vec3 rightDirection;
-	rightDirection.x = cos(glm::radians(cameraYaw + 90.0f));
-	rightDirection.y = 0.0f;
-	rightDirection.z = sin(glm::radians(cameraYaw + 90.0f));
-
-	cameraUpReal = glm::normalize(glm::cross(rightDirection, direction));
-
-	cameraFront = glm::normalize(direction);
+	mainCamera.rotate(dx, dy);
 }
 
 int main()
@@ -361,14 +324,10 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Вращение камеры:
-		glm::mat4 view = glm::lookAt(
-			cameraPos,						// Позиция камеры
-			cameraPos + cameraFront,		// Положение камеры
-			cameraUp						// Направление вверх для камеры
-		);
+		glm::mat4 view = mainCamera.getViewMatrix();
 
 		// Поправка на FOV камеры:
-		glm::mat4 projection = glm::perspective(glm::radians(cameraFOV), (float)windowWidth / windowHeight, 0.1f, 100.0f);
+		glm::mat4 projection = glm::perspective(glm::radians(mainCamera.FOV), (float)windowWidth / windowHeight, 0.1f, 100.0f);
 
 		for (auto cubPos : cubePositions)
 		{
