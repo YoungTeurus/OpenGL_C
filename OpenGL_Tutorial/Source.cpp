@@ -263,6 +263,17 @@ int main()
 		0.6f,
 		0.3f,
 	};
+	glm::vec3 cubeColor[] = {
+		glm::vec3(1.0f, 0.0f, 0.0f),
+		glm::vec3(0.7f, 0.3f, 0.0f),
+		glm::vec3(0.4f, 0.3f, 0.5f),
+		glm::vec3(0.3f, 0.6f, 0.1f),
+		glm::vec3(0.8f, 0.8f, 0.8f),
+		glm::vec3(0.0f, 1.0f, 0.0f),
+		glm::vec3(0.0f, 0.0f, 1.0f),
+		glm::vec3(0.5f, 0.5f, 0.5f),
+		glm::vec3(0.8f, 0.1f, 0.8f),
+	};
 
 	glm::vec3 lightCubePositions[] = {
 		glm::vec3(0.0f, 0.0f, 0.0f),
@@ -380,7 +391,7 @@ int main()
 
 			// containerTexture->use();
 			cubeShader->use();
-			cubeShader->setFloatVec3("objectColor", 1.0f, 0.5f, 0.31f);
+			cubeShader->setFloatVec3("objectColor", cubeColor[i].r, cubeColor[i].g, cubeColor[i].b);
 			cubeShader->setFloatVec3("lightColor", 1.0f, 1.0f, 1.0f);
 			// basicShader->use();
 			// basicShader->setInt("uDrawMode", drawMode);
