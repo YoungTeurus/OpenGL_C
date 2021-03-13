@@ -242,7 +242,6 @@ int main()
 	// };
 
 	glm::vec3 cubePositions[] = {
-		glm::vec3(0.0f, 0.0f, 0.0f),
 		glm::vec3(2.0f, 5.0f, -15.0f),
 		glm::vec3(-1.5f, -2.2f, -2.5f),
 		glm::vec3(-3.8f, -2.0f, -12.3f),
@@ -253,9 +252,7 @@ int main()
 		glm::vec3(1.5f, 0.2f, -1.5f),
 		glm::vec3(-1.3f, 1.0f, -1.5f)
 	};
-
 	float cubeScales[] = {
-		0.5f,
 		0.4f,
 		0.6f,
 		0.55f,
@@ -267,15 +264,23 @@ int main()
 		0.3f,
 	};
 
+	glm::vec3 lightCubePositions[] = {
+		glm::vec3(0.0f, 0.0f, 0.0f),
+	};
+	float lightCubeScales[] = {
+		0.5f,
+	};
+
 	//  онец исходных данных
 
+#pragma region Cube VAO, VBO, EBO
 	unsigned	 VAO_cube
 				,VBO_cube
 				,EBO_cube
 				;
 	// VAO полигона - хранение данных о атрибутах
 	// VBO полигона - хранение данных в видеопам€ти
-	// EBO полигона - ...
+	// EBO полигона - хранение данных о рЄбрах и гран€х
 	glGenBuffers(1, &VBO_cube);
 	glGenBuffers(1, &EBO_cube);
 	glGenVertexArrays(1, &VAO_cube);
@@ -302,20 +307,40 @@ int main()
 
 	// —брасываем VAO:
 	glBindVertexArray(0);
+#pragma endregion
+
+#pragma region Light VAO, VBO, EBO
+	unsigned VAO_light;
+	glGenVertexArrays(1, &VAO_light);
+	glBindVertexArray(VAO_light);
+
+	// ѕовторное использование VBO куба:
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_cube);
+
+	// ѕовторное использование EBO куба:
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO_cube);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeOfVertex_cube * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	glBindVertexArray(0);
+#pragma endregion
 
 	glEnable(GL_DEPTH_TEST);
 
-	Shader* basicShader = new Shader("./shaders/basic.vert", "./shaders/basic.frag");
+	// Shader* basicShader = new Shader("./shaders/basic.vert", "./shaders/basic.frag");
+	Shader* cubeShader = new Shader("./shaders/basic.vert", "./shaders/cube.frag");
+	Shader* lightShader = new Shader("./shaders/basic.vert", "./shaders/lightCube.frag");
 	Texture* containerTexture = new Texture("./textures/container.jpg");
 	Texture* pogfaceTexture = new Texture("./textures/awesomeface.png", TextureType::RGBA);
 
-	int drawMode = 0; //  онтролирует отрисовку: 0 - рисование цветом, 1 - рисование текстурой, 2 - две текстуры
+	int drawMode; //  онтролирует отрисовку: 0 - рисование цветом, 1 - рисование текстурой, 2 - две текстуры
 
 
-	// ”станавливаем ID-текстур дл€ рисовани€ двух текстур сразу
-	basicShader->use();
-	basicShader->setInt("uTexture", 0); // GL_TEXTURE0
-	basicShader->setInt("uTexture2", 1); // GL_TEXTURE1
+	// // ”станавливаем ID-текстур дл€ рисовани€ двух текстур сразу
+	// basicShader->use();
+	// basicShader->setInt("uTexture", 0); // GL_TEXTURE0
+	// basicShader->setInt("uTexture2", 1); // GL_TEXTURE1
 
 
 	// Model matrix: размещение объекта в мировых координатах:
@@ -342,25 +367,51 @@ int main()
 		// ѕоправка на FOV камеры:
 		glm::mat4 projection = glm::perspective(glm::radians(mainCamera.FOV), (float)windowWidth / windowHeight, 0.1f, 100.0f);
 
+
+		// ќтрисовка €щиков:
+		drawMode = 1;
 		int i = 0;
 		for (auto cubPos : cubePositions)
 		{
 			model = glm::mat4(1.0f);
 			model = glm::translate(model, cubPos);
-			model = glm::rotate(model, glm::radians((float)(90.0f * sin(glfwGetTime()))), glm::vec3(0.1f, 0.2f, 0.3f));
+			// model = glm::rotate(model, glm::radians((float)(90.0f * sin(glfwGetTime()))), glm::vec3(0.1f, 0.2f, 0.3f));
 			model = glm::scale(model, glm::vec3(cubeScales[i], cubeScales[i], cubeScales[i]));
 
-			containerTexture->use();
-			basicShader->use();
-			basicShader->setInt("uDrawMode", drawMode);
+			// containerTexture->use();
+			cubeShader->use();
+			cubeShader->setFloatVec3("objectColor", 1.0f, 0.5f, 0.31f);
+			cubeShader->setFloatVec3("lightColor", 1.0f, 1.0f, 1.0f);
+			// basicShader->use();
+			// basicShader->setInt("uDrawMode", drawMode);
 			
 			glm::mat4 transformation = projection * view * model;
 
-			basicShader->setFloatMat4("transformation", glm::value_ptr(transformation));
+			// basicShader->setFloatMat4("transformation", glm::value_ptr(transformation));
+			cubeShader->setFloatMat4("transformation", glm::value_ptr(transformation));
 
 			glBindVertexArray(VAO_cube);
 			glDrawElements(GL_TRIANGLES, cubeIndicesCount * 3, GL_UNSIGNED_INT, 0);
 
+			i++;
+		}
+
+		i = 0;
+		for (auto lightCubPos : lightCubePositions) {
+			model = glm::mat4(1.0f);
+			model = glm::translate(model, lightCubPos);
+			// model = glm::rotate(model, glm::radians((float)(90.0f * sin(glfwGetTime()))), glm::vec3(0.1f, 0.2f, 0.3f));
+			model = glm::scale(model, glm::vec3(lightCubeScales[i], lightCubeScales[i], lightCubeScales[i]));
+		
+			lightShader->use();
+			
+			glm::mat4 transformation = projection * view * model;
+			
+			lightShader->setFloatMat4("transformation", glm::value_ptr(transformation));
+
+			glBindVertexArray(VAO_light);
+			glDrawElements(GL_TRIANGLES, cubeIndicesCount * 3, GL_UNSIGNED_INT, 0);
+		
 			i++;
 		}
 
