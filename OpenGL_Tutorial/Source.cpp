@@ -8,6 +8,11 @@
 #include "Shader.h"
 #include "Texture.h"
 
+glm::vec3 cameraPos		= glm::vec3(0.0f, 0.0f,	 3.0f);  // Положение камеры
+glm::vec3 cameraFront	= glm::vec3(0.0f, 0.0f, -1.0f);  // Направление взгляда камеры
+glm::vec3 cameraUp		= glm::vec3(0.0f, 1.0f,  0.0f);  // Направление "вверх" для камеры
+const float cameraSpeed = 0.05f;						 // Скорость движения камеры
+
 struct Color
 {
 	float r, g, b, a;
@@ -25,21 +30,31 @@ void OnResize(GLFWwindow* window, int width, int height)
 // Работа с устройствами ввода
 void processInput(GLFWwindow* window)
 {
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-	{
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS){
 		glfwSetWindowShouldClose(window, true);
 	}
-	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
-	{
+	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS){
 		background = {1.f, 0.f, 0.f, 1.f};
 	}
-	if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
-	{
+	if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS){
 		background = {0.f, 1.f, 0.f, 1.f};
 	}
-	if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
-	{
+	if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS){
 		background = {0.f, 0.f, 1.f, 1.f};
+	}
+
+	// Перемещение камеры:
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+		cameraPos += cameraSpeed * cameraFront;
+	}
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+		cameraPos -= cameraSpeed * cameraFront;
+	}
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+	}
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 	}
 }
 
@@ -222,12 +237,12 @@ int main()
 	// view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
 
 	// Через матрицу LookAt:
-	// Создаём вектор позиции камеры (отодвинут "назад", "из экрана" - Z+):
-	glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, 3.0f);
-	// Точка, куда смотрит камера:
-	glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-	// Вектор "вверх" для мира:
-	glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+	// // Создаём вектор позиции камеры (отодвинут "назад", "из экрана" - Z+):
+	// glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, 3.0f);
+	// // Точка, куда смотрит камера:
+	// glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+	// // Вектор "вверх" для мира:
+	// glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
 	// // (Обратное) направление взгляда камеры:
 	// glm::vec3 cameraDirection = glm::normalize(cameraPosition - cameraTarget); // Направлена в +Z
 	// // Вектор "вправо" для камеры: результат векторного произведения "вверх" и "вперёд" (правило правой руки)
@@ -255,13 +270,10 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Вращение камеры:
-		float camX = sin(glfwGetTime()) * radius;
-		float camZ = cos(glfwGetTime()) * radius;
-		cameraPosition = glm::vec3(camX, 0.0f, camZ);
 		glm::mat4 view = glm::lookAt(
-			cameraPosition,		// Позиция камеры
-			cameraTarget,		// Положение камеры
-			worldUp				// Направление вверх для мира
+			cameraPos,						// Позиция камеры
+			cameraPos + cameraFront,		// Положение камеры
+			cameraUp						// Направление вверх для камеры
 		);
 
 		for (auto cubPos : cubePositions)
