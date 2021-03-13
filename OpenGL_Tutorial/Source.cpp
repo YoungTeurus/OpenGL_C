@@ -215,9 +215,32 @@ int main()
 	model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
 	// View matrix: размещение мира относительно камеры:
-	// Отодвинули мир вперёд (Z+ ось), т.е. отодвинули камеру назад.
-	glm::mat4 view = glm::mat4(1.0f);
-	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+
+	// Примитивно:
+	// // Отодвинули мир вперёд (Z+ ось), т.е. отодвинули камеру назад.
+	// glm::mat4 view = glm::mat4(1.0f);
+	// view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+
+	// Через матрицу LookAt:
+	// Создаём вектор позиции камеры (отодвинут "назад", "из экрана" - Z+):
+	glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, 3.0f);
+	// Точка, куда смотрит камера:
+	glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+	// Вектор "вверх" для мира:
+	glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+	// // (Обратное) направление взгляда камеры:
+	// glm::vec3 cameraDirection = glm::normalize(cameraPosition - cameraTarget); // Направлена в +Z
+	// // Вектор "вправо" для камеры: результат векторного произведения "вверх" и "вперёд" (правило правой руки)
+	// glm::vec3 cameraRight = glm::normalize(glm::cross(worldUp, cameraDirection));
+	// // Вектор "вверх" для камеры:
+	// glm::vec3 cameraUp = glm::cross(cameraRight, cameraDirection);
+	// // Создаём матрицу LookAt...
+
+	glm::mat4 view = glm::lookAt(
+		cameraPosition,		// Позиция камеры
+		cameraTarget,		// Положение камеры
+		worldUp				// Направление вверх для мира
+	);
 
 	// Projection matrix: поправка объектов на перспективу и их клиппинг
 	glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)windowWidth / windowHeight, 0.1f, 100.0f);
@@ -233,8 +256,8 @@ int main()
 		// model = glm::rotate(model, glm::radians(sin((float)glfwGetTime()) / 13), glm::vec3(0.0f, 1.0f, 0.0f));
 		// model = glm::rotate(model, glm::radians(sin((float)glfwGetTime()) / 17), glm::vec3(0.0f, 0.0f, 1.0f));
 
-		glm::mat4 view = glm::mat4(1.0f);
-		view = glm::translate(view, glm::vec3(-sin(glfwGetTime()), 0.0f, -3.0f));
+		// glm::mat4 view = glm::mat4(1.0f);
+		// view = glm::translate(view, glm::vec3(-sin(glfwGetTime()), 0.0f, -3.0f));
 
 		for (auto cubPos : cubePositions)
 		{
