@@ -7,10 +7,12 @@
 enum MovementDirection {
 	FORWARD,
 	BACKWARD,
-	LEFT,
-	RIGHT,
+	STRAFE_LEFT,
+	STRAFE_RIGHT,
 	UP,
-	DOWN
+	DOWN,
+	ROLL_LEFT,
+	ROLL_RIGHT,
 };
 
 // Значения по умолчанию:
@@ -49,13 +51,13 @@ public:
 	glm::mat4 getViewMatrix();
 
 	// Перемещение камеры в указанном направлении в течение deltaTime
-	void move(MovementDirection direction, float deltaTime);
+	void handleKeyboard(MovementDirection direction, float deltaTime);
 
 	// Поворот камеры при перемещении мыши на xOffset и yOffset. При необходимости ограничивает тангаж
-	void rotate(float xOffset, float yOffset, GLboolean constrainPitch = true);
+	void handleMouseMovement(float xOffset, float yOffset, GLboolean constrainPitch = true);
 
 	// Изменение FOV камеры при скролле колёсика
-	void changeFOV(float yOffset);
+	void handleMouseScroll(float yOffset);
 
 private:
 	// Рассчитывает векторы

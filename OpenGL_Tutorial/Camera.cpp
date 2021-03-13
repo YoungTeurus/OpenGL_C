@@ -25,7 +25,7 @@ glm::mat4 Camera::getViewMatrix()
 	return lookAt(position, position + front, up);
 }
 
-void Camera::move(MovementDirection direction, float deltaTime)
+void Camera::handleKeyboard(MovementDirection direction, float deltaTime)
 {
 	float velocity = movementSpeed * deltaTime;
 	switch (direction)
@@ -36,10 +36,10 @@ void Camera::move(MovementDirection direction, float deltaTime)
 	case BACKWARD:
 		position -= front * velocity;
 		break;
-	case LEFT:
+	case STRAFE_LEFT:
 		position -= right * velocity;
 		break;
-	case RIGHT:
+	case STRAFE_RIGHT:
 		position += right * velocity;
 		break;
 	case UP:
@@ -48,10 +48,14 @@ void Camera::move(MovementDirection direction, float deltaTime)
 	case DOWN:
 		position -= up * velocity;
 		break;
+	case ROLL_LEFT:
+		break;
+	case ROLL_RIGHT:
+		break;
 	}
 }
 
-void Camera::rotate(float xOffset, float yOffset, GLboolean constrainPitch)
+void Camera::handleMouseMovement(float xOffset, float yOffset, GLboolean constrainPitch)
 {
 	xOffset *= mouseSensitivity;
 	yOffset *= mouseSensitivity;
@@ -69,7 +73,7 @@ void Camera::rotate(float xOffset, float yOffset, GLboolean constrainPitch)
 	updateCameraVectors();
 }
 
-void Camera::changeFOV(float yOffset)
+void Camera::handleMouseScroll(float yOffset)
 {
 	FOV -= yOffset;
 	if (FOV < 1.0f)

@@ -55,36 +55,38 @@ void processInput(GLFWwindow* window)
 
 	// Перемещение камеры:
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-		mainCamera.move(FORWARD, deltaTime);
+		mainCamera.handleKeyboard(FORWARD, deltaTime);
 	}
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-		mainCamera.move(BACKWARD, deltaTime);
+		mainCamera.handleKeyboard(BACKWARD, deltaTime);
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-		mainCamera.move(LEFT, deltaTime);
+		mainCamera.handleKeyboard(STRAFE_LEFT, deltaTime);
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-		mainCamera.move(RIGHT, deltaTime);
+		mainCamera.handleKeyboard(STRAFE_RIGHT, deltaTime);
 	}
 
 	// TODO: сделать поворот камеры вокруг оси Z
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
+		mainCamera.handleKeyboard(ROLL_LEFT, deltaTime);
 	}
 	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
+		mainCamera.handleKeyboard(ROLL_RIGHT, deltaTime);
 	}
 
 	// Поднятие-спуск камеры:
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-		mainCamera.move(UP, deltaTime);
+		mainCamera.handleKeyboard(UP, deltaTime);
 	}
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
-		mainCamera.move(DOWN, deltaTime);
+		mainCamera.handleKeyboard(DOWN, deltaTime);
 	}
 }
 
 // Обработка движения колёсика мыши
 void scrollCallback(GLFWwindow* window, double xOffset, double yOffset) {
-	mainCamera.changeFOV(yOffset);
+	mainCamera.handleMouseScroll(yOffset);
 }
 
 // Обработка движения мыши
@@ -101,7 +103,7 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
 		  dy = lastCursorY - ypos;  // Отражаем Y, так как в OpenGl ось Y идёт вверх, а в окнах - вниз
 	lastCursorX = xpos; lastCursorY = ypos;
 
-	mainCamera.rotate(dx, dy);
+	mainCamera.handleMouseMovement(dx, dy);
 }
 
 int main()
