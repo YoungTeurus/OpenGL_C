@@ -22,6 +22,7 @@ glm::vec3 cameraUp		= glm::vec3(0.0f, 1.0f,  0.0f);  // Направление "вверх" для 
 
 float cameraYaw = -90.f,  // Рыскание камеры: вращение вокруг оси Y (по часовой стрелке) - влево-вправо
 	  cameraPitch = 0.0f; // Тангаж камеры: вращение вокруг оси X (по часовой стрелке) - вниз-вверх
+float cameraFOV = 30.0f;  // Угол зрения камеры
 
 const float cameraSpeed = 1.0f;							 // Скорость движения камеры
 const float mouseSensitivity = 0.05f;  // Чувствительность мыши
@@ -76,6 +77,16 @@ void processInput(GLFWwindow* window)
 	}
 }
 
+// Обработка движения колёсика мыши
+void scrollCallback(GLFWwindow* window, double xOffset, double yOffset) {
+	cameraFOV -= (float)yOffset;
+	if (cameraFOV < 1.0f)
+		cameraFOV = 1.0f;
+	else if (cameraFOV > 89.5f)
+		cameraFOV = 89.5f;
+}
+
+// Обработка движения мыши
 void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
 	// Обработка первого движения камеры:
 	if (firstMouse) {
@@ -144,6 +155,7 @@ int main()
 
 	glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_DISABLED);  // Захватываем курсор
 	glfwSetCursorPosCallback(win, mouseCallback);  // Функция, вызываемая при перемещении курсора
+	glfwSetScrollCallback(win, scrollCallback);
 
 	glfwSetFramebufferSizeCallback(win, OnResize);
 
@@ -316,7 +328,7 @@ int main()
 	// );
 
 	// Projection matrix: поправка объектов на перспективу и их клиппинг
-	glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)windowWidth / windowHeight, 0.1f, 100.0f);
+	// glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)windowWidth / windowHeight, 0.1f, 100.0f);
 
 	while (!glfwWindowShouldClose(win))
 	{
@@ -335,6 +347,9 @@ int main()
 			cameraPos + cameraFront,		// Положение камеры
 			cameraUp						// Направление вверх для камеры
 		);
+
+		// Поправка на FOV камеры:
+		glm::mat4 projection = glm::perspective(glm::radians(cameraFOV), (float)windowWidth / windowHeight, 0.1f, 100.0f);
 
 		for (auto cubPos : cubePositions)
 		{
