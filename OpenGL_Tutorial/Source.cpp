@@ -354,9 +354,10 @@ int main()
 			containerTexture->use();
 			basicShader->use();
 			basicShader->setInt("uDrawMode", drawMode);
-			basicShader->setFloatMat4("model", glm::value_ptr(model));
-			basicShader->setFloatMat4("view", glm::value_ptr(view));
-			basicShader->setFloatMat4("projection", glm::value_ptr(projection));
+			
+			glm::mat4 transformation = projection * view * model;
+
+			basicShader->setFloatMat4("transformation", glm::value_ptr(transformation));
 
 			glBindVertexArray(VAO_cube);
 			glDrawElements(GL_TRIANGLES, cubeIndicesCount * 3, GL_UNSIGNED_INT, 0);
