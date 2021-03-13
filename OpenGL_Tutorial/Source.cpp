@@ -8,10 +8,13 @@
 #include "Shader.h"
 #include "Texture.h"
 
+float deltaTime = 0.0f;									 // Разница во времени между последним и предпоследним кадрами
+float lastFrameTime = 0.0f;									 // Время последнего кадра
+
 glm::vec3 cameraPos		= glm::vec3(0.0f, 0.0f,	 3.0f);  // Положение камеры
 glm::vec3 cameraFront	= glm::vec3(0.0f, 0.0f, -1.0f);  // Направление взгляда камеры
 glm::vec3 cameraUp		= glm::vec3(0.0f, 1.0f,  0.0f);  // Направление "вверх" для камеры
-const float cameraSpeed = 0.05f;						 // Скорость движения камеры
+const float cameraSpeed = 1.0f;							 // Скорость движения камеры
 
 struct Color
 {
@@ -44,6 +47,7 @@ void processInput(GLFWwindow* window)
 	}
 
 	// Перемещение камеры:
+	float cameraSpeed = ::cameraSpeed * deltaTime;
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
 		cameraPos += cameraSpeed * cameraFront;
 	}
@@ -264,6 +268,10 @@ int main()
 
 	while (!glfwWindowShouldClose(win))
 	{
+		float currentFrameTime = glfwGetTime();
+		deltaTime = currentFrameTime - lastFrameTime;
+		lastFrameTime = currentFrameTime;
+
 		processInput(win);
 
 		glClearColor(background.r, background.g, background.b, background.a);
