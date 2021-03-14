@@ -6,6 +6,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <glm/glm.hpp>
 
 class Shader
 {
@@ -21,6 +22,7 @@ public:
 
 	void setFloatVec2(const std::string& name, float value, float value2) const;
 	void setFloatVec3(const std::string& name, float value, float value2, float value3) const;
+	void setFloatVec3(const std::string& name, glm::vec3 vec) const;
 	void setFloatVec4(const std::string& name, float value, float value2, float value3, float value4) const;
 
 	void setFloatMat3(const std::string& name, float* mat);

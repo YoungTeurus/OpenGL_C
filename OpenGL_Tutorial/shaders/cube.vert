@@ -15,7 +15,7 @@ out vec3 fragPosition;  // Положение точки в мировых координатах
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
-uniform mat4 transformation;
+uniform mat4 transformation;  // Перемножение трёх матриц выше в порядке: P * V * M
 uniform mat3 normal;  // Матрица нормалей - используется для поворота/скейлинга
 
 void main()

@@ -388,14 +388,14 @@ int main()
 		{
 			model = glm::mat4(1.0f);
 			model = glm::translate(model, cubPos);
-			model = glm::rotate(model, glm::radians((float)(90.0f * sin(glfwGetTime() * i))), glm::vec3(0.1f, 0.2f, 0.3f));
+			// model = glm::rotate(model, glm::radians((float)(90.0f * sin(glfwGetTime() * i))), glm::vec3(0.1f, 0.2f, 0.3f));
 			model = glm::scale(model, glm::vec3(cubeScales[i], cubeScales[i], cubeScales[i]));
 
 			// containerTexture->use();
 			cubeShader->use();
 			cubeShader->setFloatVec3("objectColor", cubeColor[i].r, cubeColor[i].g, cubeColor[i].b);
-			cubeShader->setFloatVec3("lightColor", 1.0f, 1.0f, 1.0f);
-			cubeShader->setFloatVec3("lightPos", lightCubePositions[0].x, lightCubePositions[0].y, lightCubePositions[0].z);
+			cubeShader->setFloatVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+			cubeShader->setFloatVec3("lightPos", lightCubePositions[0]);
 			// basicShader->use();
 			// basicShader->setInt("uDrawMode", drawMode);
 			
@@ -410,6 +410,7 @@ int main()
 			cubeShader->setFloatMat4("projection", glm::value_ptr(projection));
 			cubeShader->setFloatMat4("transformation", glm::value_ptr(transformation));
 			cubeShader->setFloatMat3("normal", glm::value_ptr(normal));
+			cubeShader->setFloatVec3("viewPos", mainCamera.position);
 
 			glBindVertexArray(VAO_cube);
 			glDrawElements(GL_TRIANGLES, cubeIndicesCount * 3, GL_UNSIGNED_INT, 0);
