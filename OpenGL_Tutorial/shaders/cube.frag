@@ -2,8 +2,7 @@
 
 struct Material {
 	sampler2D	diffuse;	// Карта освещения (текстура)
-	
-	vec3		specular;	// Цвет объекта в спекулярном освещении
+	sampler2D	specular;	// Карта для спекулярного света (текстура)
 	float		shininess;	// Глянцевость поверхности
 };
 
@@ -48,7 +47,7 @@ void main(){
 	// 32 - степень глянцевости поверхности. Чем больше, тем более чётко выделено светлое пятно
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
 
-	vec3 specular = (material.specular * spec) * light.specular;
+	vec3 specular = light.specular * spec * vec3(texture(material.specular, fTextureCoord));
 
 	vec3 result = ambient + diffuse + specular;
 
