@@ -327,12 +327,13 @@ int main()
 	glGenVertexArrays(1, &VAO_light);
 	glBindVertexArray(VAO_light);
 
-	// Повторное использование VBO куба:
-	glBindBuffer(GL_ARRAY_BUFFER, VBO_cube);
-
 	// Повторное использование EBO куба:
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO_cube);
 
+	// Повторное использование VBO куба:
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_cube);
+
+	// Записываем в новый VAO данные из старого VBO:
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeOfVertex_cube * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
@@ -348,6 +349,7 @@ int main()
 	Texture* container2Texture = new Texture("./textures/container2.png", TextureType::RGBA);
 	Texture* container2_specularTexture = new Texture("./textures/container2_specular.png", TextureType::RGBA);
 	Texture* pogfaceTexture = new Texture("./textures/awesomeface.png", TextureType::RGBA);
+	Texture* matrixTexture = new Texture("./textures/matrix.jpg");
 
 	int drawMode; // Контролирует отрисовку: 0 - рисование цветом, 1 - рисование текстурой, 2 - две текстуры
 
@@ -399,6 +401,8 @@ int main()
 			container2Texture->use();
 			glActiveTexture(GL_TEXTURE1);
 			container2_specularTexture->use();
+			glActiveTexture(GL_TEXTURE2);
+			matrixTexture->use();
 			cubeShader->use();
 			cubeShader->setFloatVec3(	"material.specular",	0.5f, 0.5f, 0.5f	);
 			cubeShader->setFloat(		"material.shininess",				32.0f	);
@@ -408,6 +412,7 @@ int main()
 			cubeShader->setFloatVec3(	"light.position", lightCubePositions[0]);
 			cubeShader->setInt(			"material.diffuse", 0);  // Указываем, что для карты диффузии используется текстура 0
 			cubeShader->setInt(			"material.specular", 1);  // Указываем, что для карты диффузии используется текстура 1
+			cubeShader->setInt(			"material.emission", 2);  // Указываем, что для карты свечения используется текстура 2
 			// basicShader->use();
 			// basicShader->setInt("uDrawMode", drawMode);
 			

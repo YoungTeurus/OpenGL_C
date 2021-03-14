@@ -3,6 +3,9 @@
 struct Material {
 	sampler2D	diffuse;	// Карта освещения (текстура)
 	sampler2D	specular;	// Карта для спекулярного света (текстура)
+
+	sampler2D	emission;	// Карта свечения
+
 	float		shininess;	// Глянцевость поверхности
 };
 
@@ -26,6 +29,8 @@ uniform Light light;
 uniform vec3 viewPos;  // Положение камеры в мировых координатах
 
 void main(){
+	float emissionStrenght = 0.7f;
+
 	// Мировое освещение:
 	vec3 ambient = light.ambient * vec3(texture(material.diffuse, fTextureCoord));
 
@@ -46,10 +51,12 @@ void main(){
 
 	// 32 - степень глянцевости поверхности. Чем больше, тем более чётко выделено светлое пятно
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-
 	vec3 specular = light.specular * spec * vec3(texture(material.specular, fTextureCoord));
 
-	vec3 result = ambient + diffuse + specular;
+	// Свечение объекта
+	vec3 emission = vec3(texture(material.emission, fTextureCoord));
+
+	vec3 result = ambient + diffuse + specular + emission;
 
 	fragColor = vec4(result, 1.0);
 }
