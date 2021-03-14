@@ -26,7 +26,7 @@ struct Color
 	float r, g, b, a;
 };
 
-Color background = {0.f, 0.f, 0.f, 1.f};
+Color background = {0.05f, 0.05f, 0.05f, 1.f};
 
 // Callback функция, вызываемая при изменении размеров окна.
 void OnResize(GLFWwindow* window, int width, int height)
@@ -279,7 +279,7 @@ int main()
 		glm::vec3(0.0f, 0.0f, 0.0f),
 	};
 	float lightCubeScales[] = {
-		0.5f,
+		0.3f,
 	};
 
 	// Конец исходных данных
@@ -343,8 +343,9 @@ int main()
 	glEnable(GL_DEPTH_TEST);
 
 	// Shader* basicShader = new Shader("./shaders/basic.vert", "./shaders/basic.frag");
-	Shader* cubeShader = new Shader("./shaders/cube.vert", "./shaders/cube.frag");
+	Shader* cubeShader = new Shader("./shaders/cube.vert", "./shaders/cube_pointLight.frag");
 	Shader* lightShader = new Shader("./shaders/cube.vert", "./shaders/lightCube.frag");
+
 	Texture* containerTexture = new Texture("./textures/container.jpg");
 	Texture* container2Texture = new Texture("./textures/container2.png", TextureType::RGBA);
 	Texture* container2_specularTexture = new Texture("./textures/container2_specular.png", TextureType::RGBA);
@@ -401,15 +402,18 @@ int main()
 			container2Texture->use();
 			glActiveTexture(GL_TEXTURE1);
 			container2_specularTexture->use();
-			glActiveTexture(GL_TEXTURE2);
-			matrixTexture->use();
+			// glActiveTexture(GL_TEXTURE2);
+			// matrixTexture->use();
 			cubeShader->use();
-			cubeShader->setFloatVec3(	"material.specular",	0.5f, 0.5f, 0.5f	);
-			cubeShader->setFloat(		"material.shininess",				32.0f	);
+			cubeShader->setFloatVec3(	"material.specular",	0.5f, 0.5f, 0.5f);
+			cubeShader->setFloat(		"material.shininess",				32.0f);
 			cubeShader->setFloatVec3(	"light.ambient",		0.2f, 0.2f, 0.2f);
 			cubeShader->setFloatVec3(	"light.diffuse",		0.5f, 0.5f, 0.5f);
-			cubeShader->setFloatVec3(	"light.specular",		1.0f, 1.0f, 1.0f	);
-			cubeShader->setFloatVec3(	"light.direction", 3.0f, -4.0f, 5.0f);
+			cubeShader->setFloatVec3(	"light.specular",		1.0f, 1.0f, 1.0f);
+			cubeShader->setFloatVec3(	"light.position", lightCubePositions[0]);
+			cubeShader->setFloat(		"light.constant",					1.0f);
+			cubeShader->setFloat(		"light.linear",						0.09f);
+			cubeShader->setFloat(		"light.quadratic",					0.032f);
 			cubeShader->setInt(			"material.diffuse", 0);  // Указываем, что для карты диффузии используется текстура 0
 			cubeShader->setInt(			"material.specular", 1);  // Указываем, что для карты диффузии используется текстура 1
 			cubeShader->setInt(			"material.emission", 2);  // Указываем, что для карты свечения используется текстура 2

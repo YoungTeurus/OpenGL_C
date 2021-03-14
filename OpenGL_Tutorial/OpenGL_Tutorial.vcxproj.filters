@@ -61,13 +61,16 @@
     <None Include="shaders\basic.vert">
       <Filter>shaders</Filter>
     </None>
-    <None Include="shaders\cube.frag">
-      <Filter>shaders</Filter>
-    </None>
     <None Include="shaders\cube.vert">
       <Filter>shaders</Filter>
     </None>
     <None Include="shaders\lightCube.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\cube_parallelLight.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\cube_pointLight.frag">
       <Filter>shaders</Filter>
     </None>
   </ItemGroup>

@@ -10,7 +10,6 @@ struct Material {
 };
 
 struct Light {
-	// vec3 position;		// Месторасположение источника света
 	vec3 direction;		// Направление параллельного света
 
 	vec3 ambient;		// Цвет (сила?) мирового света
