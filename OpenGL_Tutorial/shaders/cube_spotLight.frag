@@ -18,6 +18,10 @@ struct Light {
 	vec3 ambient;		// Цвет (сила?) мирового света
 	vec3 diffuse;		// Цвет (сила?) диффузного света
 	vec3 specular;		// Цвет (сила?) спекулярного света
+
+	float constant;
+	float linear;
+	float quadratic;
 };
 
 in vec3 fNormal;
@@ -32,12 +36,16 @@ uniform Light light;
 uniform vec3 viewPos;  // Положение камеры в мировых координатах
 
 void main(){
-	vec3 result;
+	vec3 vertToLightVec = light.position - fragPosition;
+	float vertToLightDistance = length(vertToLightVec);
+
+	float intencity = 1.0 / (light.constant + light.linear * vertToLightDistance + light.quadratic * vertToLightDistance * vertToLightDistance);
+
 	// Мировое освещение:
 	vec3 ambient = light.ambient * vec3(texture(material.diffuse, fTextureCoord));
 
 	// Направление от вертекса к свету
-	vec3 lightDir = normalize(light.position - fragPosition); // Вектор направления света
+	vec3 lightDir = normalize(vertToLightVec); // Вектор направления света
 
 	vec3 specularMap = vec3(texture(material.specular, fTextureCoord));
 	// Свечение объекта
@@ -67,10 +75,10 @@ void main(){
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
 	vec3 specular = light.specular * spec * specularMap;
 
-	diffuse *= intensity;
-	specular *= intensity;
+	diffuse *= intensity * intencity;
+	specular *= intensity * intencity;
 
-	result = ambient + diffuse + specular + emission;
+	vec3 result = ambient + diffuse + specular + emission;
 
 	fragColor = vec4(result, 1.0);
 }
