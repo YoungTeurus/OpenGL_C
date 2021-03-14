@@ -315,6 +315,8 @@ int main()
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeOfVertex_cube * sizeof(float), (void*)(10 * sizeof(float)));
 	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeOfVertex_cube * sizeof(float), (void*)(7 * sizeof(float)));
+	glEnableVertexAttribArray(3);
 
 	// —брасываем VAO:
 	glBindVertexArray(0);
@@ -393,12 +395,16 @@ int main()
 			cubeShader->use();
 			cubeShader->setFloatVec3("objectColor", cubeColor[i].r, cubeColor[i].g, cubeColor[i].b);
 			cubeShader->setFloatVec3("lightColor", 1.0f, 1.0f, 1.0f);
+			cubeShader->setFloatVec3("lightPos", lightCubePositions[0].x, lightCubePositions[0].y, lightCubePositions[0].z);
 			// basicShader->use();
 			// basicShader->setInt("uDrawMode", drawMode);
 			
 			glm::mat4 transformation = projection * view * model;
 
 			// basicShader->setFloatMat4("transformation", glm::value_ptr(transformation));
+			cubeShader->setFloatMat4("model", glm::value_ptr(model));
+			cubeShader->setFloatMat4("view", glm::value_ptr(view));
+			cubeShader->setFloatMat4("projection", glm::value_ptr(projection));
 			cubeShader->setFloatMat4("transformation", glm::value_ptr(transformation));
 
 			glBindVertexArray(VAO_cube);
