@@ -393,9 +393,14 @@ int main()
 
 			// containerTexture->use();
 			cubeShader->use();
-			cubeShader->setFloatVec3("objectColor", cubeColor[i].r, cubeColor[i].g, cubeColor[i].b);
-			cubeShader->setFloatVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-			cubeShader->setFloatVec3("lightPos", lightCubePositions[0]);
+			cubeShader->setFloatVec3(	"material.ambient",		1.0f, 0.5f, 0.31f	);
+			cubeShader->setFloatVec3(	"material.diffuse",		1.0f, 0.5f, 0.31f	);
+			cubeShader->setFloatVec3(	"material.specular",	0.5f, 0.5f, 0.5f	);
+			cubeShader->setFloat(		"material.shininess",				32.0f	);
+			cubeShader->setFloatVec3(	"light.ambient",		0.2f, 0.2f, 0.2f);
+			cubeShader->setFloatVec3(	"light.diffuse",		0.5f, 0.5f, 0.5f);
+			cubeShader->setFloatVec3(	"light.specular",		1.0f, 1.0f, 1.0f	);
+			cubeShader->setFloatVec3(	"light.position", lightCubePositions[0]);
 			// basicShader->use();
 			// basicShader->setInt("uDrawMode", drawMode);
 			
