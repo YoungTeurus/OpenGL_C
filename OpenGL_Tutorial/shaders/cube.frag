@@ -1,10 +1,10 @@
 #version 330 core
 
 struct Material {
-	vec3 ambient;		// Цвет объекта в мировом освещении
-	vec3 diffuse;		// Цвет объекта в диффузном освещении
-	vec3 specular;		// Цвет объекта в спекулярном освещении
-	float shininess;	// Глянцевость поверхности
+	sampler2D	diffuse;	// Карта освещения (текстура)
+	
+	vec3		specular;	// Цвет объекта в спекулярном освещении
+	float		shininess;	// Глянцевость поверхности
 };
 
 struct Light {
@@ -17,6 +17,7 @@ struct Light {
 
 in vec3 fNormal;
 in vec3 fragPosition;
+in vec2 fTextureCoord;
 
 out vec4 fragColor;
 
@@ -27,7 +28,7 @@ uniform vec3 viewPos;  // Положение камеры в мировых координатах
 
 void main(){
 	// Мировое освещение:
-	vec3 ambient = material.ambient * light.ambient;
+	vec3 ambient = light.ambient * vec3(texture(material.diffuse, fTextureCoord));
 
 	// Диффузионный свет:
 	vec3 norm = normalize(fNormal);  // Нормаль к поверхности
@@ -37,7 +38,7 @@ void main(){
 	// diff = 1, когда угол = 0 (свет падает перпендикулярно)
 	float diff = max( dot(norm, lightDir), 0.0);
 
-	vec3 diffuse = (diff * material.diffuse) * light.diffuse;
+	vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuse, fTextureCoord));
 
 	// Specular свет:
 	vec3 viewDir = normalize(viewPos - fragPosition);

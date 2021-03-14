@@ -345,6 +345,7 @@ int main()
 	Shader* cubeShader = new Shader("./shaders/cube.vert", "./shaders/cube.frag");
 	Shader* lightShader = new Shader("./shaders/cube.vert", "./shaders/lightCube.frag");
 	Texture* containerTexture = new Texture("./textures/container.jpg");
+	Texture* container2Texture = new Texture("./textures/container2.png", TextureType::RGBA);
 	Texture* pogfaceTexture = new Texture("./textures/awesomeface.png", TextureType::RGBA);
 
 	int drawMode; // Контролирует отрисовку: 0 - рисование цветом, 1 - рисование текстурой, 2 - две текстуры
@@ -392,15 +393,17 @@ int main()
 			model = glm::scale(model, glm::vec3(cubeScales[i], cubeScales[i], cubeScales[i]));
 
 			// containerTexture->use();
+			// Загружаем (биндим) карту диффузии в текстуру 0
+			container2Texture->use();
+			glActiveTexture(GL_TEXTURE0);
 			cubeShader->use();
-			cubeShader->setFloatVec3(	"material.ambient",		1.0f, 0.5f, 0.31f	);
-			cubeShader->setFloatVec3(	"material.diffuse",		1.0f, 0.5f, 0.31f	);
 			cubeShader->setFloatVec3(	"material.specular",	0.5f, 0.5f, 0.5f	);
 			cubeShader->setFloat(		"material.shininess",				32.0f	);
 			cubeShader->setFloatVec3(	"light.ambient",		0.2f, 0.2f, 0.2f);
 			cubeShader->setFloatVec3(	"light.diffuse",		0.5f, 0.5f, 0.5f);
 			cubeShader->setFloatVec3(	"light.specular",		1.0f, 1.0f, 1.0f	);
 			cubeShader->setFloatVec3(	"light.position", lightCubePositions[0]);
+			cubeShader->setInt(			"material.diffuse", 0);  // Указываем, что для карты диффузии используется текстура 0
 			// basicShader->use();
 			// basicShader->setInt("uDrawMode", drawMode);
 			

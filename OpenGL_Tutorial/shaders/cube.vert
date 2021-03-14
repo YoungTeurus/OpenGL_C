@@ -6,7 +6,7 @@ layout (location = 2) in vec2 aTexCoord;
 layout (location = 3) in vec3 aNormal;
 
 out vec4 fColor;
-out vec2 fTexCoord;
+out vec2 fTextureCoord;
 out vec3 fNormal;
 out vec3 fragPosition;  // ѕоложение точки в мировых координатах
 
@@ -25,5 +25,5 @@ void main()
 	fNormal = normal * aNormal;
 
 	fColor = aColor;
-	fTexCoord = aTexCoord;
+	fTextureCoord = aTexCoord;
 }
