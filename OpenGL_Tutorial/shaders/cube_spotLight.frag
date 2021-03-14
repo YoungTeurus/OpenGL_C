@@ -12,7 +12,8 @@ struct Material {
 struct Light {
 	vec3 position;
 	vec3 direction;		// Направление света
-	float cutOffCosin;	// Косинус угла распространения света
+	float cutOffCosin;	// Косинус угла распространения света со 100% интенсивностью
+	float outerCutOffCosin;	// Косинус угла распространения света, за которым интенсивность = 0%
 
 	vec3 ambient;		// Цвет (сила?) мирового света
 	vec3 diffuse;		// Цвет (сила?) диффузного света
@@ -45,29 +46,31 @@ void main(){
 	// Эффект spotlight:
 	// Находим косинус угла между направлением фонаря и направлением от объекта к свету
 	float cosinBetweenLightAndVertex = dot(lightDir, normalize(-light.direction));
+	// Используем форумулу: I = (0 - y) / e (https://learnopengl.com/Lighting/Light-casters) , чтобы сделать плавную границу света
+	float difference = light.cutOffCosin - light.outerCutOffCosin;
+	float intensity = clamp((cosinBetweenLightAndVertex - light.outerCutOffCosin)/difference, 0.0, 1.0);
 	
-	if (cosinBetweenLightAndVertex > light.cutOffCosin){
-		// Диффузионный свет:
-		vec3 norm = normalize(fNormal);  // Нормаль к поверхности
-		// Скалярное произведение, даёт косинус угла [0,1], так как оба вектора нормализованы
-		// diff = 1, когда угол = 0 (свет падает перпендикулярно)
-		float diff = max( dot(norm, lightDir), 0.0);
+	// Диффузионный свет:
+	vec3 norm = normalize(fNormal);  // Нормаль к поверхности
+	// Скалярное произведение, даёт косинус угла [0,1], так как оба вектора нормализованы
+	// diff = 1, когда угол = 0 (свет падает перпендикулярно)
+	float diff = max( dot(norm, lightDir), 0.0);
 
-		vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuse, fTextureCoord));
+	vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuse, fTextureCoord));
 
-		// Specular свет:
-		vec3 viewDir = normalize(viewPos - fragPosition);
-		// Отражаем падающий свет отнсоительно вектора нормали
-		vec3 reflectDir = reflect(-lightDir, norm);
+	// Specular свет:
+	vec3 viewDir = normalize(viewPos - fragPosition);
+	// Отражаем падающий свет отнсоительно вектора нормали
+	vec3 reflectDir = reflect(-lightDir, norm);
 
-		// shininess - степень глянцевости поверхности. Чем больше, тем более чётко выделено светлое пятно
-		float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-		vec3 specular = light.specular * spec * specularMap;
+	// shininess - степень глянцевости поверхности. Чем больше, тем более чётко выделено светлое пятно
+	float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+	vec3 specular = light.specular * spec * specularMap;
 
-		result = ambient + diffuse + specular + emission;
-	} else {
-		result = ambient + emission;
-	}
+	diffuse *= intensity;
+	specular *= intensity;
+
+	result = ambient + diffuse + specular + emission;
 
 	fragColor = vec4(result, 1.0);
 }

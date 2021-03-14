@@ -413,6 +413,7 @@ int main()
 			cubeShader->setFloatVec3(	"light.position", mainCamera.position);
 			cubeShader->setFloatVec3(	"light.direction", mainCamera.front);
 			cubeShader->setFloat(		"light.cutOffCosin", glm::cos(glm::radians(12.5f)));
+			cubeShader->setFloat(		"light.outerCutOffCosin", glm::cos(glm::radians(15.0f)));
 			cubeShader->setFloat(		"light.constant",					1.0f);
 			cubeShader->setFloat(		"light.linear",						0.09f);
 			cubeShader->setFloat(		"light.quadratic",					0.032f);
