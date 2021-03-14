@@ -388,7 +388,7 @@ int main()
 		{
 			model = glm::mat4(1.0f);
 			model = glm::translate(model, cubPos);
-			// model = glm::rotate(model, glm::radians((float)(90.0f * sin(glfwGetTime()))), glm::vec3(0.1f, 0.2f, 0.3f));
+			model = glm::rotate(model, glm::radians((float)(90.0f * sin(glfwGetTime() * i))), glm::vec3(0.1f, 0.2f, 0.3f));
 			model = glm::scale(model, glm::vec3(cubeScales[i], cubeScales[i], cubeScales[i]));
 
 			// containerTexture->use();
@@ -401,11 +401,15 @@ int main()
 			
 			glm::mat4 transformation = projection * view * model;
 
+			// Матрица нормалей:
+			glm::mat3 normal = glm::transpose(glm::inverse(model));
+
 			// basicShader->setFloatMat4("transformation", glm::value_ptr(transformation));
 			cubeShader->setFloatMat4("model", glm::value_ptr(model));
 			cubeShader->setFloatMat4("view", glm::value_ptr(view));
 			cubeShader->setFloatMat4("projection", glm::value_ptr(projection));
 			cubeShader->setFloatMat4("transformation", glm::value_ptr(transformation));
+			cubeShader->setFloatMat3("normal", glm::value_ptr(normal));
 
 			glBindVertexArray(VAO_cube);
 			glDrawElements(GL_TRIANGLES, cubeIndicesCount * 3, GL_UNSIGNED_INT, 0);

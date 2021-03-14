@@ -16,12 +16,13 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 uniform mat4 transformation;
+uniform mat3 normal;  // Матрица нормалей - используется для поворота/скейлинга
 
 void main()
 {
 	gl_Position = transformation * vec4(aPos, 1.0f);
 	fragPosition = vec3(model * vec4(aPos, 1.0f));
-	fNormal = aNormal;
+	fNormal = normal * aNormal;
 
 	fColor = aColor;
 	fTexCoord = aTexCoord;
