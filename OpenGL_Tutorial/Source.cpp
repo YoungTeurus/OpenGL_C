@@ -343,7 +343,7 @@ int main()
 	glEnable(GL_DEPTH_TEST);
 
 	// Shader* basicShader = new Shader("./shaders/basic.vert", "./shaders/basic.frag");
-	Shader* cubeShader = new Shader("./shaders/cube.vert", "./shaders/cube_pointLight.frag");
+	Shader* cubeShader = new Shader("./shaders/cube.vert", "./shaders/cube_spotLight.frag");
 	Shader* lightShader = new Shader("./shaders/cube.vert", "./shaders/lightCube.frag");
 
 	Texture* containerTexture = new Texture("./textures/container.jpg");
@@ -362,11 +362,13 @@ int main()
 
 
 	// Model matrix: размещение объекта в мировых координатах:
-	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-
+	glm::mat4 model;
 	// View matrix: размещение мира относительно камеры:
+	glm::mat4 view;
 	// Projection matrix: поправка объектов на перспективу и их клиппинг
+	glm::mat4 projection;
+
+	glm::mat4 transformation;
 
 	while (!glfwWindowShouldClose(win))
 	{
@@ -380,14 +382,13 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Вращение камеры:
-		glm::mat4 view = mainCamera.getViewMatrix();
+		view = mainCamera.getViewMatrix();
 
 		// Поправка на FOV камеры:
-		glm::mat4 projection = glm::perspective(glm::radians(mainCamera.FOV), (float)windowWidth / windowHeight, 0.1f, 100.0f);
+		projection = glm::perspective(glm::radians(mainCamera.FOV), (float)windowWidth / windowHeight, 0.1f, 100.0f);
 
 
 		// Отрисовка ящиков:
-		drawMode = 1;
 		int i = 0;
 		for (auto cubPos : cubePositions)
 		{
@@ -396,7 +397,6 @@ int main()
 			// model = glm::rotate(model, glm::radians((float)(90.0f * sin(glfwGetTime() * i))), glm::vec3(0.1f, 0.2f, 0.3f));
 			model = glm::scale(model, glm::vec3(cubeScales[i], cubeScales[i], cubeScales[i]));
 
-			// containerTexture->use();
 			// Загружаем (биндим) карту диффузии в текстуру 0
 			glActiveTexture(GL_TEXTURE0);
 			container2Texture->use();
@@ -410,22 +410,21 @@ int main()
 			cubeShader->setFloatVec3(	"light.ambient",		0.2f, 0.2f, 0.2f);
 			cubeShader->setFloatVec3(	"light.diffuse",		0.5f, 0.5f, 0.5f);
 			cubeShader->setFloatVec3(	"light.specular",		1.0f, 1.0f, 1.0f);
-			cubeShader->setFloatVec3(	"light.position", lightCubePositions[0]);
+			cubeShader->setFloatVec3(	"light.position", mainCamera.position);
+			cubeShader->setFloatVec3(	"light.direction", mainCamera.front);
+			cubeShader->setFloat(		"light.cutOffCosin", glm::cos(glm::radians(12.5f)));
 			cubeShader->setFloat(		"light.constant",					1.0f);
 			cubeShader->setFloat(		"light.linear",						0.09f);
 			cubeShader->setFloat(		"light.quadratic",					0.032f);
 			cubeShader->setInt(			"material.diffuse", 0);  // Указываем, что для карты диффузии используется текстура 0
 			cubeShader->setInt(			"material.specular", 1);  // Указываем, что для карты диффузии используется текстура 1
 			cubeShader->setInt(			"material.emission", 2);  // Указываем, что для карты свечения используется текстура 2
-			// basicShader->use();
-			// basicShader->setInt("uDrawMode", drawMode);
 			
-			glm::mat4 transformation = projection * view * model;
+			transformation = projection * view * model;
 
 			// Матрица нормалей:
 			glm::mat3 normal = glm::transpose(glm::inverse(model));
 
-			// basicShader->setFloatMat4("transformation", glm::value_ptr(transformation));
 			cubeShader->setFloatMat4("model", glm::value_ptr(model));
 			cubeShader->setFloatMat4("view", glm::value_ptr(view));
 			cubeShader->setFloatMat4("projection", glm::value_ptr(projection));
@@ -439,24 +438,24 @@ int main()
 			i++;
 		}
 
-		i = 0;
-		for (auto lightCubPos : lightCubePositions) {
-			model = glm::mat4(1.0f);
-			model = glm::translate(model, lightCubPos);
-			// model = glm::rotate(model, glm::radians((float)(90.0f * sin(glfwGetTime()))), glm::vec3(0.1f, 0.2f, 0.3f));
-			model = glm::scale(model, glm::vec3(lightCubeScales[i], lightCubeScales[i], lightCubeScales[i]));
-		
-			lightShader->use();
-			
-			glm::mat4 transformation = projection * view * model;
-			
-			lightShader->setFloatMat4("transformation", glm::value_ptr(transformation));
-
-			glBindVertexArray(VAO_light);
-			glDrawElements(GL_TRIANGLES, cubeIndicesCount * 3, GL_UNSIGNED_INT, 0);
-		
-			i++;
-		}
+		// i = 0;
+		// for (auto lightCubPos : lightCubePositions) {
+		// 	model = glm::mat4(1.0f);
+		// 	model = glm::translate(model, lightCubPos);
+		// 	// model = glm::rotate(model, glm::radians((float)(90.0f * sin(glfwGetTime()))), glm::vec3(0.1f, 0.2f, 0.3f));
+		// 	model = glm::scale(model, glm::vec3(lightCubeScales[i], lightCubeScales[i], lightCubeScales[i]));
+		// 
+		// 	lightShader->use();
+		// 	
+		// 	transformation = projection * view * model;
+		// 	
+		// 	lightShader->setFloatMat4("transformation", glm::value_ptr(transformation));
+		// 
+		// 	glBindVertexArray(VAO_light);
+		// 	glDrawElements(GL_TRIANGLES, cubeIndicesCount * 3, GL_UNSIGNED_INT, 0);
+		// 
+		// 	i++;
+		// }
 
 
 		glfwSwapBuffers(win);

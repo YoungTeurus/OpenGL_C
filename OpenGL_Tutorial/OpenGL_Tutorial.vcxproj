@@ -169,6 +169,7 @@
     <None Include="shaders\cube.vert" />
     <None Include="shaders\cube_parallelLight.frag" />
     <None Include="shaders\cube_pointLight.frag" />
+    <None Include="shaders\cube_spotLight.frag" />
     <None Include="shaders\lightCube.frag" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
