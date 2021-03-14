@@ -276,9 +276,33 @@ int main()
 	};
 
 	glm::vec3 lightCubePositions[] = {
-		glm::vec3(0.0f, 0.0f, 0.0f),
+		glm::vec3(0.0f, 0.0f, 10.0f),
+		glm::vec3(0.0f, 0.0f, -5.0f),
+		glm::vec3(-2.0f, -2.0f, -5.0f),
+		glm::vec3(2.0f, 2.0f, -5.0f),
+	};
+	glm::vec3 lightCubeAmbient[] = {
+		glm::vec3(0.05f, 0.05f, 0.05f),
+		glm::vec3(0.1f, 0.00f, 0.00f),
+		glm::vec3(0.00f, 0.1f, 0.00f),
+		glm::vec3(0.00f, 0.00f, 0.1f),
+	};
+	glm::vec3 lightCubeDiffuse[] = {
+		glm::vec3(0.5f, 0.5f, 0.5f),
+		glm::vec3(1.0f, 0.0f, 0.0f),
+		glm::vec3(0.0f, 1.0f, 0.0f),
+		glm::vec3(0.0f, 0.0f, 1.0f),
+	};
+	glm::vec3 lightCubeSpecular[] = {
+		glm::vec3(1.0f, 1.0f, 1.0f),
+		glm::vec3(1.0f, 0.0f, 0.0f),
+		glm::vec3(0.0f, 1.0f, 0.0f),
+		glm::vec3(0.0f, 0.0f, 1.0f),
 	};
 	float lightCubeScales[] = {
+		0.3f,
+		0.3f,
+		0.3f,
 		0.3f,
 	};
 
@@ -343,7 +367,7 @@ int main()
 	glEnable(GL_DEPTH_TEST);
 
 	// Shader* basicShader = new Shader("./shaders/basic.vert", "./shaders/basic.frag");
-	Shader* cubeShader = new Shader("./shaders/cube.vert", "./shaders/cube_spotLight.frag");
+	Shader* cubeShader = new Shader("./shaders/cube.vert", "./shaders/cube_mixLight.frag");
 	Shader* lightShader = new Shader("./shaders/cube.vert", "./shaders/lightCube.frag");
 
 	Texture* containerTexture = new Texture("./textures/container.jpg");
@@ -351,15 +375,7 @@ int main()
 	Texture* container2_specularTexture = new Texture("./textures/container2_specular.png", TextureType::RGBA);
 	Texture* pogfaceTexture = new Texture("./textures/awesomeface.png", TextureType::RGBA);
 	Texture* matrixTexture = new Texture("./textures/matrix.jpg");
-
-	int drawMode; // Контролирует отрисовку: 0 - рисование цветом, 1 - рисование текстурой, 2 - две текстуры
-
-
-	// // Устанавливаем ID-текстур для рисования двух текстур сразу
-	// basicShader->use();
-	// basicShader->setInt("uTexture", 0); // GL_TEXTURE0
-	// basicShader->setInt("uTexture2", 1); // GL_TEXTURE1
-
+	Texture* lampTexture = new Texture("./textures/glowing_lamp.jpg");
 
 	// Model matrix: размещение объекта в мировых координатах:
 	glm::mat4 model;
@@ -402,25 +418,61 @@ int main()
 			container2Texture->use();
 			glActiveTexture(GL_TEXTURE1);
 			container2_specularTexture->use();
-			// glActiveTexture(GL_TEXTURE2);
-			// matrixTexture->use();
+			glActiveTexture(GL_TEXTURE2);
+			lampTexture->use();
+
 			cubeShader->use();
-			cubeShader->setFloatVec3(	"material.specular",	0.5f, 0.5f, 0.5f);
-			cubeShader->setFloat(		"material.shininess",				32.0f);
-			cubeShader->setFloatVec3(	"light.ambient",		0.1f, 0.1f, 0.1f);
-			cubeShader->setFloatVec3(	"light.diffuse",		0.5f, 0.5f, 0.5f);
-			cubeShader->setFloatVec3(	"light.specular",		1.0f, 1.0f, 1.0f);
-			cubeShader->setFloatVec3(	"light.position", mainCamera.position);
-			cubeShader->setFloatVec3(	"light.direction", mainCamera.front);
-			cubeShader->setFloat(		"light.cutOffCosin", glm::cos(glm::radians(12.5f)));
-			cubeShader->setFloat(		"light.outerCutOffCosin", glm::cos(glm::radians(15.0f)));
-			cubeShader->setFloat(		"light.constant",					1.0f);
-			cubeShader->setFloat(		"light.linear",						0.09f);
-			cubeShader->setFloat(		"light.quadratic",					0.032f);
-			cubeShader->setInt(			"material.diffuse", 0);  // Указываем, что для карты диффузии используется текстура 0
-			cubeShader->setInt(			"material.specular", 1);  // Указываем, что для карты диффузии используется текстура 1
-			cubeShader->setInt(			"material.emission", 2);  // Указываем, что для карты свечения используется текстура 2
+
+			cubeShader->setInt("material.diffuse", 0);  // Указываем, что для карты диффузии используется текстура 0
+			cubeShader->setInt("material.specular", 1);  // Указываем, что для карты диффузии используется текстура 1
+			cubeShader->setInt("material.emission", 2);  // Указываем, что для карты свечения используется текстура 2
+			cubeShader->setFloat("material.shininess", 32.0f);
+
+			// DirLight
+			cubeShader->setFloatVec3("dirLight.direction", 2.0f, -2.0f, -2.0f);
+			cubeShader->setFloatVec3("dirLight.ambient", 0.01f, 0.01f, 0.01f);
+			cubeShader->setFloatVec3("dirLight.diffuse", 0.03f, 0.03f, 0.03f);
+			cubeShader->setFloatVec3("dirLight.specular", 0.05f, 0.05f, 0.05f);
+
+			// PointLight
+			for (int li = 0; li < 4; li++) {
+				string lightIndex = to_string(li);
 			
+				cubeShader->setFloatVec3("pointLights[" + lightIndex + "].position", lightCubePositions[li]);
+				cubeShader->setFloatVec3("pointLights[" + lightIndex + "].ambient", lightCubeAmbient[li]);
+				cubeShader->setFloatVec3("pointLights[" + lightIndex + "].diffuse", lightCubeDiffuse[li]);
+				cubeShader->setFloatVec3("pointLights[" + lightIndex + "].specular", lightCubeSpecular[li]);
+				cubeShader->setFloat("pointLights[" + lightIndex + "].constant", 1.0f);
+				cubeShader->setFloat("pointLights[" + lightIndex + "].linear", 0.09f);
+				cubeShader->setFloat("pointLights[" + lightIndex + "].quadratic", 0.032f);
+			}
+			
+			// SpotLight
+			cubeShader->setFloatVec3("spotLight.position", mainCamera.position);
+			cubeShader->setFloatVec3("spotLight.direction", mainCamera.front);
+			cubeShader->setFloat("spotLight.cutOffCosin", glm::cos(glm::radians(2.5f)));
+			cubeShader->setFloat("spotLight.outerCutOffCosin", glm::cos(glm::radians(5.0f)));
+			cubeShader->setFloatVec3("spotLight.ambient", 0.1f, 0.1f, 0.1f);
+			cubeShader->setFloatVec3("spotLight.diffuse", 0.75f, 0.75f, 0.6f);
+			cubeShader->setFloatVec3("spotLight.specular", 1.0f, 1.0f, 1.0f);
+			cubeShader->setFloat("spotLight.constant", 1.0f);
+			cubeShader->setFloat("spotLight.linear", 0.045f);
+			cubeShader->setFloat("spotLight.quadratic", 0.0075f);
+
+			// cubeShader->setFloatVec3(	"material.specular",	0.5f, 0.5f, 0.5f);
+			// cubeShader->setFloat(		"material.shininess",				32.0f);
+			// cubeShader->setFloatVec3(	"light.ambient",		0.1f, 0.1f, 0.1f);
+			// cubeShader->setFloatVec3(	"light.diffuse",		0.5f, 0.5f, 0.5f);
+			// cubeShader->setFloatVec3(	"light.specular",		1.0f, 1.0f, 1.0f);
+			// cubeShader->setFloatVec3(	"light.position", mainCamera.position);
+			// cubeShader->setFloatVec3(	"light.direction", mainCamera.front);
+			// cubeShader->setFloat(		"light.cutOffCosin", glm::cos(glm::radians(12.5f)));
+			// cubeShader->setFloat(		"light.outerCutOffCosin", glm::cos(glm::radians(15.0f)));
+			// cubeShader->setFloat(		"light.constant",					1.0f);
+			// cubeShader->setFloat(		"light.linear",						0.09f);
+			// cubeShader->setFloat(		"light.quadratic",					0.032f);
+
+#pragma region Трансформации и отрисовка
 			transformation = projection * view * model;
 
 			// Матрица нормалей:
@@ -435,28 +487,30 @@ int main()
 
 			glBindVertexArray(VAO_cube);
 			glDrawElements(GL_TRIANGLES, cubeIndicesCount * 3, GL_UNSIGNED_INT, 0);
+#pragma endregion
 
 			i++;
 		}
 
-		// i = 0;
-		// for (auto lightCubPos : lightCubePositions) {
-		// 	model = glm::mat4(1.0f);
-		// 	model = glm::translate(model, lightCubPos);
-		// 	// model = glm::rotate(model, glm::radians((float)(90.0f * sin(glfwGetTime()))), glm::vec3(0.1f, 0.2f, 0.3f));
-		// 	model = glm::scale(model, glm::vec3(lightCubeScales[i], lightCubeScales[i], lightCubeScales[i]));
-		// 
-		// 	lightShader->use();
-		// 	
-		// 	transformation = projection * view * model;
-		// 	
-		// 	lightShader->setFloatMat4("transformation", glm::value_ptr(transformation));
-		// 
-		// 	glBindVertexArray(VAO_light);
-		// 	glDrawElements(GL_TRIANGLES, cubeIndicesCount * 3, GL_UNSIGNED_INT, 0);
-		// 
-		// 	i++;
-		// }
+		i = 0;
+		for (auto lightCubPos : lightCubePositions) {
+			model = glm::mat4(1.0f);
+			model = glm::translate(model, lightCubPos);
+			// model = glm::rotate(model, glm::radians((float)(90.0f * sin(glfwGetTime()))), glm::vec3(0.1f, 0.2f, 0.3f));
+			model = glm::scale(model, glm::vec3(lightCubeScales[i], lightCubeScales[i], lightCubeScales[i]));
+		
+			lightShader->use();
+			
+			transformation = projection * view * model;
+			
+			lightShader->setFloatMat4("transformation", glm::value_ptr(transformation));
+			lightShader->setFloatVec3("uColor", lightCubeDiffuse[i]);
+		
+			glBindVertexArray(VAO_light);
+			glDrawElements(GL_TRIANGLES, cubeIndicesCount * 3, GL_UNSIGNED_INT, 0);
+		
+			i++;
+		}
 
 
 		glfwSwapBuffers(win);

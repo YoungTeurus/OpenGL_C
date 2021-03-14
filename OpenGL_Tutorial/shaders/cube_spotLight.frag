@@ -39,7 +39,8 @@ void main(){
 	vec3 vertToLightVec = light.position - fragPosition;
 	float vertToLightDistance = length(vertToLightVec);
 
-	float intencity = 1.0 / (light.constant + light.linear * vertToLightDistance + light.quadratic * vertToLightDistance * vertToLightDistance);
+	// "Затухание света" - поправка светимости от расстояния до источника света
+	float attenuation = 1.0 / (light.constant + light.linear * vertToLightDistance + light.quadratic * vertToLightDistance * vertToLightDistance);
 
 	// Мировое освещение:
 	vec3 ambient = light.ambient * vec3(texture(material.diffuse, fTextureCoord));
@@ -56,7 +57,7 @@ void main(){
 	float cosinBetweenLightAndVertex = dot(lightDir, normalize(-light.direction));
 	// Используем форумулу: I = (0 - y) / e (https://learnopengl.com/Lighting/Light-casters) , чтобы сделать плавную границу света
 	float difference = light.cutOffCosin - light.outerCutOffCosin;
-	float intensity = clamp((cosinBetweenLightAndVertex - light.outerCutOffCosin)/difference, 0.0, 1.0);
+	float intensity_angle = clamp((cosinBetweenLightAndVertex - light.outerCutOffCosin)/difference, 0.0, 1.0);
 	
 	// Диффузионный свет:
 	vec3 norm = normalize(fNormal);  // Нормаль к поверхности
@@ -75,8 +76,8 @@ void main(){
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
 	vec3 specular = light.specular * spec * specularMap;
 
-	diffuse *= intensity * intencity;
-	specular *= intensity * intencity;
+	diffuse *= intensity_angle * attenuation;
+	specular *= intensity_angle * attenuation;
 
 	vec3 result = ambient + diffuse + specular + emission;
 

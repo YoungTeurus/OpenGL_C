@@ -76,5 +76,8 @@
     <None Include="shaders\cube_spotLight.frag">
       <Filter>shaders</Filter>
     </None>
+    <None Include="shaders\cube_mixLight.frag">
+      <Filter>shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
