@@ -27,24 +27,27 @@
     <ClCompile Include="glad.c">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="Texture.cpp">
-      <Filter>Исходные файлы\classes</Filter>
-    </ClCompile>
-    <ClCompile Include="Shader.cpp">
-      <Filter>Исходные файлы\classes</Filter>
-    </ClCompile>
-    <ClCompile Include="Camera.cpp">
+    <ClCompile Include="classes\Camera.cpp">
       <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="classes\Shader.cpp">
+      <Filter>Исходные файлы\classes</Filter>
+    </ClCompile>
+    <ClCompile Include="classes\Texture.cpp">
+      <Filter>Исходные файлы\classes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Shader.h">
+    <ClInclude Include="classes\Camera.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Texture.h">
+    <ClInclude Include="classes\Shader.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Camera.h">
+    <ClInclude Include="classes\Texture.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\stb_image.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
@@ -55,10 +58,13 @@
     <None Include="shaders\basic.vert">
       <Filter>shaders</Filter>
     </None>
-    <None Include="lightCube.frag">
+    <None Include="shaders\cube.frag">
       <Filter>shaders</Filter>
     </None>
-    <None Include="shaders\cube.frag">
+    <None Include="shaders\cube.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\lightCube.frag">
       <Filter>shaders</Filter>
     </None>
   </ItemGroup>

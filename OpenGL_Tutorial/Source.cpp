@@ -5,9 +5,9 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <GLFW/glfw3.h>
 #include <iostream>
-#include "Shader.h"
-#include "Camera.h"
-#include "Texture.h"
+#include "classes/Shader.h"
+#include "classes/Camera.h"
+#include "classes/Texture.h"
 
 float deltaTime = 0.0f;									 // Разница во времени между последним и предпоследним кадрами
 float lastFrameTime = 0.0f;								 // Время последнего кадра
@@ -148,9 +148,9 @@ int main()
 #pragma endregion
 
 	// Исходные данные:
-	const int numOfVertexes_cube = 24, sizeOfVertex_cube = 9;
+	const int numOfVertexes_cube = 24, sizeOfVertex_cube = 12;
 
-	float cubeMesh[] = {
+	float cubeMesh[numOfVertexes_cube * sizeOfVertex_cube] = {
 		//   X       Y       Z           R       G       B       A			 Nx	      Ny       Nz          S       T
 		// Передняя грань (z: +1)
 		    1.0f,   1.0f,   1.0f,       1.0f,   1.0f,   1.0f,   1.0f,	    0.0f,    0.0f,    1.0f,       1.0f,   1.0f,  // верхний правый
@@ -158,30 +158,30 @@ int main()
 		   -1.0f,  -1.0f,   1.0f,       1.0f,   0.0f,   1.0f,   1.0f,	    0.0f,    0.0f,    1.0f,       0.0f,   0.0f,  // нижний левый
 		    1.0f,  -1.0f,   1.0f,       0.5f,   0.5f,   0.5f,   1.0f,	    0.0f,    0.0f,    1.0f,       1.0f,   0.0f,  // нижний правый
 		// Правая грань (x: +1)											    
-			1.0f,   1.0f,  -1.0f,       1.0f,   1.0f,   1.0f,   1.0f,	    1.0f,    1.0f,    1.0f,       1.0f,   1.0f,  // верхний правый
-			1.0f,   1.0f,   1.0f,       0.0f,   1.0f,   1.0f,   1.0f,	    1.0f,    1.0f,    1.0f,       0.0f,   1.0f,  // верхний левый
-			1.0f,  -1.0f,   1.0f,       1.0f,   0.0f,   1.0f,   1.0f,	    1.0f,    1.0f,    1.0f,       0.0f,   0.0f,  // нижний левый
-			1.0f,  -1.0f,  -1.0f,       0.5f,   0.5f,   0.5f,   1.0f,	    1.0f,    1.0f,    1.0f,       1.0f,   0.0f,  // нижний правый
+			1.0f,   1.0f,  -1.0f,       1.0f,   1.0f,   1.0f,   1.0f,	    1.0f,    0.0f,    0.0f,       1.0f,   1.0f,  // верхний правый
+			1.0f,   1.0f,   1.0f,       0.0f,   1.0f,   1.0f,   1.0f,	    1.0f,    0.0f,    0.0f,       0.0f,   1.0f,  // верхний левый
+			1.0f,  -1.0f,   1.0f,       1.0f,   0.0f,   1.0f,   1.0f,	    1.0f,    0.0f,    0.0f,       0.0f,   0.0f,  // нижний левый
+			1.0f,  -1.0f,  -1.0f,       0.5f,   0.5f,   0.5f,   1.0f,	    1.0f,    0.0f,    0.0f,       1.0f,   0.0f,  // нижний правый
 		// Верхняя грань (y: +1)										   
-			1.0f,   1.0f,  -1.0f,       1.0f,   1.0f,   1.0f,   1.0f,	    1.0f,    1.0f,    1.0f,       1.0f,   1.0f,  // верхний правый
-		   -1.0f,   1.0f,  -1.0f,       0.0f,   1.0f,   1.0f,   1.0f,	    1.0f,    1.0f,    1.0f,       0.0f,   1.0f,  // верхний левый
-		   -1.0f,   1.0f,   1.0f,       1.0f,   0.0f,   1.0f,   1.0f,	    1.0f,    1.0f,    1.0f,       0.0f,   0.0f,  // нижний левый
-			1.0f,   1.0f,   1.0f,       0.5f,   0.5f,   0.5f,   1.0f,	    1.0f,    1.0f,    1.0f,       1.0f,   0.0f,  // нижний правый
+			1.0f,   1.0f,  -1.0f,       1.0f,   1.0f,   1.0f,   1.0f,	    0.0f,    1.0f,    0.0f,       1.0f,   1.0f,  // верхний правый
+		   -1.0f,   1.0f,  -1.0f,       0.0f,   1.0f,   1.0f,   1.0f,	    0.0f,    1.0f,    0.0f,       0.0f,   1.0f,  // верхний левый
+		   -1.0f,   1.0f,   1.0f,       1.0f,   0.0f,   1.0f,   1.0f,	    0.0f,    1.0f,    0.0f,       0.0f,   0.0f,  // нижний левый
+			1.0f,   1.0f,   1.0f,       0.5f,   0.5f,   0.5f,   1.0f,	    0.0f,    1.0f,    0.0f,       1.0f,   0.0f,  // нижний правый
 		// Левая грань (x: -1)											    
-		   -1.0f,   1.0f,   1.0f,       1.0f,   1.0f,   1.0f,   1.0f,	    1.0f,    1.0f,    1.0f,       1.0f,   1.0f,  // верхний правый
-		   -1.0f,   1.0f,  -1.0f,       0.0f,   1.0f,   1.0f,   1.0f,	    1.0f,    1.0f,    1.0f,       0.0f,   1.0f,  // верхний левый
-		   -1.0f,  -1.0f,  -1.0f,       1.0f,   0.0f,   1.0f,   1.0f,	    1.0f,    1.0f,    1.0f,       0.0f,   0.0f,  // нижний левый
-		   -1.0f,  -1.0f,   1.0f,       0.5f,   0.5f,   0.5f,   1.0f,	    1.0f,    1.0f,    1.0f,       1.0f,   0.0f,  // нижний правый
+		   -1.0f,   1.0f,   1.0f,       1.0f,   1.0f,   1.0f,   1.0f,	   -1.0f,    0.0f,    0.0f,       1.0f,   1.0f,  // верхний правый
+		   -1.0f,   1.0f,  -1.0f,       0.0f,   1.0f,   1.0f,   1.0f,	   -1.0f,    0.0f,    0.0f,       0.0f,   1.0f,  // верхний левый
+		   -1.0f,  -1.0f,  -1.0f,       1.0f,   0.0f,   1.0f,   1.0f,	   -1.0f,    0.0f,    0.0f,       0.0f,   0.0f,  // нижний левый
+		   -1.0f,  -1.0f,   1.0f,       0.5f,   0.5f,   0.5f,   1.0f,	   -1.0f,    0.0f,    0.0f,       1.0f,   0.0f,  // нижний правый
 		// Нижняя грань (y: -1)											    
-			1.0f,  -1.0f,   1.0f,       1.0f,   1.0f,   1.0f,   1.0f,	    1.0f,    1.0f,    1.0f,       1.0f,   1.0f,  // верхний правый
-		   -1.0f,  -1.0f,   1.0f,       0.0f,   1.0f,   1.0f,   1.0f,	    1.0f,    1.0f,    1.0f,       0.0f,   1.0f,  // верхний левый
-		   -1.0f,  -1.0f,  -1.0f,       1.0f,   0.0f,   1.0f,   1.0f,	    1.0f,    1.0f,    1.0f,       0.0f,   0.0f,  // нижний левый
-			1.0f,  -1.0f,  -1.0f,       0.5f,   0.5f,   0.5f,   1.0f,	    1.0f,    1.0f,    1.0f,       1.0f,   0.0f,  // нижний правый
+			1.0f,  -1.0f,   1.0f,       1.0f,   1.0f,   1.0f,   1.0f,	    0.0f,   -1.0f,    0.0f,       1.0f,   1.0f,  // верхний правый
+		   -1.0f,  -1.0f,   1.0f,       0.0f,   1.0f,   1.0f,   1.0f,	    0.0f,   -1.0f,    0.0f,       0.0f,   1.0f,  // верхний левый
+		   -1.0f,  -1.0f,  -1.0f,       1.0f,   0.0f,   1.0f,   1.0f,	    0.0f,   -1.0f,    0.0f,       0.0f,   0.0f,  // нижний левый
+			1.0f,  -1.0f,  -1.0f,       0.5f,   0.5f,   0.5f,   1.0f,	    0.0f,   -1.0f,    0.0f,       1.0f,   0.0f,  // нижний правый
 		// Задняя грань (z: -1)											   
-		   -1.0f,   1.0f,  -1.0f,       1.0f,   1.0f,   1.0f,   1.0f,	    1.0f,    1.0f,    1.0f,       1.0f,   1.0f,  // верхний правый
-			1.0f,   1.0f,  -1.0f,       0.0f,   1.0f,   1.0f,   1.0f,	    1.0f,    1.0f,    1.0f,       0.0f,   1.0f,  // верхний левый
-			1.0f,  -1.0f,  -1.0f,       1.0f,   0.0f,   1.0f,   1.0f,	    1.0f,    1.0f,    1.0f,       0.0f,   0.0f,  // нижний левый
-		   -1.0f,  -1.0f,  -1.0f,       0.5f,   0.5f,   0.5f,   1.0f,	    1.0f,    1.0f,    1.0f,       1.0f,   0.0f,  // нижний правый
+		   -1.0f,   1.0f,  -1.0f,       1.0f,   1.0f,   1.0f,   1.0f,	    0.0f,    0.0f,   -1.0f,       1.0f,   1.0f,  // верхний правый
+			1.0f,   1.0f,  -1.0f,       0.0f,   1.0f,   1.0f,   1.0f,	    0.0f,    0.0f,   -1.0f,       0.0f,   1.0f,  // верхний левый
+			1.0f,  -1.0f,  -1.0f,       1.0f,   0.0f,   1.0f,   1.0f,	    0.0f,    0.0f,   -1.0f,       0.0f,   0.0f,  // нижний левый
+		   -1.0f,  -1.0f,  -1.0f,       0.5f,   0.5f,   0.5f,   1.0f,	    0.0f,    0.0f,   -1.0f,       1.0f,   0.0f,  // нижний правый
 	};
 
 	const int cubeIndicesCount = 12;
@@ -313,7 +313,7 @@ int main()
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeOfVertex_cube * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeOfVertex_cube * sizeof(float), (void*)(7 * sizeof(float)));
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeOfVertex_cube * sizeof(float), (void*)(10 * sizeof(float)));
 	glEnableVertexAttribArray(2);
 
 	// Сбрасываем VAO:
@@ -340,8 +340,8 @@ int main()
 	glEnable(GL_DEPTH_TEST);
 
 	// Shader* basicShader = new Shader("./shaders/basic.vert", "./shaders/basic.frag");
-	Shader* cubeShader = new Shader("./shaders/basic.vert", "./shaders/cube.frag");
-	Shader* lightShader = new Shader("./shaders/basic.vert", "./shaders/lightCube.frag");
+	Shader* cubeShader = new Shader("./shaders/cube.vert", "./shaders/cube.frag");
+	Shader* lightShader = new Shader("./shaders/cube.vert", "./shaders/lightCube.frag");
 	Texture* containerTexture = new Texture("./textures/container.jpg");
 	Texture* pogfaceTexture = new Texture("./textures/awesomeface.png", TextureType::RGBA);
 
