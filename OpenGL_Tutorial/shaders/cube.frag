@@ -49,12 +49,13 @@ void main(){
 	// Отражаем падающий свет отнсоительно вектора нормали
 	vec3 reflectDir = reflect(-lightDir, norm);
 
-	// 32 - степень глянцевости поверхности. Чем больше, тем более чётко выделено светлое пятно
+	// shininess - степень глянцевости поверхности. Чем больше, тем более чётко выделено светлое пятно
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-	vec3 specular = light.specular * spec * vec3(texture(material.specular, fTextureCoord));
+	vec3 specularMap = vec3(texture(material.specular, fTextureCoord));
+	vec3 specular = light.specular * spec * specularMap;
 
 	// Свечение объекта
-	vec3 emission = vec3(texture(material.emission, fTextureCoord));
+	vec3 emission = vec3(texture(material.emission, fTextureCoord)) * (vec3(1.0) * int(specularMap.r == 0));
 
 	vec3 result = ambient + diffuse + specular + emission;
 
