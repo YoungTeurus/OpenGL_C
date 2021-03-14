@@ -409,7 +409,7 @@ int main()
 			cubeShader->setFloatVec3(	"light.ambient",		0.2f, 0.2f, 0.2f);
 			cubeShader->setFloatVec3(	"light.diffuse",		0.5f, 0.5f, 0.5f);
 			cubeShader->setFloatVec3(	"light.specular",		1.0f, 1.0f, 1.0f	);
-			cubeShader->setFloatVec3(	"light.position", lightCubePositions[0]);
+			cubeShader->setFloatVec3(	"light.direction", 3.0f, -4.0f, 5.0f);
 			cubeShader->setInt(			"material.diffuse", 0);  // ”казываем, что дл€ карты диффузии используетс€ текстура 0
 			cubeShader->setInt(			"material.specular", 1);  // ”казываем, что дл€ карты диффузии используетс€ текстура 1
 			cubeShader->setInt(			"material.emission", 2);  // ”казываем, что дл€ карты свечени€ используетс€ текстура 2

@@ -152,8 +152,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="classes\Camera.cpp" />
-    <ClCompile Include="glad.c" />
     <ClCompile Include="classes\Shader.cpp" />
+    <ClCompile Include="include\glad.c" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="classes\Texture.cpp" />
   </ItemGroup>

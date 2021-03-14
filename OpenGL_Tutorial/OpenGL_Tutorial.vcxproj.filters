@@ -19,12 +19,12 @@
     <Filter Include="Исходные файлы\classes">
       <UniqueIdentifier>{bb55530a-8024-496b-b541-fb92f1e51356}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Исходные файлы\include">
+      <UniqueIdentifier>{0de59806-4328-41b4-813f-6dc68a9afd36}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="glad.c">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="classes\Camera.cpp">
@@ -35,6 +35,9 @@
     </ClCompile>
     <ClCompile Include="classes\Texture.cpp">
       <Filter>Исходные файлы\classes</Filter>
+    </ClCompile>
+    <ClCompile Include="include\glad.c">
+      <Filter>Исходные файлы\include</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

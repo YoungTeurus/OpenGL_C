@@ -10,7 +10,8 @@ struct Material {
 };
 
 struct Light {
-	vec3 position;		// Месторасположение источника света
+	// vec3 position;		// Месторасположение источника света
+	vec3 direction;		// Направление параллельного света
 
 	vec3 ambient;		// Цвет (сила?) мирового света
 	vec3 diffuse;		// Цвет (сила?) диффузного света
@@ -29,14 +30,12 @@ uniform Light light;
 uniform vec3 viewPos;  // Положение камеры в мировых координатах
 
 void main(){
-	float emissionStrenght = 0.7f;
-
 	// Мировое освещение:
 	vec3 ambient = light.ambient * vec3(texture(material.diffuse, fTextureCoord));
 
 	// Диффузионный свет:
 	vec3 norm = normalize(fNormal);  // Нормаль к поверхности
-	vec3 lightDir = normalize(light.position - fragPosition); // Вектор направления света
+	vec3 lightDir = normalize(-light.direction); // Вектор направления света
 
 	// Скалярное произведение, даёт косинус угла [0,1], так как оба вектора нормализованы
 	// diff = 1, когда угол = 0 (свет падает перпендикулярно)
