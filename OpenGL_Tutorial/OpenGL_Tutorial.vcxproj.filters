@@ -22,11 +22,14 @@
     <Filter Include="Исходные файлы\include">
       <UniqueIdentifier>{0de59806-4328-41b4-813f-6dc68a9afd36}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Исходные файлы\interfaces">
+      <UniqueIdentifier>{3c36dd5a-2c98-4aa6-8514-57053ee14f90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\classes\WorldObjects">
+      <UniqueIdentifier>{ae2d638c-1fe2-4c72-a573-c42557a11634}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
     <ClCompile Include="classes\Camera.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
@@ -38,6 +41,12 @@
     </ClCompile>
     <ClCompile Include="include\glad.c">
       <Filter>Исходные файлы\include</Filter>
+    </ClCompile>
+    <ClCompile Include="newSource.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Source.cpp">
+      <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -52,6 +61,33 @@
     </ClInclude>
     <ClInclude Include="include\stb_image.h">
       <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldObject.h">
+      <Filter>Исходные файлы\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Cube.h">
+      <Filter>Исходные файлы\classes\WorldObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Исходные файлы\classes</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialWorldObject.h">
+      <Filter>Исходные файлы\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="PointLight.h">
+      <Filter>Исходные файлы\classes\WorldObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderedWorldObject.h">
+      <Filter>Исходные файлы\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>Исходные файлы\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="AttenuatedLight.h">
+      <Filter>Исходные файлы\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="LightCube.h">
+      <Filter>Исходные файлы\classes\WorldObjects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

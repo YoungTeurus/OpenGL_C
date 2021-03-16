@@ -1,6 +1,6 @@
 #include "Shader.h"
 
-unsigned Shader::ID() {
+unsigned Shader::ID() const {
 	return programID;
 }
 
@@ -68,7 +68,7 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath) {
 	glDeleteShader(fragment);
 }
 
-void Shader::use() {
+void Shader::use() const {
 	glUseProgram(programID);
 }
 
@@ -105,12 +105,12 @@ void Shader::setFloatVec4(const std::string& name, float value, float value2, fl
 	glUniform4f(glGetUniformLocation(programID, name.c_str()), value, value2, value3, value4);
 }
 
-void Shader::setFloatMat3(const std::string& name, float* mat)
+void Shader::setFloatMat3(const std::string& name, float* mat) const
 {
 	glUniformMatrix3fv(glGetUniformLocation(programID, name.c_str()), 1, GL_FALSE, mat);
 }
 
-void Shader::setFloatMat4(const std::string& name, float* mat)
+void Shader::setFloatMat4(const std::string& name, float* mat) const
 {
 	glUniformMatrix4fv(glGetUniformLocation(programID, name.c_str()), 1, GL_FALSE, mat);
 }

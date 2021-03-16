@@ -155,13 +155,23 @@
     <ClCompile Include="classes\Shader.cpp" />
     <ClCompile Include="include\glad.c" />
     <ClCompile Include="Source.cpp" />
+    <ClCompile Include="newSource.cpp" />
     <ClCompile Include="classes\Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AttenuatedLight.h" />
     <ClInclude Include="classes\Camera.h" />
     <ClInclude Include="classes\Shader.h" />
     <ClInclude Include="classes\Texture.h" />
+    <ClInclude Include="Cube.h" />
     <ClInclude Include="include\stb_image.h" />
+    <ClInclude Include="Light.h" />
+    <ClInclude Include="LightCube.h" />
+    <ClInclude Include="MaterialWorldObject.h" />
+    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="PointLight.h" />
+    <ClInclude Include="ShaderedWorldObject.h" />
+    <ClInclude Include="WorldObject.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\basic.frag" />

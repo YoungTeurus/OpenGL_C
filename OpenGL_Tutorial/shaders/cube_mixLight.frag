@@ -13,7 +13,7 @@ struct Material {
 
 // Направленный свет
 struct DirLight {
-	vec3 direction;
+	vec3 direction; 
 
 	vec3 ambient;		// Цвет (сила?) мирового света
 	vec3 diffuse;		// Цвет (сила?) диффузного света
