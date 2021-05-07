@@ -10,7 +10,7 @@ class LightCube : public Cube, PointLight
 		const float pos_x = 0, const float pos_y = 0, const float pos_z = 0,
 		const float scale_x = 1, const float scale_y = 1, const float scale_z = 1)
 			:Cube(shader, material, pos_x, pos_y, pos_z, scale_x, scale_y, scale_z),
-			 PointLight(shader, ambient, diffuse, specular, constant, linear, quadratic, pos_x, pos_y, pos_z)
+			 PointLight(ambient, diffuse, specular, constant, linear, quadratic, pos_x, pos_y, pos_z)
 	{
 	}
 };

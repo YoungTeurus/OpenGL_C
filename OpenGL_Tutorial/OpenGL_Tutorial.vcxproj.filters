@@ -89,6 +89,9 @@
     <ClInclude Include="LightCube.h">
       <Filter>Исходные файлы\classes\WorldObjects</Filter>
     </ClInclude>
+    <ClInclude Include="DirectionalLight.h">
+      <Filter>Исходные файлы\classes\WorldObjects</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\basic.frag">

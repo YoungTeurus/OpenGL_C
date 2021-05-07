@@ -1,6 +1,6 @@
 #version 330 core
 
-#define NUMBER_OF_MAX_POINT_LIGHTS 4
+#define NUMBER_OF_MAX_POINT_LIGHTS 32
 
 struct Material {
 	sampler2D	diffuse;	// Карта освещения (текстура)
@@ -66,8 +66,11 @@ in vec2 fTextureCoord;
 out vec4 fragColor;
 
 uniform Material material;
+uniform bool hasDirLight = false;
 uniform DirLight dirLight;
+uniform int pointLightsNumber = 0;
 uniform PointLight pointLights[NUMBER_OF_MAX_POINT_LIGHTS];
+uniform bool hasSpotLight = false;
 uniform SpotLight spotLight;
 
 uniform vec3 viewPos;  // Положение камеры в мировых координатах
@@ -76,14 +79,20 @@ void main(){
 	vec3 normal = normalize(fNormal);  // Нормальная к грани
 	vec3 viewDir = normalize(viewPos - fragPosition);  // Угол между взглядом и вертексом
 
+	vec3 result = vec3(0.0, 0.0, 0.0);
+
 	// 1. За основу берётся направленное освещение
-	vec3 result = CalcDirLight(dirLight, normal, viewDir);
+	if (hasDirLight){
+		result += CalcDirLight(dirLight, normal, viewDir);
+	}
 	// 2. Прибавление света от точечных источников
-	for(int i = 0; i < NUMBER_OF_MAX_POINT_LIGHTS; i++){
+	for(int i = 0; i < pointLightsNumber; i++){
 		result += CalcPointLight(pointLights[i], normal, fragPosition, viewDir);
 	}
 	// 3. Прибавление света от фонарика
-	result += CalcSpotLight(spotLight, normal, fragPosition, viewDir);
+	if (hasSpotLight){
+		result += CalcSpotLight(spotLight, normal, fragPosition, viewDir);
+	}
 
 	// 4. Прибавление собственного свечения
 	vec3 emission = vec3(texture(material.emission, fTextureCoord));

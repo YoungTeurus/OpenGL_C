@@ -4,7 +4,7 @@
 // Источник света с затуханием (точечный, прожекторный)
 class AttenuatedLight : public Light
 {
-protected:
+public:
 	float constant_;
 	float linear_;
 	float quadratic_;

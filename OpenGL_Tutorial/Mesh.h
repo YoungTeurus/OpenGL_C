@@ -39,7 +39,7 @@ static VertexDataConfig pos_color_normal_texture_VDC = VertexDataConfig{
 
 class Mesh
 {
-private:
+public:
 	const float		*vertex_data_;		// Данные о вершинах объекта
 	const unsigned	*indices_data_;		// Данные о гранях объекта
 	const int size_of_vertex_data_;
@@ -79,14 +79,6 @@ public:
 			glVertexAttribPointer(attr.id, attr.size, attr.type, GL_FALSE, vdc_->sizeOfVertex * attr.sizeOfType, (void*)(static_cast<long>(attr.offset) * attr.sizeOfType));
 			glEnableVertexAttribArray(attr.id);
 		}
-		// glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeOfVertex_cube * sizeof(float), (void*)0);
-		// glEnableVertexAttribArray(0);
-		// glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeOfVertex_cube * sizeof(float), (void*)(3 * sizeof(float)));
-		// glEnableVertexAttribArray(1);
-		// glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeOfVertex_cube * sizeof(float), (void*)(10 * sizeof(float)));
-		// glEnableVertexAttribArray(2);
-		// glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeOfVertex_cube * sizeof(float), (void*)(7 * sizeof(float)));
-		// glEnableVertexAttribArray(3);
 
 		// Сбрасываем VAO:
 		glBindVertexArray(0);

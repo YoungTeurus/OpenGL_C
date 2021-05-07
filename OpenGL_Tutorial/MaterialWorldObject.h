@@ -25,28 +25,28 @@ public:
 	void draw(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos, const std::list<Light*> &lights) const
 	{
 		shader_->use();
-		// material_->use(shader_);
+		material_->use(shader_);
+
+		for (const auto& light : lights)
+		{
+			light->use(shader_);
+		}
 
 		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::translate(model, position_);
 		model = glm::scale(model, scale_);
-
+		
 		glm::mat4 transformation = projection * view * model;
-
+		
 		// Матрица нормалей:
 		glm::mat3 normal = glm::transpose(glm::inverse(model));
-
+		
 		shader_->setFloatMat4("model", glm::value_ptr(model));
 		shader_->setFloatMat4("view", glm::value_ptr(view));
 		shader_->setFloatMat4("projection", glm::value_ptr(projection));
 		shader_->setFloatMat4("transformation", glm::value_ptr(transformation));
 		shader_->setFloatMat3("normal", glm::value_ptr(normal));
 		shader_->setFloatVec3("viewPos", viewPos);
-
-		for (const auto& light : lights)
-		{
-			light->use(shader_);
-		}
 
 		mesh_->use();
 	};

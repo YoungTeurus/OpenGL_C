@@ -1,5 +1,6 @@
-// #define OLD_SOURCE
+//#define OLD_SOURCE
 
+#include "DirectionalLight.h"
 #ifdef OLD_SOURCE
 
 // GLAD подключаем ПЕРЕД всеми библиотеками с подключением OpenGL
@@ -556,7 +557,7 @@ struct Color
 	float r, g, b, a;
 };
 
-Color background = {0.05f, 0.05f, 0.05f, 1.f};
+Color background = {0.25f, 0.25f, 0.25f, 1.f};
 
 // Callback функция, вызываемая при изменении размеров окна.
 void OnResize(GLFWwindow* window, int width, int height)
@@ -745,9 +746,11 @@ int main()
 	// Конец исходных данных
 
 	// Загрузка внешних данных:
-	// Shader* basicShader = new Shader("./shaders/basic.vert", "./shaders/basic.frag");
+	// Shader* basicShader = new Shader("./shaders/cube.vert", "./shaders/cube_mixLight.frag");
 	Shader* cubeShader = new Shader("./shaders/cube.vert", "./shaders/cube_mixLight.frag");
-	Shader* lightShader = new Shader("./shaders/cube.vert", "./shaders/lightCube.frag");
+	Shader* cubeShader_onlyDirectionalLight = new Shader("./shaders/cube.vert", "./shaders/cube_parallelLight.frag");
+	Shader* cubeShader_onlyPointLight = new Shader("./shaders/cube.vert", "./shaders/cube_pointLight.frag");
+	// Shader* lightShader = new Shader("./shaders/cube.vert", "./shaders/lightCube.frag");
 
 	Texture* containerTexture = new Texture("./textures/container.jpg");
 	Texture* container2Texture = new Texture("./textures/container2.png", TextureType::RGBA);
@@ -756,18 +759,34 @@ int main()
 	Texture* matrixTexture = new Texture("./textures/matrix.jpg");
 	Texture* lampTexture = new Texture("./textures/glowing_lamp.jpg");
 
+	Material* cubeMaterial = new Material{container2Texture, container2_specularTexture, lampTexture, 32.0f};
+	
 	std::list<Cube*> cubes = {
 		new Cube(cubeShader,
-		new Material{container2Texture, container2_specularTexture, lampTexture, 32.0f},
-		0.0f, 0.0f, 0.0f,
-		1.0f,1.0f,1.0f),	
+		cubeMaterial,
+		-1.75f, -2.0f, -2.5f,
+		0.75f,0.75f,0.75f),
+
+		new Cube(cubeShader,
+		cubeMaterial,
+		1.75f, -1.5f, -2.0f,
+		0.75f,0.75f,0.75f),
 	};
 
 	std::list<Light*> lights = {
-		new PointLight(glm::vec3(0.1f, 0.1f, 0.1f),
-		glm::vec3(0.5f, 0.5f, 0.5f),
-		glm::vec3(1.0f, 1.0f, 1.0f),
-		1.0f, 0.09f, 0.032f, 10.0f, 10.0f, 10.0f),
+		new PointLight(
+		glm::vec3(0.05f, 0.0f, 0.0f),
+		glm::vec3(0.75f, 0.00f, 0.00f),
+		glm::vec3(1.0f, 0.0f, 0.0f),
+		1.0f, 0.045f, 0.0075f,
+		0.0f, 0.0f, 0.0f
+		),
+		new DirectionalLight(
+		glm::vec3(0.0f, 0.1f, 0.0f),
+		glm::vec3(0.0f, 0.5f, 0.0f),
+		glm::vec3(0.0f, 1.0f, 0.0f),
+		glm::vec3(0.0f, 1.0f, -1.0f)
+		),
 	};
 
 	glEnable(GL_DEPTH_TEST);
@@ -779,7 +798,7 @@ int main()
 	// Projection matrix: поправка объектов на перспективу и их клиппинг
 	glm::mat4 projection;
 
-	glm::mat4 transformation;
+	// glm::mat4 transformation;
 
 	while (!glfwWindowShouldClose(win))
 	{
@@ -800,7 +819,6 @@ int main()
 
 
 		// Отрисовка ящиков:
-		 
 		for (const auto& cub : cubes)
 		{
 			cub->draw(view, projection, mainCamera.position, lights);

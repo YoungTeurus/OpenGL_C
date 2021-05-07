@@ -164,6 +164,7 @@
     <ClInclude Include="classes\Shader.h" />
     <ClInclude Include="classes\Texture.h" />
     <ClInclude Include="Cube.h" />
+    <ClInclude Include="DirectionalLight.h" />
     <ClInclude Include="include\stb_image.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="LightCube.h" />
