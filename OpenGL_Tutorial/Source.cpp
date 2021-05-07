@@ -25,6 +25,17 @@ bool firstMouse = true;
 
 Camera mainCamera = Camera(glm::vec3(0.0f, 0.0f, 5.0f));
 
+bool wireframeMode = false;
+
+void setPolygoneDrawMode() {
+	if (wireframeMode) {
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	}
+	else {
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	}
+}
+
 struct Color
 {
 	float r, g, b, a;
@@ -88,6 +99,20 @@ void processInput(GLFWwindow* window)
 	}
 }
 
+void onKeyAction(GLFWwindow* window, int key, int scancode, int action, int mods) {
+	if (action == GLFW_PRESS) {
+		switch (key)
+		{
+		case GLFW_KEY_M:
+			wireframeMode = !wireframeMode;
+			setPolygoneDrawMode();
+			break;
+		default:
+			break;
+		}
+	}
+}
+
 // Обработка движения колёсика мыши
 void scrollCallback(GLFWwindow* window, double xOffset, double yOffset) {
 	mainCamera.handleMouseScroll((float)yOffset);
@@ -144,6 +169,8 @@ int main()
 	glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_DISABLED);  // Захватываем курсор
 	glfwSetCursorPosCallback(win, mouseCallback);  // Функция, вызываемая при перемещении курсора
 	glfwSetScrollCallback(win, scrollCallback);
+	glfwSetKeyCallback(win, onKeyAction);
+	setPolygoneDrawMode();
 
 	glfwSetFramebufferSizeCallback(win, OnResize);
 
@@ -263,6 +290,7 @@ int main()
 	};
 
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
 
 	// View matrix: размещение мира относительно камеры:
 	glm::mat4 view;
