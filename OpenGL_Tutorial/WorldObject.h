@@ -43,7 +43,7 @@ public:
 	{
 		// Mesh и texture могут использоваться дальше?
 		// delete texture_;
-		// delete mesh_;
+		// delete _mesh;
 	};
 };
 
