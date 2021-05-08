@@ -3,7 +3,8 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "../include/stb_image.h"
 
-Texture::Texture(const char* texturePath, TextureType textureType)
+Texture::Texture(const char* texturePath, TextureType textureType, TextureRGBMode textureRGBMode = TextureRGBMode::RGB)
+	:type(textureType)
 {
 	int width, height, nrChannels;
 	stbi_set_flip_vertically_on_load(true);
@@ -26,7 +27,7 @@ Texture::Texture(const char* texturePath, TextureType textureType)
 			width,				// Размеры изображения
 			height,				// - ^ - ^ - ^ -
 			0,					// "Legacy stuff"
-			(int)textureType,	// Формат исходного изображения
+			(int)textureRGBMode,	// Формат исходного изображения
 			GL_UNSIGNED_BYTE,	// Формат данных исходного изображения
 			texture		// Указатель на массив с изображением
 		);
@@ -44,12 +45,7 @@ Texture::~Texture()
 	glDeleteTextures(1, &textureID);
 }
 
-void Texture::use()
-{
-	glBindTexture(GL_TEXTURE_2D, textureID);
-}
-
-unsigned Texture::ID()
+unsigned Texture::ID() const
 {
 	return this->textureID;
 }

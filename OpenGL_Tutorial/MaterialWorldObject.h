@@ -48,7 +48,7 @@ public:
 		_shader->setFloatMat3("normal", glm::value_ptr(normal));
 		_shader->setFloatVec3("viewPos", viewPos);
 
-		_mesh->use();
+		_mesh->draw();
 	};
 
 	virtual ~MaterialWorldObject() = default;

@@ -154,8 +154,8 @@
     <ClCompile Include="classes\Camera.cpp" />
     <ClCompile Include="classes\Shader.cpp" />
     <ClCompile Include="include\glad.c" />
+    <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Source.cpp" />
-    <ClCompile Include="newSource.cpp" />
     <ClCompile Include="classes\Texture.cpp" />
   </ItemGroup>
   <ItemGroup>

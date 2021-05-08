@@ -253,9 +253,9 @@ int main()
 	// Shader* lightShader = new Shader("./shaders/cube.vert", "./shaders/lightCube.frag");
 
 	Texture* containerTexture = new Texture("./textures/container.jpg");
-	Texture* container2Texture = new Texture("./textures/container2.png", TextureType::RGBA);
-	Texture* container2_specularTexture = new Texture("./textures/container2_specular.png", TextureType::RGBA);
-	Texture* pogfaceTexture = new Texture("./textures/awesomeface.png", TextureType::RGBA);
+	Texture* container2Texture = new Texture("./textures/container2.png", TextureRGBMode::RGBA);
+	Texture* container2_specularTexture = new Texture("./textures/container2_specular.png", TextureRGBMode::RGBA);
+	Texture* pogfaceTexture = new Texture("./textures/awesomeface.png", TextureRGBMode::RGBA);
 	Texture* matrixTexture = new Texture("./textures/matrix.jpg");
 	Texture* lampTexture = new Texture("./textures/glowing_lamp.jpg");
 

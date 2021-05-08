@@ -42,10 +42,10 @@
     <ClCompile Include="include\glad.c">
       <Filter>Исходные файлы\include</Filter>
     </ClCompile>
-    <ClCompile Include="newSource.cpp">
+    <ClCompile Include="Source.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="Source.cpp">
+    <ClCompile Include="Mesh.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>

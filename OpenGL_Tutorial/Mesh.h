@@ -1,6 +1,18 @@
 #pragma once
+
 #include <list>
+#include <vector>
 #include <glad/glad.h>
+#include "classes/Texture.h"
+#include "classes/Shader.h"
+
+typedef unsigned int Indice;
+
+struct Vertex {
+	glm::vec3 position;
+	glm::vec3 normal;
+	glm::vec2 texCoords;
+};
 
 // TODO: вынести в отдельный класс?
 // Атрибут шейдера
@@ -13,81 +25,40 @@ struct Attribute
 	int offset;			// Смещение (в байтах)
 };
 
-// TODO: вынести в отдельный класс?
-// Информация о данных вершин
-struct VertexDataConfig
-{
-	int sizeOfVertex;				// Размер одного элемента данных вершины
-	std::list<Attribute> attributes;// Атрибуты вершины, хранимые в данных
+struct MeshAttributesConfig {
+	std::list<Attribute> attributes;
 };
 
-// TODO: вынести в другое место?
-// Стандартная информация для вершины, содержащей позицию, цвет, нормаль и координаты текстуры.
-static VertexDataConfig pos_color_normal_texture_VDC = VertexDataConfig{
-	12,
+static MeshAttributesConfig defaultConfig_positionNormalTexture = MeshAttributesConfig{
 	{
 		// Position:
 		Attribute{0, 3, GL_FLOAT, sizeof(float), 0},
 		// Color:
 		Attribute{1, 4, GL_FLOAT, sizeof(float), 3},
 		// Texture:
-		Attribute{2, 2, GL_FLOAT, sizeof(float), 10},
-		// Normal
-		Attribute{3, 3, GL_FLOAT, sizeof(float), 7},
+		Attribute{2, 2, GL_FLOAT, sizeof(float), 7},
 	}
 };
 
 class Mesh
 {
 public:
-	const float		*vertex_data_;		// Данные о вершинах объекта
-	const unsigned	*indices_data_;		// Данные о гранях объекта
-	const int size_of_vertex_data_;
-	const int size_of_indices_data_;
+	std::vector<Vertex>			vertices;		// Данные о вершинах объекта
+	std::vector<Indice>	indices;		// Данные о гранях объекта
+	std::vector<Texture>		textures;		// Текстуры, связанные с данным объектом
 
-	const VertexDataConfig *vdc_;		// Настройка данных о вершинах объекта
-
+private:
 	unsigned vao_;
 	unsigned vbo_;
 	unsigned ebo_;
+
+	const MeshAttributesConfig mac_;		// Настройка данных о вершинах объекта
 public:
-	Mesh(const int vertex_data_length, const float *vertex_data, const int indices_data_length, const unsigned *indices_data, const VertexDataConfig *vdc)
-	: vertex_data_(vertex_data), indices_data_(indices_data), vdc_(vdc), size_of_vertex_data_(vertex_data_length), size_of_indices_data_(indices_data_length)
-	{		
-		// VAO полигона - хранение данных о атрибутах
-		// VBO полигона - хранение данных в видеопамяти
-		// EBO полигона - хранение данных о рёбрах и гранях
-		glGenVertexArrays(1, &vao_);
-		glGenBuffers(1, &vbo_);
-		glGenBuffers(1, &ebo_);
+	Mesh(std::vector<Vertex> vertices, std::vector<Indice> indices, std::vector<Texture> textures, MeshAttributesConfig &meshAttributesConfig);
 
-		// Привязка VAO:
-		glBindVertexArray(vao_);
+	void draw(Shader &shader) const;
 
-		// Сохраняем в VAO:
-		glBindBuffer(GL_ARRAY_BUFFER, vao_); // Буфер для хранения данных
-		// Читаем данные в VBO:
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * size_of_vertex_data_, vertex_data_, GL_STATIC_DRAW);
-
-		// EBO:
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo_);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(float) * size_of_indices_data_, indices_data_, GL_STATIC_DRAW);
-
-		// Сохраняем данные о атрибутах:
-		for (const auto& attr : vdc_->attributes)
-		{
-			glVertexAttribPointer(attr.id, attr.size, attr.type, GL_FALSE, vdc_->sizeOfVertex * attr.sizeOfType, (void*)(static_cast<long>(attr.offset) * attr.sizeOfType));
-			glEnableVertexAttribArray(attr.id);
-		}
-
-		// Сбрасываем VAO:
-		glBindVertexArray(0);
-	}
-
-	void use() const
-	{
-		glBindVertexArray(vao_);
-		glDrawElements(GL_TRIANGLES, size_of_indices_data_, GL_UNSIGNED_INT, 0);
-	}
+private:
+	void setupMesh();
 };
 
