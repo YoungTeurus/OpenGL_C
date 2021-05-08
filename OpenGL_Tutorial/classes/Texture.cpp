@@ -3,20 +3,56 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "../include/stb_image.h"
 
-Texture::Texture(const char* texturePath, TextureType textureType, TextureRGBMode textureRGBMode = TextureRGBMode::RGB)
-	:type(textureType)
+Texture::Texture(TextureType textureType)
+	:type(textureType), textureID(-1), filename("")
+{}
+
+Texture::Texture(const char* pathToTexture, TextureType textureType)
+	:type(textureType), filename("")
 {
+	loadFromFileAndSetTextureID(pathToTexture);
+}
+
+Texture::~Texture()
+{
+	glDeleteTextures(1, &textureID);
+}
+
+void Texture::loadFromFileAndSetTextureID(const char* pathToTexture)
+{
+	if (textureID != -1) {
+		throw std::runtime_error("Texture::loadFromFileAndSetTextureID: there was an attempt to reload alreeady loaded texture!");
+	}
+
 	int width, height, nrChannels;
-	stbi_set_flip_vertically_on_load(true);
-	unsigned char* texture = stbi_load(texturePath, &width, &height, &nrChannels, 0);
+	// stbi_set_flip_vertically_on_load(true);
+	unsigned char* texture = stbi_load(pathToTexture, &width, &height, &nrChannels, 0);
+
+	if (!texture) {
+		throw std::runtime_error((std::string("Texture::Texture: failed loading texture at path: ") + pathToTexture).c_str());
+	}
+
+	GLenum textureRGBMode;
+	switch (nrChannels)
+	{
+	case 1:
+		textureRGBMode = GL_RED;
+		break;
+	case 3:
+		textureRGBMode = GL_RGB;
+		break;
+	case 4:
+		textureRGBMode = GL_RGBA;
+		break;
+	}
 
 	glGenTextures(1, &textureID);
 	glBindTexture(GL_TEXTURE_2D, textureID);  // Все операции над GL_TEXTURE_2D будут происходить над данной текстурой.
 	// Настройка параметров замещения (растягивания) текустуры для обоих осей
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	// Настройка параметров интерполяции текстуры: линейная интерполяция
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	// Настройка параметров интерполяции текстуры: линейная интерполяция (с использованием mipmap)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	if (texture) {
 		// Генерация текустуры:
@@ -38,11 +74,6 @@ Texture::Texture(const char* texturePath, TextureType textureType, TextureRGBMod
 	}
 
 	stbi_image_free(texture); // Освобождение памяти
-}
-
-Texture::~Texture()
-{
-	glDeleteTextures(1, &textureID);
 }
 
 unsigned Texture::ID() const

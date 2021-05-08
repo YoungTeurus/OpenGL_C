@@ -1,7 +1,7 @@
 #include "Mesh.h"
 
-Mesh::Mesh(std::vector<Vertex> vertices, std::vector<Indice> indices, std::vector<Texture> textures, MeshAttributesConfig &meshAttributesConfig)
-	:vertices(vertices), indices(indices), textures(textures), mac_(meshAttributesConfig)
+Mesh::Mesh(std::vector<Vertex> vertices, std::vector<Indice> indices, std::vector<Texture> textures)
+	:vertices(vertices), indices(indices), textures(textures)
 {
 	setupMesh();
 }

@@ -44,7 +44,7 @@ class Mesh
 {
 public:
 	std::vector<Vertex>			vertices;		// Данные о вершинах объекта
-	std::vector<Indice>	indices;		// Данные о гранях объекта
+	std::vector<Indice>			indices;		// Данные о гранях объекта
 	std::vector<Texture>		textures;		// Текстуры, связанные с данным объектом
 
 private:
@@ -52,9 +52,8 @@ private:
 	unsigned vbo_;
 	unsigned ebo_;
 
-	const MeshAttributesConfig mac_;		// Настройка данных о вершинах объекта
 public:
-	Mesh(std::vector<Vertex> vertices, std::vector<Indice> indices, std::vector<Texture> textures, MeshAttributesConfig &meshAttributesConfig);
+	Mesh(std::vector<Vertex> vertices, std::vector<Indice> indices, std::vector<Texture> textures);
 
 	void draw(Shader &shader) const;
 

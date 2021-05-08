@@ -4,12 +4,6 @@
 #include <iostream>
 #include <map>
 
-enum class TextureRGBMode: int
-{
-	RGB = GL_RGB,
-	RGBA = GL_RGBA,
-};
-
 enum class TextureType : unsigned {
 	DIFFUSE = 0,
 	SPECULAR = 1
@@ -24,12 +18,16 @@ class Texture
 {
 public:
 	TextureType type;
+	std::string filename;
 private:
 	unsigned textureID;
 
 public:
-	Texture(const char* texturePath, TextureType textureType, TextureRGBMode textureRGBMode = TextureRGBMode::RGB);
+	Texture(TextureType textureType);
+	Texture(const char* pathToTexture, TextureType textureType);
 	~Texture();
+
+	void loadFromFileAndSetTextureID(const char* pathToTexture);
 
 	unsigned ID() const;
 };

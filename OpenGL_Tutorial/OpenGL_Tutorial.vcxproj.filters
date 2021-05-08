@@ -46,7 +46,10 @@
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="Mesh.cpp">
-      <Filter>Исходные файлы</Filter>
+      <Filter>Исходные файлы\classes</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Исходные файлы\classes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -68,9 +71,6 @@
     <ClInclude Include="Cube.h">
       <Filter>Исходные файлы\classes\WorldObjects</Filter>
     </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>Исходные файлы\classes</Filter>
-    </ClInclude>
     <ClInclude Include="MaterialWorldObject.h">
       <Filter>Исходные файлы\interfaces</Filter>
     </ClInclude>
@@ -91,6 +91,12 @@
     </ClInclude>
     <ClInclude Include="DirectionalLight.h">
       <Filter>Исходные файлы\classes\WorldObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
