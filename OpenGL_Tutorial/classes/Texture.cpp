@@ -4,20 +4,20 @@
 #include "../include/stb_image.h"
 
 Texture::Texture(TextureType textureType)
-	:type(textureType), textureID(-1), filename("")
+	:type(textureType), textureID(0), filename("")
 {}
 
 Texture::Texture(const char* pathToTexture, TextureType textureType)
-	:type(textureType)
+	:type(textureType), textureID(0)
 {
 	loadFromFileAndSetTextureID(pathToTexture);
 }
 
 Texture::Texture(const char* filename, const std::string& directory, TextureType textureType)
-	:type(textureType)
+	:type(textureType), textureID(0)
 {
 	this->filename = std::string(filename);
-	std::string pathToTexture = "D:/Coding/C++/OpenGL_Tutorial/OpenGL_Tutorial/" + directory + '/' + this->filename;
+	std::string pathToTexture = directory + '/' + this->filename;
 	
 	loadFromFileAndSetTextureID(pathToTexture.c_str());
 }
@@ -29,22 +29,14 @@ Texture::~Texture()
 
 void Texture::loadFromFileAndSetTextureID(const char* pathToTexture)
 {
-	if (textureID != -1) {
+	int width, height, nrChannels;
+	
+	if (textureID != 0) {
 		throw std::runtime_error("Texture::loadFromFileAndSetTextureID: there was an attempt to reload alreeady loaded texture!");
 	}
 
-	int width, height, nrChannels;
 	
-	unsigned char textureData[1];
-	
-	height = width = nrChannels = 1;
-	// try{
-	// 	textureData = stbi_load(pathToTexture, &width, &height, &nrChannels, 0);
-	// } catch(const std::exception e)
-	// {
-	// 	stbi_image_free(textureData);
-	// 	return;
-	// }
+	unsigned char* textureData = stbi_load(pathToTexture, &width, &height, &nrChannels, 0);
 
 	if (!textureData) {
 		stbi_image_free(textureData);
