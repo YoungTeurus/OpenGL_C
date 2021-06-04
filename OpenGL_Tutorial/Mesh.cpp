@@ -6,17 +6,21 @@ Mesh::Mesh(std::vector<Vertex> vertices, std::vector<Indice> indices, std::vecto
 	setupMesh();
 }
 
-void Mesh::draw(Shader& shader) const
+void Mesh::draw(const Shader& shader) const
 {
 	// Подключение текстур:
 	unsigned diffuseNum = 1;
 	unsigned specularNum = 1;
+	unsigned normalNum = 1;
+	unsigned heightNum = 1;
 	for (unsigned i = 0; i < textures.size(); i++) {
 		glActiveTexture(GL_TEXTURE0 + i);  // Активируем необходимую текстуру перед подключением
 
 		std::string textureNumber;
+		
 		const Texture &currentTexutre = textures[i];
 		const TextureType currentTexutureType = currentTexutre.type;
+		
 		switch (currentTexutureType)
 		{
 		case TextureType::DIFFUSE:
@@ -25,13 +29,18 @@ void Mesh::draw(Shader& shader) const
 		case TextureType::SPECULAR:
 			textureNumber = std::to_string(specularNum++);
 			break;
+		case TextureType::NORMAL:
+			textureNumber = std::to_string(normalNum++);
+			break;
+		case TextureType::HEIGHT:
+			textureNumber = std::to_string(heightNum++);
+			break;
 		default:
 			throw new std::runtime_error("Mesh::draw: TextureType of currentTexutre is undefined for switch case!");
-			break;
 		}
 		std::string currentTextureShaderName = textureTypeShaderNames.at(currentTexutureType);
 
-		shader.setFloat( ("material." + currentTextureShaderName + textureNumber).c_str(), i);
+		shader.setFloat( (currentTextureShaderName + textureNumber).c_str(), i);
 		glBindTexture(GL_TEXTURE_2D, currentTexutre.ID());
 	}
 	glActiveTexture(GL_TEXTURE0);
@@ -64,16 +73,21 @@ void Mesh::setupMesh()
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Indice) * indices.size(), &indices[0], GL_STATIC_DRAW);
 
 	// Сохраняем данные о атрибутах:
-	// TODO: Избавиться от magic values при помощи Attribute?
 	// Позиция вертекса:
-	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Vertex::position));
+	glEnableVertexAttribArray(0);
 	// Нормаль к вертексу:
-	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Vertex::normal));
+	glEnableVertexAttribArray(1);
 	// Координаты текстур вертекса:
-	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Vertex::texCoords));
+	glEnableVertexAttribArray(2);
+	// Координаты tangent-а:
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Vertex::tangent));
+	glEnableVertexAttribArray(3);
+	// Координаты bitangent-а:
+	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Vertex::bitangent));
+	glEnableVertexAttribArray(4);
 
 	// Сбрасываем VAO:
 	glBindVertexArray(0);

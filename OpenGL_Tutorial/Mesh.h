@@ -12,6 +12,10 @@ struct Vertex {
 	glm::vec3 position;
 	glm::vec3 normal;
 	glm::vec2 texCoords;
+
+	// TODO: разобраться, что такое tangent!
+	glm::vec3 tangent;
+	glm::vec3 bitangent;
 };
 
 // TODO: вынести в отдельный класс?
@@ -55,7 +59,7 @@ private:
 public:
 	Mesh(std::vector<Vertex> vertices, std::vector<Indice> indices, std::vector<Texture> textures);
 
-	void draw(Shader &shader) const;
+	void draw(const Shader &shader) const;
 
 private:
 	void setupMesh();

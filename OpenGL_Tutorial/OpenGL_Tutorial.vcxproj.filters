@@ -25,8 +25,8 @@
     <Filter Include="Исходные файлы\interfaces">
       <UniqueIdentifier>{3c36dd5a-2c98-4aa6-8514-57053ee14f90}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Исходные файлы\classes\WorldObjects">
-      <UniqueIdentifier>{ae2d638c-1fe2-4c72-a573-c42557a11634}</UniqueIdentifier>
+    <Filter Include="Исходные файлы\classes\Lights">
+      <UniqueIdentifier>{078e8370-1f18-4983-99f5-cbfdbc4014e6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -65,38 +65,35 @@
     <ClInclude Include="include\stb_image.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="WorldObject.h">
-      <Filter>Исходные файлы\interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="Cube.h">
-      <Filter>Исходные файлы\classes\WorldObjects</Filter>
-    </ClInclude>
-    <ClInclude Include="MaterialWorldObject.h">
-      <Filter>Исходные файлы\interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="PointLight.h">
-      <Filter>Исходные файлы\classes\WorldObjects</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderedWorldObject.h">
-      <Filter>Исходные файлы\interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="Light.h">
-      <Filter>Исходные файлы\interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="AttenuatedLight.h">
-      <Filter>Исходные файлы\interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="LightCube.h">
-      <Filter>Исходные файлы\classes\WorldObjects</Filter>
-    </ClInclude>
-    <ClInclude Include="DirectionalLight.h">
-      <Filter>Исходные файлы\classes\WorldObjects</Filter>
-    </ClInclude>
     <ClInclude Include="Mesh.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Model.h">
       <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="AttenuatedLight.h">
+      <Filter>Исходные файлы\classes\Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseLight.h">
+      <Filter>Исходные файлы\classes\Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="PositionedLight.h">
+      <Filter>Исходные файлы\classes\Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="PointLight.h">
+      <Filter>Исходные файлы\classes\Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="ColoredLight.h">
+      <Filter>Исходные файлы\classes\Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectionalLight.h">
+      <Filter>Исходные файлы\classes\Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="SpotLight.h">
+      <Filter>Исходные файлы\classes\Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="AmbientLight.h">
+      <Filter>Исходные файлы\classes\Lights</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -122,6 +119,12 @@
       <Filter>shaders</Filter>
     </None>
     <None Include="shaders\cube_mixLight.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\backpack_mixLight.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\backpack_mixLight.vert">
       <Filter>shaders</Filter>
     </None>
   </ItemGroup>

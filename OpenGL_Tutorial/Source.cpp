@@ -6,12 +6,13 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
-#include "Cube.h"
 #include "PointLight.h"
 #include "classes/Shader.h"
 #include "classes/Camera.h"
 #include "classes/Texture.h"
 #include "DirectionalLight.h"
+#include "Model.h"
+#include "SpotLight.h"
 
 float deltaTime = 0.0f;									 // Разница во времени между последним и предпоследним кадрами
 float lastFrameTime = 0.0f;								 // Время последнего кадра
@@ -23,7 +24,7 @@ float lastCursorX = (float)windowInitialWidth / 2,
 
 bool firstMouse = true;
 
-Camera mainCamera = Camera(glm::vec3(0.0f, 0.0f, 5.0f));
+Camera mainCamera = Camera((float)windowInitialWidth / windowInitialHeight, glm::vec3(0.0f, 0.0f, 5.0f));
 
 bool wireframeMode = false;
 
@@ -43,11 +44,31 @@ struct Color
 
 Color background = {0.25f, 0.25f, 0.25f, 1.f};
 
+struct ModelTransform
+{
+	glm::vec3 position;
+	glm::vec3 rotation;
+	glm::vec3 scale;
+
+	void setScale(float s)
+	{
+		scale = glm::vec3(s);
+	}
+};
+
+struct Material
+{
+	glm::vec3 ambient;
+	glm::vec3 diffuse;
+	glm::vec3 specular;
+	float shininess;
+};
+
 // Callback функция, вызываемая при изменении размеров окна.
 void OnResize(GLFWwindow* window, int width, int height)
 {
+	mainCamera.aspectRatio = (float)width / height;
 	glViewport(0, 0, width, height);
-	// std::cout << "Resized to " << width << "x" << height << std::endl;
 }
 
 // Работа с устройствами ввода
@@ -175,123 +196,63 @@ int main()
 	glfwSetFramebufferSizeCallback(win, OnResize);
 
 	glViewport(0, 0, windowWidth, windowHeight);
-	// Конец настройки glfw
-#pragma endregion
-
-	glm::vec3 cubePositions[] = {
-		glm::vec3(2.0f, 5.0f, -15.0f),
-		glm::vec3(-1.5f, -2.2f, -2.5f),
-		glm::vec3(-3.8f, -2.0f, -12.3f),
-		glm::vec3(2.4f, -0.4f, -3.5f),
-		glm::vec3(-1.7f, 3.0f, -7.5f),
-		glm::vec3(1.3f, -2.0f, -2.5f),
-		glm::vec3(1.5f, 2.0f, -2.5f),
-		glm::vec3(1.5f, 0.2f, -1.5f),
-		glm::vec3(-1.3f, 1.0f, -1.5f)
-	};
-	float cubeScales[] = {
-		0.4f,
-		0.6f,
-		0.55f,
-		0.35f,
-		0.75f,
-		0.25f,
-		0.85f,
-		0.6f,
-		0.3f,
-	};
-	glm::vec3 cubeColor[] = {
-		glm::vec3(1.0f, 0.0f, 0.0f),
-		glm::vec3(0.7f, 0.3f, 0.0f),
-		glm::vec3(0.4f, 0.3f, 0.5f),
-		glm::vec3(0.3f, 0.6f, 0.1f),
-		glm::vec3(0.8f, 0.8f, 0.8f),
-		glm::vec3(0.0f, 1.0f, 0.0f),
-		glm::vec3(0.0f, 0.0f, 1.0f),
-		glm::vec3(0.5f, 0.5f, 0.5f),
-		glm::vec3(0.8f, 0.1f, 0.8f),
-	};
-
-	glm::vec3 lightCubePositions[] = {
-		glm::vec3(0.0f, 0.0f, 10.0f),
-		glm::vec3(0.0f, 0.0f, -5.0f),
-		glm::vec3(-2.0f, -2.0f, -5.0f),
-		glm::vec3(2.0f, 2.0f, -5.0f),
-	};
-	glm::vec3 lightCubeAmbient[] = {
-		glm::vec3(0.05f, 0.05f, 0.05f),
-		glm::vec3(0.1f, 0.00f, 0.00f),
-		glm::vec3(0.00f, 0.1f, 0.00f),
-		glm::vec3(0.00f, 0.00f, 0.1f),
-	};
-	glm::vec3 lightCubeDiffuse[] = {
-		glm::vec3(0.5f, 0.5f, 0.5f),
-		glm::vec3(1.0f, 0.0f, 0.0f),
-		glm::vec3(0.0f, 1.0f, 0.0f),
-		glm::vec3(0.0f, 0.0f, 1.0f),
-	};
-	glm::vec3 lightCubeSpecular[] = {
-		glm::vec3(1.0f, 1.0f, 1.0f),
-		glm::vec3(1.0f, 0.0f, 0.0f),
-		glm::vec3(0.0f, 1.0f, 0.0f),
-		glm::vec3(0.0f, 0.0f, 1.0f),
-	};
-	float lightCubeScales[] = {
-		0.3f,
-		0.3f,
-		0.3f,
-		0.3f,
-	};
-
-	// Конец исходных данных
-
-	// Загрузка внешних данных:
-	// Shader* basicShader = new Shader("./shaders/cube.vert", "./shaders/cube_mixLight.frag");
-	Shader* cubeShader = new Shader("./shaders/cube.vert", "./shaders/cube_mixLight.frag");
-	Shader* cubeShader_onlyDirectionalLight = new Shader("./shaders/cube.vert", "./shaders/cube_parallelLight.frag");
-	Shader* cubeShader_onlyPointLight = new Shader("./shaders/cube.vert", "./shaders/cube_pointLight.frag");
-	// Shader* lightShader = new Shader("./shaders/cube.vert", "./shaders/lightCube.frag");
-
-	Texture* containerTexture = new Texture("./textures/container.jpg");
-	Texture* container2Texture = new Texture("./textures/container2.png", TextureRGBMode::RGBA);
-	Texture* container2_specularTexture = new Texture("./textures/container2_specular.png", TextureRGBMode::RGBA);
-	Texture* pogfaceTexture = new Texture("./textures/awesomeface.png", TextureRGBMode::RGBA);
-	Texture* matrixTexture = new Texture("./textures/matrix.jpg");
-	Texture* lampTexture = new Texture("./textures/glowing_lamp.jpg");
-
-	Material* cubeMaterial = new Material{container2Texture, container2_specularTexture, lampTexture, 32.0f};
-	
-	std::list<Cube*> cubes = {
-		new Cube(cubeShader,
-		cubeMaterial,
-		-1.75f, -2.0f, -2.5f,
-		0.75f,0.75f,0.75f),
-
-		new Cube(cubeShader,
-		cubeMaterial,
-		1.75f, -1.5f, -2.0f,
-		0.75f,0.75f,0.75f),
-	};
-
-	std::list<Light*> lights = {
-		new PointLight(
-		glm::vec3(0.05f, 0.0f, 0.0f),
-		glm::vec3(0.75f, 0.00f, 0.00f),
-		glm::vec3(1.0f, 0.0f, 0.0f),
-		1.0f, 0.045f, 0.0075f,
-		0.0f, 0.0f, 0.0f
-		),
-		new DirectionalLight(
-		glm::vec3(0.0f, 0.1f, 0.0f),
-		glm::vec3(0.0f, 0.5f, 0.0f),
-		glm::vec3(0.0f, 1.0f, 0.0f),
-		glm::vec3(0.0f, 1.0f, -1.0f)
-		),
-	};
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
+	// Конец настройки glfw
+#pragma endregion
 
+	// Загрузка внешних данных:
+	Shader* backpack_shader = new Shader("shaders\\backpack_mixLight.vert", "shaders\\backpack_mixLight.frag");
+	
+	Model backpack("models/backpack/backpack.obj", false);
+
+	// Подготовка источников освещения:
+	vector<BaseLight*> lights;
+
+	PointLight* redLamp = new PointLight(
+		glm::vec3(0.1f, 0.1f, 0.1f),
+		glm::vec3(1.0f, 0.2f, 0.2f),
+		glm::vec3(1.0f, 0.2f, 0.2f),
+		1.0f, 0.1f, 0.09f,
+		glm::vec3(0.0f, 0.0f, 0.0f),
+		"RedLamp"
+	);
+	lights.push_back(redLamp);
+	
+	PointLight* blueLamp = new PointLight(
+		glm::vec3(0.1f, 0.1f, 0.1f),
+		glm::vec3(0.2f, 0.2f, 1.0f),
+		glm::vec3(0.2f, 0.2f, 1.0f),
+		1.0f, 0.1f, 0.09f,
+		glm::vec3(0.0f, 0.0f, 0.0f),
+		"BlueLamp"
+	);
+	lights.push_back(blueLamp);
+
+	DirectionalLight* sunLight = new DirectionalLight(
+		glm::vec3(-1.0f, -1.0f, -1.0f),
+		glm::vec3(0.1f, 0.1f, 0.1f),
+		glm::vec3(0.5f, 0.5f, 0.5f),
+		glm::vec3(0.0f, 0.0f, 0.0f),
+		"Sun"
+	);
+	lights.push_back(sunLight);
+
+	SpotLight* flashLight = new SpotLight(
+		glm::radians(10.f),
+		glm::vec3(0.0f, 0.0f, 0.0f),
+		glm::vec3(0.0f, 0.0f, 0.0f),
+		glm::vec3(0.7f, 0.7f, 0.6f),
+		glm::vec3(0.8f, 0.8f, 0.6f),
+		1.0f, 0.1f, 0.09f,
+		glm::vec3(0.0f, 0.0f, 0.0f),
+		"FlashLight"
+	);
+	lights.push_back(flashLight);
+
+	// Model matrix: размещение объекта в мировых координатах:
+	glm::mat4 model;
 	// View matrix: размещение мира относительно камеры:
 	glm::mat4 view;
 	// Projection matrix: поправка объектов на перспективу и их клиппинг
@@ -310,43 +271,40 @@ int main()
 		glClearColor(background.r, background.g, background.b, background.a);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		// Изменение положения источников света:
+		flashLight->setPosition(mainCamera.position - mainCamera.up * 0.3f);
+		flashLight->setDirection(mainCamera.front);
+
 		// Вращение камеры:
 		view = mainCamera.getViewMatrix();
 
 		// Поправка на FOV камеры:
-		projection = glm::perspective(glm::radians(mainCamera.FOV), (float)windowWidth / windowHeight, 0.1f, 100.0f);
+		projection = mainCamera.getProjectionMatrix();
 
+		glm::mat4 pv = projection * view;
 
-		// Отрисовка ящиков:
-		for (const auto& cube : cubes)
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(0.0f));
+		model = glm::scale(model, glm::vec3(1.0f));
+		backpack_shader->use();
+		backpack_shader->setFloatMat4("perspectiveAndView", glm::value_ptr(pv));
+		backpack_shader->setFloatMat4("model", glm::value_ptr(model));
+		backpack_shader->setFloat("shininess", 64.0f);
+		backpack_shader->setFloatVec3("viewPos", mainCamera.position);
+
+		int activeLights = 0;
+		for (int i = 0; i < lights.size(); i++)
 		{
-			cube->draw(view, projection, mainCamera.position, lights);
+			activeLights += lights[i]->useAndReturnSuccess(backpack_shader, activeLights);
 		}
-
-		// i = 0;
-		// for (auto lightCubPos : lightCubePositions) {
-		// 	model = glm::mat4(1.0f);
-		// 	model = glm::translate(model, lightCubPos);
-		// 	// model = glm::rotate(model, glm::radians((float)(90.0f * sin(glfwGetTime()))), glm::vec3(0.1f, 0.2f, 0.3f));
-		// 	model = glm::scale(model, glm::vec3(lightCubeScales[i], lightCubeScales[i], lightCubeScales[i]));
-		// 
-		// 	lightShader->use();
-		// 	
-		// 	transformation = projection * view * model;
-		// 	
-		// 	lightShader->setFloatMat4("transformation", glm::value_ptr(transformation));
-		// 	lightShader->setFloatVec3("uColor", lightCubeDiffuse[i]);
-		// 
-		// 	glBindVertexArray(VAO_light);
-		// 	glDrawElements(GL_TRIANGLES, cubeIndicesCount * 3, GL_UNSIGNED_INT, 0);
-		// 
-		// 	i++;
-		// }
-
+		backpack_shader->setInt("lightsCount", activeLights);
+		backpack.draw(*backpack_shader);
 
 		glfwSwapBuffers(win);
 		glfwPollEvents();
 	}
+
+	delete backpack_shader;
 
 	glfwTerminate();
 	return 0;

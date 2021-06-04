@@ -38,17 +38,24 @@ public:
 	float mouseSensitivity;	// Чувствительность мыши
 	float FOV;				// Угол зрения камеры
 
+	float zNear;
+	float zFar;
+	float aspectRatio;
+
 	// Конструктор камеры с векторными параметрами
-	Camera(glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = DEFAULT_YAW, float pitch = DEFAULT_PITCH);
+	Camera(float aspectRatio, glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = DEFAULT_YAW, float pitch = DEFAULT_PITCH, float zNear = 1.0f, float zFar = 100.0f);
 
 	// Конструктор камеры со скалярными параметрами
-	Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch);
+	Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch, float aspectRatio, float zNear = 1.0f, float zFar = 100.0f);
 
 	// Деструктор камеры
 	~Camera();
 
 	// Получение видовой матрицы Look At
 	glm::mat4 getViewMatrix();
+
+	
+	glm::mat4 getProjectionMatrix();
 
 	// Перемещение камеры в указанном направлении в течение deltaTime
 	void handleKeyboard(MovementDirection direction, float deltaTime);

@@ -1,31 +1,21 @@
 #pragma once
-#include "Light.h"
+#include "PositionedLight.h"
+#include "ColoredLight.h"
 
-class DirectionalLight : public Light
+class DirectionalLight : public ColoredLight
 {
 private:
-	glm::vec3 direction_;
+	glm::vec3 direction;
 public:
-	static bool has_directional_light;
-	
-	DirectionalLight(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular,
-		glm::vec3 direction)
-			: Light(ambient, diffuse, specular), direction_(direction)
-	{
-		has_directional_light = true;
-	}
+	DirectionalLight(const glm::vec3& direction,
+		const glm::vec3& ambient, const glm::vec3& diffuse, const glm::vec3& specular, const std::string& name)
+		: ColoredLight(ambient, diffuse, specular, name, LightType::Directional),
+		direction(direction)
+	{}
 
-	void use(const Shader* shader) const override
+	void setShaderParameters(Shader* shader, std::string lightNumber) override
 	{
-		shader->setBool("hasDirLight", has_directional_light);
-		// DirLight
-		shader->setFloatVec3("dirLight.direction", direction_);
-		shader->setFloatVec3("dirLight.ambient", ambient_);
-		shader->setFloatVec3("dirLight.diffuse", diffuse_);
-		shader->setFloatVec3("dirLight.specular", specular_);
+		ColoredLight::setShaderParameters(shader, lightNumber);
+		shader->setFloatVec3("lights[" + lightNumber + "].direction",	direction);
 	}
-
-	virtual ~DirectionalLight() = default;
 };
-
-bool DirectionalLight::has_directional_light = false;

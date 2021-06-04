@@ -1,6 +1,6 @@
 #version 330 core
 
-#define NUMBER_OF_MAX_POINT_LIGHTS 32
+#define NUMBER_OF_MAX_POINT_LIGHTS 8
 
 struct Material {
 	sampler2D	diffuse;	// Карта освещения (текстура)

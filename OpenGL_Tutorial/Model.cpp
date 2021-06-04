@@ -1,7 +1,7 @@
 #include "Model.h"
 #include <stb_image.h>
 
-void Model::draw(Shader& shader)
+void Model::draw(const Shader& shader)
 {
 	for(auto& mesh : meshes)
 	{
@@ -9,10 +9,17 @@ void Model::draw(Shader& shader)
 	}
 }
 
-void Model::loadModel(string path)
+void Model::loadModel(string path, bool isUV_flipped)
 {
 	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+	const aiScene* scene;
+	if (isUV_flipped)
+	{
+		scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+	} else
+	{
+		scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals  | aiProcess_CalcTangentSpace);
+	}
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 		cout << "ERROR::ASSIMP::" << importer.GetErrorString() << endl;
@@ -43,18 +50,20 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
 	vector<Indice> indices;
 	vector<Texture> textures;
 
-	// Обработка положения вершины:
+	// Обработка вершины:
 	for (unsigned i = 0; i < mesh->mNumVertices; i++) {
 		Vertex vertex;
 
 		aiVector3D &currentVertexPosition = mesh->mVertices[i];
 
+		// Обработка положения вершины:
 		glm::vec3 tempVector;
 		tempVector.x = currentVertexPosition.x;
 		tempVector.y = currentVertexPosition.y;
 		tempVector.z = currentVertexPosition.z;
 		vertex.position = tempVector;
 
+		// Обработка нормалей вершины:
 		if (mesh->HasNormals()) {
 			aiVector3D& currentVertexNormal = mesh->mNormals[i];
 			tempVector.x = currentVertexNormal.x;
@@ -70,6 +79,18 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
 			textureCoords.x = mesh->mTextureCoords[0][i].x;
 			textureCoords.y = mesh->mTextureCoords[0][i].y;
 			vertex.texCoords = textureCoords;
+
+			// Обработка tangent-координат
+			tempVector.x = mesh->mTangents[i].x;
+			tempVector.y = mesh->mTangents[i].y;
+			tempVector.z = mesh->mTangents[i].z;
+			vertex.tangent = tempVector;
+
+			// Обработка би-tangent-координат
+			tempVector.x = mesh->mBitangents[i].x;
+			tempVector.y = mesh->mBitangents[i].y;
+			tempVector.z = mesh->mBitangents[i].z;
+			vertex.bitangent = tempVector;
 		}
 		else {
 			vertex.texCoords = glm::vec2(0.0f);
@@ -90,11 +111,17 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
 	if (mesh->mMaterialIndex >= 0) {
 		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
+		// Диффузные (обычные) текстуры:
 		vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, TextureType::DIFFUSE);
 		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
+		// Карты "бликов" и "отражений"
 		vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, TextureType::SPECULAR);
 		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+
+		// Карты нормалей
+		vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, TextureType::NORMAL);
+		textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
 	}
 
 	return Mesh(vertices, indices, textures);
@@ -107,11 +134,21 @@ vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type,
 		aiString textureFilename;
 		mat->GetTexture(type, i, &textureFilename);
 
-		string pathToTexture = directory + '/' + string(textureFilename.C_Str());
-		
-		Texture *texture = new Texture(pathToTexture.c_str(), textureType);
-		texture->filename = string(textureFilename.C_Str());
-		textures.push_back(*texture);
+		bool skip = false;
+		for(unsigned j = 0; j < textures_loaded.size(); j++)
+		{
+			if (std::strcmp(textures_loaded[j].filename.c_str(), textureFilename.C_Str()) == 0)
+			{
+				textures.push_back(textures_loaded[j]);
+				skip = true;
+				break;
+			}
+		}
+		if (!skip)
+		{
+			Texture texture = *(new Texture(textureFilename.C_Str(), this->directory, textureType));
+			textures_loaded.push_back(texture);
+		}
 	}
-	return vector<Texture>();
+	return textures;
 }

@@ -130,7 +130,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;assimp-vc142-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -160,23 +160,24 @@
     <ClCompile Include="classes\Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AttenuatedLight.h" />
+    <ClInclude Include="AmbientLight.h" />
+    <ClInclude Include="BaseLight.h" />
     <ClInclude Include="classes\Camera.h" />
     <ClInclude Include="classes\Shader.h" />
     <ClInclude Include="classes\Texture.h" />
-    <ClInclude Include="Cube.h" />
+    <ClInclude Include="ColoredLight.h" />
     <ClInclude Include="DirectionalLight.h" />
+    <ClInclude Include="AttenuatedLight.h" />
+    <ClInclude Include="PointLight.h" />
+    <ClInclude Include="PositionedLight.h" />
     <ClInclude Include="include\stb_image.h" />
-    <ClInclude Include="Light.h" />
-    <ClInclude Include="LightCube.h" />
-    <ClInclude Include="MaterialWorldObject.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
-    <ClInclude Include="PointLight.h" />
-    <ClInclude Include="ShaderedWorldObject.h" />
-    <ClInclude Include="WorldObject.h" />
+    <ClInclude Include="SpotLight.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="shaders\backpack_mixLight.frag" />
+    <None Include="shaders\backpack_mixLight.vert" />
     <None Include="shaders\basic.frag" />
     <None Include="shaders\basic.vert" />
     <None Include="shaders\cube.vert" />
