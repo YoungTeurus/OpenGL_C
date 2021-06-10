@@ -1,72 +1,141 @@
 #pragma once
-
-#include <list>
+#include <string>
 #include <vector>
-#include <glad/glad.h>
-#include "classes/Texture.h"
+#include <map>
+#include <glm/glm.hpp>
+
 #include "classes/Shader.h"
 
-typedef unsigned int Indice;
+using namespace std;
 
 struct Vertex {
-	glm::vec3 position;
-	glm::vec3 normal;
-	glm::vec2 texCoords;
-
-	// TODO: разобраться, что такое tangent!
-	glm::vec3 tangent;
-	glm::vec3 bitangent;
+    glm::vec3 position;
+    glm::vec3 normal;
+    glm::vec2 tex_coords;
+    glm::vec3 tangent;
+    glm::vec3 bitangent;
 };
 
-// TODO: вынести в отдельный класс?
-// Атрибут шейдера
-struct Attribute
-{
-	int id;				// Идентификатор атрибута (порядковый номер в шейдере)
-	int size;			// Размер атрибута
-	int type;			// Тип атрибута
-	int sizeOfType;		// Размер типа атрибута
-	int offset;			// Смещение (в байтах)
+enum class TextureType : unsigned {
+	DIFFUSE = 0,
+	SPECULAR = 1,
+	NORMAL = 2,
+	HEIGHT = 3
 };
 
-struct MeshAttributesConfig {
-	std::list<Attribute> attributes;
+static std::map<TextureType, std::string> textureTypeShaderNames = {
+	{TextureType::DIFFUSE, "texture_diffuse"},
+	{TextureType::SPECULAR, "texture_specular"},
+	{TextureType::NORMAL, "texture_normal"},
+	{TextureType::HEIGHT, "texture_height"}
 };
 
-static MeshAttributesConfig defaultConfig_positionNormalTexture = MeshAttributesConfig{
-	{
-		// Position:
-		Attribute{0, 3, GL_FLOAT, sizeof(float), 0},
-		// Color:
-		Attribute{1, 4, GL_FLOAT, sizeof(float), 3},
-		// Texture:
-		Attribute{2, 2, GL_FLOAT, sizeof(float), 7},
-	}
+static std::map<std::string, TextureType> shaderNamesTextureType = {
+	{"texture_diffuse", TextureType::DIFFUSE},
+	{"texture_specular", TextureType::SPECULAR},
+	{"texture_normal", TextureType::NORMAL},
+	{"texture_height", TextureType::HEIGHT}
 };
+
+struct Texture_ {
+    unsigned int id;
+    TextureType type;
+    string path;
+};
+
 
 class Mesh
 {
 public:
-	std::vector<Vertex>			*vertices;		// Данные о вершинах объекта
-	std::vector<Indice>			*indices;		// Данные о гранях объекта
-	std::vector<Texture*>		*textures;		// Текстуры, связанные с данным объектом
+    vector<Vertex>          vertices;
+    vector<unsigned int>    indices;
+    vector<Texture_>        textures;
+    unsigned int            VAO;
 
+    Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture_> textures);
+    void draw(Shader& shader);
 private:
-	unsigned vao_;
-	unsigned vbo_;
-	unsigned ebo_;
 
-public:
-	Mesh(std::vector<Vertex> *vertices, std::vector<Indice> *indices, std::vector<Texture*> *textures);
+    unsigned int VBO, EBO;
 
-	~Mesh()
-	{
-		printf("Goodbye, cruel world!\n");
-	}
-
-	void draw(const Shader &shader) const;
-
-private:
-	void setupMesh();
+    void setupMesh();
 };
+
+inline Mesh::Mesh(vector<Vertex> vertices, vector<unsigned> indices, vector<Texture_> textures)
+{
+    this->vertices = vertices;
+    this->indices = indices;
+    this->textures = textures;
+
+    setupMesh();
+}
+
+inline void Mesh::draw(Shader& shader)
+{
+    unsigned int diffuseNr = 1;
+    unsigned int specularNr = 1;
+    unsigned int normalNr = 1;
+    unsigned int heightNr = 1;
+    for (unsigned int i = 0; i < textures.size(); i++)
+    {
+        glActiveTexture(GL_TEXTURE0 + i);
+        string textureNumber;
+
+    	const Texture_ currentTexture = textures[i];
+    	const TextureType currentTextureType = currentTexture.type;
+
+        switch (currentTextureType)
+        {
+        case TextureType::DIFFUSE: textureNumber = std::to_string(diffuseNr++); break;
+        case TextureType::SPECULAR: textureNumber = std::to_string(specularNr++); break;
+        case TextureType::NORMAL: textureNumber = std::to_string(normalNr++); break;
+        case TextureType::HEIGHT: textureNumber = std::to_string(heightNr++); break;
+        default: ;
+        }
+
+    	string currentTextureShaderName = textureTypeShaderNames.at(currentTextureType) + textureNumber;
+    	shader.setInt(currentTextureShaderName, i);
+
+        glBindTexture(GL_TEXTURE_2D, currentTexture.id);
+    }
+    glActiveTexture(GL_TEXTURE0);
+
+    glBindVertexArray(VAO);
+    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
+}
+
+inline void Mesh::setupMesh()
+{
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
+
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
+
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tex_coords));
+
+    glEnableVertexAttribArray(3);
+    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tangent));
+
+    glEnableVertexAttribArray(4);
+    glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, bitangent));
+
+    glBindVertexArray(0);
+}
 

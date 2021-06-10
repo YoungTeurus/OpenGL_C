@@ -1,11 +1,12 @@
 #include "Shader.h"
+#include <glm/gtc/type_ptr.hpp>
 
-unsigned Shader::ID() const {
+unsigned Shader::getProgramID() const {
 	return programID;
 }
 
-Shader::Shader(const char* vertexPath, const char* fragmentPath) {
-	const char* vShaderCode, *fShaderCode;
+Shader::Shader(const GLchar *name) {
+	std::string vertexCode, fragmentCode;
 	std::string vTempString, fTempString;
 
 	std::ifstream vShaderFile, fShaderFile;
@@ -16,10 +17,10 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath) {
 	try {
 		std::stringstream vShaderStream, fShaderStream;
 		// Открываем файлы и считываем их в буферы:
-		vShaderFile.open(vertexPath);
+		vShaderFile.open(R"(.\shaders\)" + std::string(name) + ".vert");
 		vShaderStream << vShaderFile.rdbuf();
 		vShaderFile.close();
-		fShaderFile.open(fragmentPath);
+		fShaderFile.open(R"(.\shaders\)" + std::string(name) + ".frag");
 		fShaderStream << fShaderFile.rdbuf();
 		fShaderFile.close();
 		// Получаем строку из строкового потока:
@@ -29,8 +30,8 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath) {
 	catch (std::ifstream::failure e) {
 		std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
 	}
-	vShaderCode = vTempString.c_str();
-	fShaderCode = fTempString.c_str();
+	const GLchar *vShaderCode = vTempString.c_str();
+	const GLchar *fShaderCode = fTempString.c_str();
 
 	unsigned vertex, fragment;
 	int success;
@@ -105,14 +106,14 @@ void Shader::setFloatVec4(const std::string& name, float value, float value2, fl
 	glUniform4f(glGetUniformLocation(programID, name.c_str()), value, value2, value3, value4);
 }
 
-void Shader::setFloatMat3(const std::string& name, float* mat) const
+void Shader::setFloatMat3(const std::string& name, glm::mat3& matrix) const
 {
-	glUniformMatrix3fv(glGetUniformLocation(programID, name.c_str()), 1, GL_FALSE, mat);
+	glUniformMatrix3fv(glGetUniformLocation(programID, name.c_str()), 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
-void Shader::setFloatMat4(const std::string& name, float* mat) const
+void Shader::setFloatMat4(const std::string& name, glm::mat4& matrix) const
 {
-	glUniformMatrix4fv(glGetUniformLocation(programID, name.c_str()), 1, GL_FALSE, mat);
+	glUniformMatrix4fv(glGetUniformLocation(programID, name.c_str()), 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
 Shader::~Shader() {

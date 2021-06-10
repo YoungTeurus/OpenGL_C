@@ -9,7 +9,6 @@
 #include "PointLight.h"
 #include "classes/Shader.h"
 #include "classes/Camera.h"
-#include "classes/Texture.h"
 #include "DirectionalLight.h"
 #include "Model.h"
 #include "SpotLight.h"
@@ -247,9 +246,9 @@ int main()
 		glm::vec3(0.01, 0.01f, 0.01f) };	// scale
 
 	// Загрузка внешних данных:
-	Shader* backpack_shader = new Shader("shaders/backpack_mixLight.vert", "shaders/backpack_mixLight_new.frag");
+	Shader* backpack_shader = new Shader("backpack_mixLight_new");
 	
-	Model backpack("models/backpack/backpack.obj", false);
+	Model backpack("models/backpack/backpack.obj", true);
 	// Model tank("models/сromwell/14079_WWII_Tank_UK_Cromwell_v1_L2.obj", false);
 
 	// Подготовка источников освещения:
@@ -334,8 +333,8 @@ int main()
 		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(1.0f,1.0f,1.0f));
 		backpack_shader->use();
-		backpack_shader->setFloatMat4("perspectiveAndView", glm::value_ptr(pv));
-		backpack_shader->setFloatMat4("model", glm::value_ptr(model));
+		backpack_shader->setFloatMat4("perspectiveAndView", pv);
+		backpack_shader->setFloatMat4("model", model);
 		backpack_shader->setFloat("shininess", 64.0f);
 		backpack_shader->setFloatVec3("viewPos", mainCamera.position);
 
