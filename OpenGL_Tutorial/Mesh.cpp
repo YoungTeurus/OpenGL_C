@@ -1,6 +1,6 @@
 #include "Mesh.h"
 
-Mesh::Mesh(std::vector<Vertex> vertices, std::vector<Indice> indices, std::vector<Texture> textures)
+Mesh::Mesh(std::vector<Vertex> vertices, std::vector<Indice> indices, std::vector<Texture*> textures)
 	:vertices(vertices), indices(indices), textures(textures)
 {
 	setupMesh();
@@ -18,7 +18,7 @@ void Mesh::draw(const Shader& shader) const
 
 		std::string textureNumber;
 		
-		const Texture &currentTexutre = textures[i];
+		const Texture &currentTexutre = *(textures[i]);
 		const TextureType currentTexutureType = currentTexutre.type;
 		
 		switch (currentTexutureType)
@@ -38,9 +38,8 @@ void Mesh::draw(const Shader& shader) const
 		default:
 			throw new std::runtime_error("Mesh::draw: TextureType of currentTexutre is undefined for switch case!");
 		}
-		std::string currentTextureShaderName = textureTypeShaderNames.at(currentTexutureType);
-
-		shader.setFloat( (currentTextureShaderName + textureNumber).c_str(), i);
+		std::string currentTextureShaderName = textureTypeShaderNames.at(currentTexutureType) + textureNumber;
+		shader.setInt( currentTextureShaderName, i);
 		glBindTexture(GL_TEXTURE_2D, currentTexutre.ID());
 	}
 	glActiveTexture(GL_TEXTURE0);

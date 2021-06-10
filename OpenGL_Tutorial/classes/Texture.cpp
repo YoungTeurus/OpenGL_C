@@ -72,11 +72,11 @@ void Texture::loadFromFileAndSetTextureID(const char* pathToTexture)
 	glTexImage2D(
 		GL_TEXTURE_2D,		// Тип текстуры
 		0,					// Уровень мип-мапинга
-		GL_RGB,	// Формат хранимой текстуры
+		(int)textureRGBMode,// Формат хранимой текстуры
 		width,				// Размеры изображения
 		height,				// - ^ - ^ - ^ -
 		0,					// "Legacy stuff"
-		(int)textureRGBMode,	// Формат исходного изображения
+		(int)textureRGBMode,// Формат исходного изображения
 		GL_UNSIGNED_BYTE,	// Формат данных исходного изображения
 		textureData		// Указатель на массив с изображением
 	);

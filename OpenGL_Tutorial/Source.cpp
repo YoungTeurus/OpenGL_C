@@ -24,7 +24,7 @@ float lastCursorX = (float)windowInitialWidth / 2,
 
 bool firstMouse = true;
 
-Camera mainCamera = Camera((float)windowInitialWidth / windowInitialHeight, glm::vec3(0.0f, 0.0f, 50.0f));
+Camera mainCamera = Camera((float)windowInitialWidth / windowInitialHeight, glm::vec3(0.0f, 0.0f, 5.0f));
 
 bool wireframeMode = false;
 
@@ -198,7 +198,7 @@ int main()
 	glViewport(0, 0, windowWidth, windowHeight);
 
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
+	// glEnable(GL_CULL_FACE);
 	// Конец настройки glfw
 #pragma endregion
 
@@ -247,53 +247,53 @@ int main()
 		glm::vec3(0.01, 0.01f, 0.01f) };	// scale
 
 	// Загрузка внешних данных:
-	Shader* backpack_shader = new Shader("shaders/backpack_mixLight.vert", "shaders/backpack_mixLight.frag");
+	Shader* backpack_shader = new Shader("shaders/backpack_mixLight.vert", "shaders/backpack_mixLight_new.frag");
 	
 	Model backpack("models/backpack/backpack.obj", false);
 
 	// Подготовка источников освещения:
 	vector<BaseLight*> lights;
 
-	// PointLight* redLamp = new PointLight(
-	// 	glm::vec3(0.1f, 0.1f, 0.1f),
-	// 	glm::vec3(1.0f, 0.2f, 0.2f),
-	// 	glm::vec3(1.0f, 0.2f, 0.2f),
-	// 	1.0f, 0.1f, 0.09f,
-	// 	glm::vec3(0.0f, 0.0f, 0.0f),
-	// 	"RedLamp"
-	// );
-	// lights.push_back(redLamp);
-	// 
-	// PointLight* blueLamp = new PointLight(
-	// 	glm::vec3(0.1f, 0.1f, 0.1f),
-	// 	glm::vec3(0.2f, 0.2f, 1.0f),
-	// 	glm::vec3(0.2f, 0.2f, 1.0f),
-	// 	1.0f, 0.1f, 0.09f,
-	// 	glm::vec3(0.0f, 0.0f, 0.0f),
-	// 	"BlueLamp"
-	// );
-	// lights.push_back(blueLamp);
-	// 
-	// DirectionalLight* sunLight = new DirectionalLight(
-	// 	glm::vec3(-1.0f, -1.0f, -1.0f),
-	// 	glm::vec3(0.1f, 0.1f, 0.1f),
-	// 	glm::vec3(0.5f, 0.5f, 0.5f),
-	// 	glm::vec3(0.0f, 0.0f, 0.0f),
-	// 	"Sun"
-	// );
-	// lights.push_back(sunLight);
-	// 
-	// SpotLight* flashLight = new SpotLight(
-	// 	glm::radians(10.f),
-	// 	glm::vec3(0.0f, 0.0f, 0.0f),
-	// 	glm::vec3(0.0f, 0.0f, 0.0f),
-	// 	glm::vec3(0.7f, 0.7f, 0.6f),
-	// 	glm::vec3(0.8f, 0.8f, 0.6f),
-	// 	1.0f, 0.1f, 0.09f,
-	// 	glm::vec3(0.0f, 0.0f, 0.0f),
-	// 	"FlashLight"
-	// );
-	// lights.push_back(flashLight);
+	PointLight* redLamp = new PointLight(
+		glm::vec3(0.1f, 0.1f, 0.1f),
+		glm::vec3(1.0f, 0.2f, 0.2f),
+		glm::vec3(1.0f, 0.2f, 0.2f),
+		1.0f, 0.1f, 0.09f,
+		glm::vec3(0.0f, 0.0f, 0.0f),
+		"RedLamp"
+	);
+	lights.push_back(redLamp);
+	
+	PointLight* blueLamp = new PointLight(
+		glm::vec3(0.1f, 0.1f, 0.1f),
+		glm::vec3(0.2f, 0.2f, 1.0f),
+		glm::vec3(0.2f, 0.2f, 1.0f),
+		1.0f, 0.1f, 0.09f,
+		glm::vec3(0.0f, 0.0f, 0.0f),
+		"BlueLamp"
+	);
+	lights.push_back(blueLamp);
+	
+	DirectionalLight* sunLight = new DirectionalLight(
+		glm::vec3(-1.0f, -1.0f, -1.0f),
+		glm::vec3(0.1f, 0.1f, 0.1f),
+		glm::vec3(0.5f, 0.5f, 0.5f),
+		glm::vec3(0.0f, 0.0f, 0.0f),
+		"Sun"
+	);
+	lights.push_back(sunLight);
+	
+	SpotLight* flashLight = new SpotLight(
+		glm::radians(10.f), glm::radians(20.f),
+		glm::vec3(0.0f, 0.0f, 0.0f),
+		glm::vec3(0.0f, 0.0f, 0.0f),
+		glm::vec3(0.7f, 0.7f, 0.6f),
+		glm::vec3(0.8f, 0.8f, 0.6f),
+		1.0f, 0.1f, 0.09f,
+		glm::vec3(0.0f, 0.0f, 0.0f),
+		"FlashLight"
+	);
+	lights.push_back(flashLight);
 
 	// Model matrix: размещение объекта в мировых координатах:
 	glm::mat4 model;
@@ -330,23 +330,20 @@ int main()
 
 		// Отрисовка рюкзака:
 		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(10.0f, 10.0f, 10.0f) * sin(currentFrameTime));
-		model = glm::scale(model, glm::vec3(0.5f,0.5f,0.5f));
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(1.0f,1.0f,1.0f));
 		backpack_shader->use();
 		backpack_shader->setFloatMat4("perspectiveAndView", glm::value_ptr(pv));
 		backpack_shader->setFloatMat4("model", glm::value_ptr(model));
 		backpack_shader->setFloat("shininess", 64.0f);
 		backpack_shader->setFloatVec3("viewPos", mainCamera.position);
 
-		// int activeLights = 0;
-		// for (int i = 0; i < lights.size(); i++)
-		// {
-		// 	activeLights += lights[i]->useAndReturnSuccess(backpack_shader, activeLights);
-		// }
-		// backpack_shader->setInt("lightsCount", activeLights);
-		// backpack.draw(*backpack_shader);
-		backpack_shader->setInt("lightsCount", 0);
-
+		int activeLights = 0;
+		for (int i = 0; i < lights.size(); i++)
+		{
+			activeLights += lights[i]->useAndReturnSuccess(backpack_shader, activeLights);
+		}
+		backpack_shader->setInt("lightsCount", activeLights);
 		backpack.draw(*backpack_shader);
 
 		glfwSwapBuffers(win);

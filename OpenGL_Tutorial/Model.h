@@ -11,7 +11,7 @@ using namespace std;
 class Model
 {
 private:
-	vector<Texture> textures_loaded;
+	vector<Texture*> textures_loaded;
 	vector<Mesh> meshes;
 	string directory;
 	bool gammaCorrection;
@@ -25,5 +25,5 @@ private:
 	void loadModel(string path, bool isUV_flipped);
 	void processNode(aiNode* node, const aiScene* scene);
 	Mesh processMesh(aiMesh* mesh, const aiScene* scene);
-	vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, TextureType textureType);
+	vector<Texture*> loadMaterialTextures(aiMaterial* mat, aiTextureType type, TextureType textureType);
 };

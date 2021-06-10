@@ -178,6 +178,7 @@
   <ItemGroup>
     <None Include="shaders\backpack_mixLight.frag" />
     <None Include="shaders\backpack_mixLight.vert" />
+    <None Include="shaders\backpack_mixLight_new.frag" />
     <None Include="shaders\basic.frag" />
     <None Include="shaders\basic.vert" />
     <None Include="shaders\cube.vert" />

@@ -127,5 +127,8 @@
     <None Include="shaders\backpack_mixLight.vert">
       <Filter>shaders</Filter>
     </None>
+    <None Include="shaders\backpack_mixLight_new.frag">
+      <Filter>shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

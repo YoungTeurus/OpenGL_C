@@ -48,7 +48,7 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
 {
 	vector<Vertex> vertices;
 	vector<Indice> indices;
-	vector<Texture> textures;
+	vector<Texture*> textures;
 
 	// Обработка вершины:
 	for (unsigned i = 0; i < mesh->mNumVertices; i++) {
@@ -112,24 +112,24 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
 		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
 		// Диффузные (обычные) текстуры:
-		vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, TextureType::DIFFUSE);
+		vector<Texture*> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, TextureType::DIFFUSE);
 		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
 		// Карты "бликов" и "отражений"
-		vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, TextureType::SPECULAR);
+		vector<Texture*> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, TextureType::SPECULAR);
 		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 
 		// Карты нормалей
-		vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, TextureType::NORMAL);
+		vector<Texture*> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, TextureType::NORMAL);
 		textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
 	}
 
 	return Mesh(vertices, indices, textures);
 }
 
-vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type, TextureType textureType)
+vector<Texture*> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type, TextureType textureType)
 {
-	vector<Texture> textures;
+	vector<Texture*> textures;
 	for (unsigned i = 0; i < mat->GetTextureCount(type); i++) {
 		aiString textureFilename;
 		mat->GetTexture(type, i, &textureFilename);
@@ -137,7 +137,7 @@ vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type,
 		bool skip = false;
 		for(unsigned j = 0; j < textures_loaded.size(); j++)
 		{
-			if (std::strcmp(textures_loaded[j].filename.c_str(), textureFilename.C_Str()) == 0)
+			if (std::strcmp(textures_loaded[j]->filename.c_str(), textureFilename.C_Str()) == 0)
 			{
 				textures.push_back(textures_loaded[j]);
 				skip = true;
@@ -146,7 +146,7 @@ vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type,
 		}
 		if (!skip)
 		{
-			Texture texture = *(new Texture(textureFilename.C_Str(), this->directory, textureType));
+			Texture *texture = new Texture(textureFilename.C_Str(), this->directory, textureType);
 			textures_loaded.push_back(texture);
 		}
 	}

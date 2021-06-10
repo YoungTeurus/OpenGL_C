@@ -2,15 +2,6 @@
 
 #define MAX_LIGHTS 8
 
-struct Material {
-	sampler2D	diffuse;	// Карта освещения (текстура)
-	sampler2D	specular;	// Карта для спекулярного света (текстура)
-
-	sampler2D	emission;	// Карта свечения
-
-	float		shininess;	// Глянцевость поверхности
-};
-
 struct Light{
 	int type;
 
@@ -40,8 +31,6 @@ in vec2 fTextureCoord;
 in mat3 fTBN;
 
 out vec4 fragColor;
-
-uniform Material material;
 
 uniform int lightsCount;
 uniform Light lights[MAX_LIGHTS];
@@ -139,7 +128,7 @@ vec3 getDiffuseAndSpecularColor(int i, vec3 lightDirection){
 	// Получаем нормаль в диапазоне [-1;1] :
 	normal = normalize(normal);
 	// ?!
-	normal = normalize(TBN * normal);
+	normal = normalize(fTBN * normal);
 
 
 	// Скалярное произведение нормализованных векторов нормали и направления к источнику света. Может быть в диапазоне [-1;1] :
@@ -151,7 +140,7 @@ vec3 getDiffuseAndSpecularColor(int i, vec3 lightDirection){
 	// Направление отражённого света:
 	vec3 reflectDirection = reflect(lightDirection, normal);
 	// Направление ОТ положения камеры К точке падения:
-	vec3 viewDirection = normalize(fragPosition - viewPos);
+	vec3 viewDirection = normalize(fFragPosition - viewPos);
 	// Скалярное произведение векторов направлений взгляда и отражённого луча [-1;1]:
 	float viewAndReflectDirectionsDotProduct = dot(viewDirection, reflectDirection);
 
