@@ -250,6 +250,7 @@ int main()
 	Shader* backpack_shader = new Shader("shaders/backpack_mixLight.vert", "shaders/backpack_mixLight_new.frag");
 	
 	Model backpack("models/backpack/backpack.obj", false);
+	// Model tank("models/сromwell/14079_WWII_Tank_UK_Cromwell_v1_L2.obj", false);
 
 	// Подготовка источников освещения:
 	vector<BaseLight*> lights;

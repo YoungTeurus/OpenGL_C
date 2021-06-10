@@ -47,9 +47,9 @@ static MeshAttributesConfig defaultConfig_positionNormalTexture = MeshAttributes
 class Mesh
 {
 public:
-	std::vector<Vertex>			vertices;		// Данные о вершинах объекта
-	std::vector<Indice>			indices;		// Данные о гранях объекта
-	std::vector<Texture*>		textures;		// Текстуры, связанные с данным объектом
+	std::vector<Vertex>			*vertices;		// Данные о вершинах объекта
+	std::vector<Indice>			*indices;		// Данные о гранях объекта
+	std::vector<Texture*>		*textures;		// Текстуры, связанные с данным объектом
 
 private:
 	unsigned vao_;
@@ -57,7 +57,12 @@ private:
 	unsigned ebo_;
 
 public:
-	Mesh(std::vector<Vertex> vertices, std::vector<Indice> indices, std::vector<Texture*> textures);
+	Mesh(std::vector<Vertex> *vertices, std::vector<Indice> *indices, std::vector<Texture*> *textures);
+
+	~Mesh()
+	{
+		printf("Goodbye, cruel world!\n");
+	}
 
 	void draw(const Shader &shader) const;
 

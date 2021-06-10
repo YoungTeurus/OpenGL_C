@@ -12,18 +12,18 @@ class Model
 {
 private:
 	vector<Texture*> textures_loaded;
-	vector<Mesh> meshes;
+	vector<Mesh*>* meshes;
 	string directory;
-	bool gammaCorrection;
 
 public:
-	Model(const string& path, bool isUV_flipped, bool gammaCorrection = false) : gammaCorrection(gammaCorrection) {
+	Model(const string& path, bool isUV_flipped){
+		meshes = new vector<Mesh*>();
 		loadModel(path, isUV_flipped);
 	}
 	void draw(const Shader& shader);
 private:
 	void loadModel(string path, bool isUV_flipped);
 	void processNode(aiNode* node, const aiScene* scene);
-	Mesh processMesh(aiMesh* mesh, const aiScene* scene);
+	Mesh* processMesh(aiMesh* mesh, const aiScene* scene);
 	vector<Texture*> loadMaterialTextures(aiMaterial* mat, aiTextureType type, TextureType textureType);
 };

@@ -3,9 +3,9 @@
 
 void Model::draw(const Shader& shader)
 {
-	for(auto& mesh : meshes)
-	{
-		mesh.draw(shader);
+	for(auto& mesh : *meshes){
+		shader.setInt("debugValue", mesh->tempDebugValue);
+		mesh->draw(shader);
 	}
 }
 
@@ -28,30 +28,52 @@ void Model::loadModel(string path, bool isUV_flipped)
 	directory = path.substr(0, path.find_last_of('/'));
 
 	processNode(scene->mRootNode, scene);
+	printf("Was loaded %d meshes and %d textures!", meshes->size(), textures_loaded.size());
 }
+
+static int countNodes = 0;
 
 void Model::processNode(aiNode* node, const aiScene* scene)
 {
+	printf("%d - '%s' node!\n", countNodes++, node->mName.C_Str());
 	// Обрабатываем все mesh-и, связанные с текущим node
-	for (unsigned i = 0; i < node->mNumMeshes; i++) {
+	for (unsigned i = 0; i < node->mNumMeshes; i++)
+    {
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-		meshes.push_back(processMesh(mesh, scene));
-	}
+		meshes->push_back(processMesh(mesh, scene));
+    }
 
 	// Обрабатываем все child node-ы
-	for (unsigned i = 0; i < node->mNumChildren; i++) {
-		processNode(node->mChildren[i], scene);
-	}
+    for (unsigned i = 0; i < node->mNumChildren; i++)
+    {
+    	if(
+			strcmp(node->mChildren[i]->mName.C_Str(), "Cylinder.033__0") == 0 
+			|| 
+			strcmp(node->mChildren[i]->mName.C_Str(), "Cylinder.030__0") == 0
+			||
+			strcmp(node->mChildren[i]->mName.C_Str(), "Cube.037__0") == 0
+			||
+			strcmp(node->mChildren[i]->mName.C_Str(), "Cylinder.029__0") == 0
+			||
+			strcmp(node->mChildren[i]->mName.C_Str(), "Plane.008__0") == 0
+			// true
+		){
+    	// if (i == 31){
+    		processNode(node->mChildren[i], scene);
+		}
+    }
 }
 
-Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
+static int countMeshes = 0;
+
+Mesh* Model::processMesh(aiMesh* mesh, const aiScene* scene)
 {
-	vector<Vertex> vertices;
-	vector<Indice> indices;
-	vector<Texture*> textures;
+	vector<Vertex> *vertices = new vector<Vertex>();
+	vector<Indice> *indices = new vector<Indice>();
+	vector<Texture*> *textures = new vector<Texture*>();
 
 	// Обработка вершины:
-	for (unsigned i = 0; i < mesh->mNumVertices; i++) {
+	for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
 		Vertex vertex;
 
 		aiVector3D &currentVertexPosition = mesh->mVertices[i];
@@ -96,35 +118,37 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
 			vertex.texCoords = glm::vec2(0.0f);
 		}
 
-		vertices.push_back(vertex);
+		vertices->push_back(vertex);
 	}
 
 	// Обработка indices:
 	for (unsigned i = 0; i < mesh->mNumFaces; i++) {
 		aiFace face = mesh->mFaces[i];
 		for (unsigned j = 0; j < face.mNumIndices; j++) {
-			indices.push_back(face.mIndices[j]);
+			indices->push_back(face.mIndices[j]);
 		}
 	}
 
 	// Обработка материалов:
-	if (mesh->mMaterialIndex >= 0) {
-		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+	aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
-		// Диффузные (обычные) текстуры:
-		vector<Texture*> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, TextureType::DIFFUSE);
-		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+	// Диффузные (обычные) текстуры:
+	vector<Texture*> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, TextureType::DIFFUSE);
+	textures->insert(textures->end(), diffuseMaps.begin(), diffuseMaps.end());
 
-		// Карты "бликов" и "отражений"
-		vector<Texture*> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, TextureType::SPECULAR);
-		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+	// Карты "бликов" и "отражений"
+	vector<Texture*> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, TextureType::SPECULAR);
+	textures->insert(textures->end(), specularMaps.begin(), specularMaps.end());
 
-		// Карты нормалей
-		vector<Texture*> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, TextureType::NORMAL);
-		textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
-	}
+	// Карты нормалей
+	vector<Texture*> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, TextureType::NORMAL);
+	textures->insert(textures->end(), normalMaps.begin(), normalMaps.end());
 
-	return Mesh(vertices, indices, textures);
+
+	Mesh* returnMesh = new Mesh(vertices, indices, textures);
+	printf("%d mesh!\n", countMeshes++);
+	
+	return returnMesh;
 }
 
 vector<Texture*> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type, TextureType textureType)
@@ -147,6 +171,7 @@ vector<Texture*> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type
 		if (!skip)
 		{
 			Texture *texture = new Texture(textureFilename.C_Str(), this->directory, textureType);
+			textures.push_back(texture);
 			textures_loaded.push_back(texture);
 		}
 	}
