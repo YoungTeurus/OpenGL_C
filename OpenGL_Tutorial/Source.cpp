@@ -258,44 +258,44 @@ int main()
 	// Подготовка источников освещения:
 	vector<BaseLight*> lights;
 
-	PointLight* brightLamp = new PointLight(
-		glm::vec3(0.15f, 0.15f, 0.15f),
-		glm::vec3(0.75f, 0.75f, 0.75f),
-		glm::vec3(1.0f, 1.0f, 1.0f),
-		1.0f, 0.001f, 0.0009f,
-		glm::vec3(5.0f, 5.0f, 5.0f),
-		"BrightLamp"
-	);
-	lights.push_back(brightLamp);
-
-	PointLight* redLamp = new PointLight(
-		glm::vec3(0.1f, 0.1f, 0.1f),
-		glm::vec3(1.0f, 0.2f, 0.2f),
-		glm::vec3(1.0f, 0.2f, 0.2f),
-		1.0f, 0.1f, 0.09f,
-		glm::vec3(0.0f, 0.0f, 0.0f),
-		"RedLamp"
-	);
-	lights.push_back(redLamp);
-	
-	PointLight* blueLamp = new PointLight(
-		glm::vec3(0.1f, 0.1f, 0.1f),
-		glm::vec3(0.2f, 0.2f, 1.0f),
-		glm::vec3(0.2f, 0.2f, 1.0f),
-		1.0f, 0.1f, 0.09f,
-		glm::vec3(0.0f, 0.0f, 0.0f),
-		"BlueLamp"
-	);
-	lights.push_back(blueLamp);
-	
-	DirectionalLight* sunLight = new DirectionalLight(
-		glm::vec3(-1.0f, -1.0f, -1.0f),
-		glm::vec3(0.1f, 0.1f, 0.1f),
-		glm::vec3(0.5f, 0.5f, 0.5f),
-		glm::vec3(0.0f, 0.0f, 0.0f),
-		"Sun"
-	);
-	lights.push_back(sunLight);
+	// PointLight* brightLamp = new PointLight(
+	// 	glm::vec3(0.15f, 0.15f, 0.15f),
+	// 	glm::vec3(0.75f, 0.75f, 0.75f),
+	// 	glm::vec3(1.0f, 1.0f, 1.0f),
+	// 	1.0f, 0.001f, 0.0009f,
+	// 	glm::vec3(5.0f, 5.0f, 5.0f),
+	// 	"BrightLamp"
+	// );
+	// lights.push_back(brightLamp);
+	// 
+	// PointLight* redLamp = new PointLight(
+	// 	glm::vec3(0.1f, 0.1f, 0.1f),
+	// 	glm::vec3(1.0f, 0.2f, 0.2f),
+	// 	glm::vec3(1.0f, 0.2f, 0.2f),
+	// 	1.0f, 0.1f, 0.09f,
+	// 	glm::vec3(0.0f, 0.0f, 0.0f),
+	// 	"RedLamp"
+	// );
+	// lights.push_back(redLamp);
+	// 
+	// PointLight* blueLamp = new PointLight(
+	// 	glm::vec3(0.1f, 0.1f, 0.1f),
+	// 	glm::vec3(0.2f, 0.2f, 1.0f),
+	// 	glm::vec3(0.2f, 0.2f, 1.0f),
+	// 	1.0f, 0.1f, 0.09f,
+	// 	glm::vec3(0.0f, 0.0f, 0.0f),
+	// 	"BlueLamp"
+	// );
+	// lights.push_back(blueLamp);
+	// 
+	// DirectionalLight* sunLight = new DirectionalLight(
+	// 	glm::vec3(-1.0f, -1.0f, -1.0f),
+	// 	glm::vec3(0.1f, 0.1f, 0.1f),
+	// 	glm::vec3(0.5f, 0.5f, 0.5f),
+	// 	glm::vec3(0.0f, 0.0f, 0.0f),
+	// 	"Sun"
+	// );
+	// lights.push_back(sunLight);
 	
 	SpotLight* flashLight = new SpotLight(
 		glm::radians(10.f), glm::radians(20.f),
@@ -342,13 +342,13 @@ int main()
 
 	// layout (location = 0) in vec3 inFragPosition;
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * cubeVertexData.size(), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)0);
 	// layout (location = 1) in vec3 inNormal;
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * cubeVertexData.size(), (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)(3 * sizeof(float)));
 	// layout (location = 2) in vec2 inTexCoords;
 	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * cubeVertexData.size(), (void*)(6 * sizeof(float)));
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)(6 * sizeof(float)));
 
 	glBindVertexArray(0);
 
@@ -397,7 +397,7 @@ int main()
 		backpackShader->setFloatMat4("model", model);
 		backpackShader->setFloat("shininess", 64.0f);
 		backpackShader->setFloatVec3("viewPos", mainCamera.position);
-
+		
 		int activeLights = 0;
 		for (int i = 0; i < lights.size(); i++)
 		{
@@ -405,33 +405,33 @@ int main()
 		}
 		backpackShader->setInt("lightsCount", activeLights);
 		backpack.draw(*backpackShader);
-
+		
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(5.0f, 0.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(0.8f,0.8f,0.8f));
 		backpackShader->setFloatMat4("model", model);
 		backpack.draw(*backpackShader);
 
-		// lightCubeShader->use();
-		// 
-		// for (auto && lightCube : lightCubes)
-		// {
-		// 	model = glm::mat4(1.0f);
-		// 	model = glm::translate(model, lightCube.position);
-		// 	model = glm::scale(model, lightCube.scale);
-		// 	lightCubeShader->setFloatMat4("perspectiveAndView", pv);
-		// 	lightCubeShader->setFloatMat4("model", model);
-		// 	lightCubeShader->setFloatVec3("uColor", lightCube.color);
-		// 	glBindVertexArray(cubeVAO);
-		// 	glDrawElements(GL_TRIANGLES, cubeIndicesData.size(), GL_UNSIGNED_INT, 0);
-		// 	// lightCube.draw(*lightCubeShader);
-		// }
+		lightCubeShader->use();
+		
+		for (auto && lightCube : lightCubes)
+		{
+			model = glm::mat4(1.0f);
+			model = glm::translate(model, lightCube.position);
+			model = glm::scale(model, lightCube.scale);
+			lightCubeShader->setFloatMat4("projectionAndView", pv);
+			lightCubeShader->setFloatMat4("model", model);
+			lightCubeShader->setFloatVec3("uColor", lightCube.color);
+			glBindVertexArray(cubeVAO);
+			glDrawElements(GL_TRIANGLES, cubeIndicesData.size(), GL_UNSIGNED_INT, 0);
+			// lightCube.draw(*lightCubeShader);
+		}
 
 		glfwSwapBuffers(win);
 		glfwPollEvents();
 	}
 
-	delete backpackShader;
+	// delete backpackShader;
 
 	glfwTerminate();
 	return 0;
