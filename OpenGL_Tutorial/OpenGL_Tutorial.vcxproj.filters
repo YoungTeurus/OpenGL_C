@@ -130,5 +130,11 @@
     <None Include="shaders\lightCube.vert">
       <Filter>shaders</Filter>
     </None>
+    <None Include="shaders\shaderSingleColor.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\shaderSingleColor.vert">
+      <Filter>shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
