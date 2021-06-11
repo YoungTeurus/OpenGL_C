@@ -57,8 +57,6 @@ float getAttenuation(int i);
 // Свет находится в направлении lightDirection от объекта.
 vec3 getDiffuseAndSpecularColor(int i, vec3 lightDirection);
 
-void calculateNormalDiffuseSpecualarAndViewDirVectors(vec3 normal, vec3 diffuseTextureColor, vec3 specularTextureColor, vec3 viewDir);
-
 vec3 getColorFromLight(Light light, vec3 normal, vec3 fFragPosition, vec3 viewDir, vec3 diffuseTextureColor, vec3 specular);
 vec3 getColorFromDirLight(Light light, vec3 normal, vec3 viewDir, vec3 diffuseTextureColor, vec3 specularTextureColor);
 vec3 getColorFromPointLight(Light light, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 diffuseTextureColor, vec3 specularTextureColor);
@@ -67,15 +65,12 @@ vec3 getColorFromSpotLight(Light light, vec3 normal, vec3 fragPos, vec3 viewDir,
 void main(){
 	vec3 normal, diffuseTextureColor, specularTextureColor, viewDir;
 
-	// calculateNormalDiffuseSpecualarAndViewDirVectors(normal, diffuse, specular, viewDir);
-	// {
 	normal = texture(texture_normal1, fTextureCoord).rgb;
 	normal = normal * 2.0f - 1.0f;
 	normal = normalize(fTBN * normal);
 	diffuseTextureColor = texture(texture_diffuse1, fTextureCoord).rgb;
 	specularTextureColor = texture(texture_specular1, fTextureCoord).rgb;
 	viewDir = normalize(viewPos - fFragPosition);
-	// }
 
 	vec3 result = vec3(0, 0, 0);
 
@@ -84,19 +79,6 @@ void main(){
 	}
 
 	fragColor = vec4(result, 1.0);
-}
-
-void calculateNormalDiffuseSpecualarAndViewDirVectors(vec3 normal, vec3 diffuse, vec3 specular, vec3 viewDir){
-	// Получаем значение нормали в диапазоне [0;1] :
-	normal = texture(texture_normal1, fTextureCoord).rgb;
-	// Получаем нормаль в диапазоне [-1;1] :
-	normal = normal * 2.0f - 1.0f;
-	// ?!
-	normal = normalize(fTBN * normal);
-
-	diffuse = texture(texture_diffuse1, fTextureCoord).rgb;
-	specular = texture(texture_specular1, fTextureCoord).rgb;
-	viewDir = normalize(viewPos - fFragPosition);
 }
 
 vec3 getColorFromLight(Light light, vec3 normal, vec3 fFragPosition, vec3 viewDir, vec3 diffuseTextureColor, vec3 specularTextureColor){
