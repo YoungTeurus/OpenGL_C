@@ -439,6 +439,10 @@ int main()
 		flashLight->setPosition(mainCamera.position - mainCamera.up * 0.3f);
 		flashLight->setDirection(mainCamera.front);
 
+		// mainCamera.pitch += 180.0f;
+		mainCamera.yaw += 180.0f;
+		mainCamera.handleMouseMovement(0, 0, false);
+		
 		// Вращение камеры:
 		view = mainCamera.getViewMatrix();
 
@@ -446,6 +450,10 @@ int main()
 		projection = mainCamera.getProjectionMatrix();
 
 		glm::mat4 pv = projection * view;
+
+		// mainCamera.pitch -= 180.0f;
+		mainCamera.yaw -= 180.0f;
+		mainCamera.handleMouseMovement(0, 0, false);
 
 		// Отрисовка в framebuffer:
 		glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
@@ -544,9 +552,105 @@ int main()
 		glEnable(GL_DEPTH_TEST);
 
 		// Отрисовка в стандартный framebuffer:
+		view = mainCamera.getViewMatrix();
+
+		pv = projection * view;
+		
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		
+		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_STENCIL_TEST);
+		
+		glClearColor(background.r, background.g, background.b, background.a);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+		// Отрисовка источников света:
+		
+		// glEnable(GL_DEPTH_TEST); // <- Включается выше
+		// Если фейлим Stencil test, оставляем сохран. там значение.
+		// Если фейлим Depth test, оставляем сохран. в Stencil значение.
+		// Если прошли оба теста, применяем glStencilFunc, заменяя бит
+		glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+
+		glStencilMask(0x00);  // Отключаем запись в stencil buffer
+		glStencilFunc(GL_ALWAYS, 1, 0xFF);  // Говорим, что мы всегда будем проходить stencil-тест
+
+		// Отрисовка рюкзака:
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(1.0f,1.0f,1.0f));
+		backpackShader->use();
+		backpackShader->setFloatMat4("perspectiveAndView", pv);
+		backpackShader->setFloatMat4("model", model);
+		backpackShader->setFloat("shininess", 64.0f);
+		backpackShader->setFloatVec3("viewPos", mainCamera.position);
+		
+		activeLights = 0;
+		for (int i = 0; i < lights.size(); i++)
+		{
+			activeLights += lights[i]->useAndReturnSuccess(backpackShader, activeLights);
+		}
+		backpackShader->setInt("lightsCount", activeLights);
+		
+		backpack.draw(*backpackShader);
+		
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(5.0f, 0.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.8f,0.8f,0.8f));
+		backpackShader->setFloatMat4("model", model);
+		backpack.draw(*backpackShader);
+
+		glStencilFunc(GL_ALWAYS, 1, 0xFF);  // Говорим, что мы всегда будем проходить stencil-тест
+		glStencilMask(0xFF);  // Разрешаем запись в Stencil буфер
+		// Если фейлим Stencil test, оставляем сохран. там значение.
+		// Если фейлим Depth test, оставляем сохран. в Stencil значение.
+		// Если прошли оба теста, применяем glStencilFunc, заменяя бит
+
+		// Отрисовываем кубы в stencil буфер
+
+		lightCubeShader->use();
+		
+		for (auto && lightCube : lightCubes)
+		{
+			model = glm::mat4(1.0f);
+			model = glm::translate(model, lightCube.position);
+			model = glm::scale(model, lightCube.scale);
+			lightCubeShader->setFloatMat4("projectionAndView", pv);
+			lightCubeShader->setFloatMat4("model", model);
+			lightCubeShader->setFloatVec3("uColor", lightCube.color);
+			glBindVertexArray(cubeVAO);
+			glDrawElements(GL_TRIANGLES, cubeIndicesData.size(), GL_UNSIGNED_INT, 0);
+			// lightCube.draw(*lightCubeShader);
+		}
+
+		// Теперь stencil буфер содержит 1-ки там, где видны кубы
+
+		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);  // Говорим, что мы будем проходить тест, только если stencil buffer != 1, т.е. ЕСЛИ ТУДА ЕЩЁ НИЧЕГО НЕ РИСОВАЛИ (из объектов для выделения)!
+		glStencilMask(0x00);  // Отключаем запись в stencil buffer
+		glDisable(GL_DEPTH_TEST);  // Игнорируем тест глубины (рисуем сквозь все другие объекты)
+
+		// Увеличенные кубы будут рисоваться поверх всех объектов, но не в тех местах, где виден сам обрамляемый объект
+		
+		singleColorShader->use();
+
+		for (auto && lightCube : lightCubes)
+		{
+			model = glm::mat4(1.0f);
+			model = glm::translate(model, lightCube.position);
+			model = glm::scale(model, lightCube.scale + glm::vec3(0.1));
+			singleColorShader->setFloatMat4("projectionAndView", pv);
+			singleColorShader->setFloatMat4("model", model);
+			glBindVertexArray(cubeVAO);
+			glDrawElements(GL_TRIANGLES, cubeIndicesData.size(), GL_UNSIGNED_INT, 0);
+			// lightCube.draw(*lightCubeShader); 
+		}
+
+		// Для дальнейших объектов разрешаем им писать в stencil buffer и говорим, что они всегда будут его проходить, а также включаем depth_test
+
+		glStencilMask(0xFF);
+		glStencilFunc(GL_ALWAYS, 1, 0xFF);
+		glEnable(GL_DEPTH_TEST);
+		
 
 		screenRenderQuadShader->use();
 		glBindVertexArray(screenQuadVAO);
