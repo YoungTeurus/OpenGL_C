@@ -142,5 +142,11 @@
     <None Include="shaders\screenRenderQuadShader.frag">
       <Filter>shaders</Filter>
     </None>
+    <None Include="shaders\screenRenderQuadShaderWithKernel.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\screenRenderQuadShaderWithKernel.vert">
+      <Filter>shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
