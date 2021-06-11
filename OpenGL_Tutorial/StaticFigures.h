@@ -55,6 +55,26 @@ public:
 		};
 	}
 
+	inline static std::vector<float> getQuadVertexesWithUV()
+	{
+		return std::vector<float>
+		{
+		//	  X		 Y	   U	 V
+			-1.0f,  1.0f, 0.0f, 1.0f,	// верхний левый
+			-1.0f, -1.0f, 0.0f, 0.0f,	// нижний левый
+			 1.0f, -1.0f, 1.0f, 0.0f,	// нижний правый
+			 1.0f,  1.0f, 1.0f, 1.0f	// верхний правый
+        };
+	}
+
+	inline static std::vector<unsigned> getQuadIndices()
+	{
+		return std::vector<unsigned>{
+			0, 1, 2,
+			0, 2, 3
+		};
+	}
+
 	inline static unsigned getLoadedCubeVAO()
 	{
 		using namespace std;

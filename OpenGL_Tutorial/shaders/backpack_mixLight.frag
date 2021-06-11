@@ -11,7 +11,8 @@ struct Light{
 	vec3 direction;
 
 	// Для Spot источника:
-	float cutOff;
+	float cutOffCosin;
+	float outerCutOffCosin;
 
 	// Цвет источника:
 	vec3 ambient;
@@ -23,6 +24,11 @@ struct Light{
 	float linear;
 	float quadratic;
 };
+
+int LightDirectionalType = 1;
+int LightPointType = 2;
+int LightSpotType = 3;
+int LightAmbientType = 4;
 
 in vec3 fNormal;
 in vec3 fFragPosition;
@@ -51,104 +57,111 @@ float getAttenuation(int i);
 // Свет находится в направлении lightDirection от объекта.
 vec3 getDiffuseAndSpecularColor(int i, vec3 lightDirection);
 
+vec3 getColorFromLight(Light light, vec3 normal, vec3 fFragPosition, vec3 viewDir, vec3 diffuseTextureColor, vec3 specular);
+vec3 getColorFromDirLight(Light light, vec3 normal, vec3 viewDir, vec3 diffuseTextureColor, vec3 specularTextureColor);
+vec3 getColorFromPointLight(Light light, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 diffuseTextureColor, vec3 specularTextureColor);
+vec3 getColorFromSpotLight(Light light, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 diffuseTextureColor, vec3 specularTextureColor);
 
 void main(){
-	vec3 currentLightColorResult;  // Временный вектор для хранения подсчитанного цвета для текущего источника света
+	vec3 normal, diffuseTextureColor, specularTextureColor, viewDir;
+
+	normal = texture(texture_normal1, fTextureCoord).rgb;
+	normal = normal * 2.0f - 1.0f;
+	normal = normalize(fTBN * normal);
+	diffuseTextureColor = texture(texture_diffuse1, fTextureCoord).rgb;
+	specularTextureColor = texture(texture_specular1, fTextureCoord).rgb;
+	viewDir = normalize(viewPos - fFragPosition);
+
+	vec3 result = vec3(0, 0, 0);
+
 	for(int i = 0; i < lightsCount; i++){
-		if (lights[i].type == 1){ // Направленный свет:
-			// Вектор направления К источнику света (подразумевается, что передан нормализованный вектор):
-			vec3 lightDirection = -lights[i].direction;
+		result += getColorFromLight(lights[i], normal, fFragPosition, viewDir, diffuseTextureColor, specularTextureColor);
+	}
 
-			// Цвет неосвещённого участка:
-			vec3 ambientColor = lights[i].ambient * texture(texture_diffuse1, fTextureCoord).rgb;
+	fragColor = vec4(result, 1.0);
+}
 
-			// Цвет собственно от освещения:
-			vec3 diffuseAndSpecularColor = getDiffuseAndSpecularColor(i, lightDirection);
-
-			currentLightColorResult = ambientColor + diffuseAndSpecularColor;
-		} else {
-			// Нормализованный вектор направления ОТ точки падения К источнику света:
-			vec3 fromCollisionPointToLightDirection = normalize(lights[i].position - fFragPosition);
-			if( lights[i].type == 2) {  // Точечный источник света:
-				// Степень затухания света:
-				float attenuation = getAttenuation(i);
-
-				// Цвет неосвещённого участка:
-				vec3 ambientColor = lights[i].ambient * texture(texture_diffuse1, fTextureCoord).rgb;
-
-				// Цвет собственно от освещения:
-				vec3 diffuseAndSpecularColor = getDiffuseAndSpecularColor(i, fromCollisionPointToLightDirection);
-
-				currentLightColorResult = (ambientColor + diffuseAndSpecularColor) * attenuation;
-			} else if (lights[i].type == 3) {  // Конусовидный источник света:
-				// Угол между нормализованными вектором направления К источнику света и вектором направления ОТ точки падения К источнику света:
-				float angle = acos(dot(fromCollisionPointToLightDirection, normalize(-lights[i].direction)));
-
-				// Если видна хотя бы часть конуса:
-				if (angle <= lights[i].cutOff * 2.0f){
-					// Стандартный коэффициент яркости освещения:
-					float koef = 1.0f;
-					
-					if (angle >= lights[i].cutOff){
-						// Уменьшаем koef в диапазоне [0;1] в зависимости от угла:
-						koef = (lights[i].cutOff*2.0f - angle) / lights[i].cutOff;
-					}
-
-					// Степень затухания света:
-					float attenuation = getAttenuation(i);
-
-					// Цвет неосвещённого участка:
-					vec3 ambientColor = lights[i].ambient * texture(texture_diffuse1, fTextureCoord).rgb;
-
-					// Цвет собственно от освещения:
-					vec3 diffuseAndSpecularColor = getDiffuseAndSpecularColor(i, fromCollisionPointToLightDirection) * koef;
-
-					currentLightColorResult = (ambientColor + diffuseAndSpecularColor) * attenuation;
-				} else {  // angle > lights[i].cutOff * 2.0f
-					// Цвет неосвещённого участка:
-					currentLightColorResult = lights[i].ambient * texture(texture_diffuse1, fTextureCoord).rgb;
-				}
-			}
-		}
-		fragColor += vec4(currentLightColorResult, 1.0f);
+vec3 getColorFromLight(Light light, vec3 normal, vec3 fFragPosition, vec3 viewDir, vec3 diffuseTextureColor, vec3 specularTextureColor){
+	if (light.type == LightDirectionalType){
+		return getColorFromDirLight(light, normal, viewDir, diffuseTextureColor, specularTextureColor);
+	} else if (light.type == LightPointType){
+		return getColorFromPointLight(light, normal, fFragPosition, viewDir, diffuseTextureColor, specularTextureColor);
+	} else if (light.type == LightSpotType){
+		return getColorFromSpotLight(light, normal, fFragPosition, viewDir, diffuseTextureColor, specularTextureColor);
+	} else if (light.type == LightAmbientType){
+		return vec3(0, 0, 0);
 	}
 }
 
-float getAttenuation(int i){
-	float dist = distance(lights[i].position, fFragPosition);
-	float attenuation = 1.0 / (lights[i].constant + lights[i].linear*dist + lights[i].quadratic * dist * dist);
-	return attenuation;
+vec3 getColorFromDirLight(Light light, vec3 normal, vec3 viewDir, vec3 diffuseTextureColor, vec3 specularTextureColor){
+	vec3 lightDir = normalize(-light.direction); // Вектор направления света
+
+	// Скалярное произведение, даёт косинус угла [0,1], так как оба вектора нормализованы
+	// diff = 1, когда угол = 0 (свет падает перпендикулярно)
+	float diff = max( dot(normal, lightDir), 0.0);
+
+	// Отражаем падающий свет отнсоительно вектора нормали
+	vec3 reflectDir = reflect(-lightDir, normal);
+	// shininess - степень глянцевости поверхности. Чем больше, тем более чётко выделено светлое пятно
+	float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
+
+	// Комбинируем результаты:
+	vec3 _ambient = light.ambient * diffuseTextureColor;
+	vec3 _diffuse = light.diffuse * diff * diffuseTextureColor;
+	vec3 _specular = light.specular * spec * specularTextureColor;
+	return (_ambient + _diffuse + _specular);
 }
 
-vec3 getDiffuseAndSpecularColor(int i, vec3 lightDirection){
-	// Получаем значение нормали в диапазоне [0;1] :
-	vec3 normal = texture(texture_normal1, fTextureCoord).rgb;
-	// Получаем нормаль в диапазоне [-1;1] :
-	normal = normal * 2.0f - 1.0f;
-	// Получаем нормаль в диапазоне [-1;1] :
-	normal = normalize(normal);
-	// ?!
-	normal = normalize(fTBN * normal);
+vec3 getColorFromPointLight(Light light, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 diffuseTextureColor, vec3 specularTextureColor){
+	vec3 fragToLight = light.position - fragPos;  // Вектор, направленный из позиции вертекса к источнику света
+	vec3 lightDir = normalize(fragToLight); // Вектор направления света
+	float distanceToLight = length(fragToLight);
+	// "Затухание света" - поправка светимости от расстояния до источника света
+	float attenuation = 1.0 / (light.constant + light.linear * distanceToLight + light.quadratic * distanceToLight * distanceToLight);
 
+	// Скалярное произведение, даёт косинус угла [0,1], так как оба вектора нормализованы
+	// diff = 1, когда угол = 0 (свет падает перпендикулярно)
+	float diff = max( dot(normal, lightDir), 0.0);
 
-	// Скалярное произведение нормализованных векторов нормали и направления к источнику света. Может быть в диапазоне [-1;1] :
-	float angleDot = dot(normal, lightDirection);
-	// Яркость диффузного освещения: [0;1]
-	float diffuseKoeff = max(angleDot, 0.0);
-	vec3 diffuseColor = lights[i].diffuse * diffuseKoeff * texture(texture_diffuse1, fTextureCoord).rgb;
+	// Отражаем падающий свет отнсоительно вектора нормали
+	vec3 reflectDir = reflect(-lightDir, normal);
+	// shininess - степень глянцевости поверхности. Чем больше, тем более чётко выделено светлое пятно
+	float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
+	vec3 specularMap = specularTextureColor;
+	
+	vec3 ambient = light.ambient * diffuseTextureColor * attenuation;
+	vec3 diffuse = light.diffuse * diff * diffuseTextureColor * attenuation;
+	vec3 specular = light.specular * spec * specularMap * attenuation;
+	return (ambient + diffuse + specular);
+}
 
-	// Направление отражённого света:
-	vec3 reflectDirection = reflect(lightDirection, normal);
-	// Направление ОТ положения камеры К точке падения:
-	vec3 viewDirection = normalize(fFragPosition - viewPos);
-	// Скалярное произведение векторов направлений взгляда и отражённого луча [-1;1]:
-	float viewAndReflectDirectionsDotProduct = dot(viewDirection, reflectDirection);
+vec3 getColorFromSpotLight(Light light, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 diffuseTextureColor, vec3 specularTextureColor){
+	vec3 vertToLightVec = light.position - fragPos;  // Вектор, направленный из позиции вертекса к источнику света
+	float vertToLightDistance = length(vertToLightVec);
 
-	// viewAndReflectDirectionsDotProduct отрицательный?! (отражённый вектор противолежит взгляду камеры)
+	// "Затухание света" - поправка светимости от расстояния до источника света
+	float attenuation = 1.0 / (light.constant + light.linear * vertToLightDistance + light.quadratic * vertToLightDistance * vertToLightDistance);
 
-	// Яркрость спекулярного света:
-	float specularKoeff = pow(max(viewAndReflectDirectionsDotProduct, 0.0f), shininess);
-	vec3 specularColor = lights[i].specular * specularKoeff * texture(texture_specular1, fTextureCoord).rgb;
+	// Направление от вертекса к свету
+	vec3 lightDir = normalize(vertToLightVec); // Вектор направления света
 
-	return diffuseColor + specularColor;
+	// Скалярное произведение, даёт косинус угла [0,1], так как оба вектора нормализованы
+	// diff = 1, когда угол = 0 (свет падает перпендикулярно)
+	float diff = max( dot(normal, lightDir), 0.0);
+	
+	// Находим косинус угла между направлением фонаря и направлением от объекта к свету
+	float cosinBetweenLightAndVertex = dot(lightDir, normalize(-light.direction));
+	// Используем форумулу: I = (0 - y) / e (https://learnopengl.com/Lighting/Light-casters) , чтобы сделать плавную границу света
+	float difference = light.cutOffCosin - light.outerCutOffCosin;
+	float intensity_angle = clamp((cosinBetweenLightAndVertex - light.outerCutOffCosin)/difference, 0.0, 1.0);
+
+	// Отражаем падающий свет отнсоительно вектора нормали
+	vec3 reflectDir = reflect(-lightDir, normal);
+	// shininess - степень глянцевости поверхности. Чем больше, тем более чётко выделено светлое пятно
+	float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
+
+	vec3 ambient = light.ambient * diffuseTextureColor * intensity_angle * attenuation;
+	vec3 diffuse = light.diffuse * diff * diffuseTextureColor * intensity_angle * attenuation;
+	vec3 specular = light.specular * spec * specularTextureColor * intensity_angle * attenuation;
+	return (ambient + diffuse + specular);
 }

@@ -187,6 +187,8 @@
     <None Include="shaders\cube_spotLight.frag" />
     <None Include="shaders\lightCube.frag" />
     <None Include="shaders\lightCube.vert" />
+    <None Include="shaders\screenRenderQuadShader.frag" />
+    <None Include="shaders\screenRenderQuadShader.vert" />
     <None Include="shaders\shaderSingleColor.frag" />
     <None Include="shaders\shaderSingleColor.vert" />
   </ItemGroup>

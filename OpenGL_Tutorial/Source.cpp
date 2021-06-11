@@ -198,8 +198,6 @@ int main()
 
 	glViewport(0, 0, windowWidth, windowHeight);
 
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_STENCIL_TEST);
 	// TODO: вернуть отбрасывание граней.
 	// glEnable(GL_CULL_FACE);
 	// Конец настройки glfw
@@ -250,9 +248,10 @@ int main()
 		glm::vec3(0.01, 0.01f, 0.01f) };	// scale
 
 	// Загрузка внешних данных:
-	Shader* backpackShader = new Shader("backpack_mixLight_new");
+	Shader* backpackShader = new Shader("backpack_mixLight");
 	Shader* lightCubeShader = new Shader("lightCube");
 	Shader* singleColorShader = new Shader("shaderSingleColor");
+	Shader* screenRenderQuadShader = new Shader("screenRenderQuadShader");
 	
 	// Model backpack("models/backpack/backpack.obj", true);
 	Model backpack("models/tank/IS4.obj", true);
@@ -324,7 +323,67 @@ int main()
 		}
 	}
 
-	
+	// Рендеринг в текстуру:
+	unsigned frameBuffer;
+	// Создание фреймбуффера:
+	glGenFramebuffers(1, &frameBuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+	// Весь последующий рендер осуществляется в созданный frameBuffer.
+
+	// Создание текстуры, на котороую будут выводится рендер frameBuffer-а.
+	unsigned texColorBuffer;
+	glGenTextures(1, &texColorBuffer);
+	glBindTexture(GL_TEXTURE_2D, texColorBuffer);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, windowWidth, windowHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	// Присоединяем созданную текстуру к framebuffer
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texColorBuffer, 0);
+
+	// Создание render-буфера для depth и stencil тестов:
+	// Render-буфер работает в режиме write-only.
+	unsigned int rbo;
+	glGenRenderbuffers(1, &rbo);
+	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, windowWidth, windowHeight);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+	// Присоединяем созданный buffer к framebuffer
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	{
+		std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+	}
+
+	// Переключаемся на стандартный framebuffer
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	// Создаём VAO для quad-а:
+	unsigned screenQuadVAO, screenQuadVBO, screenQuadEBO;
+	vector<float> screenQuadVertexData = StaticFigures::getQuadVertexesWithUV();
+	vector<unsigned> screenQuadIndicesData = StaticFigures::getQuadIndices();
+
+	glGenVertexArrays(1, &screenQuadVAO);
+	glGenBuffers(1, &screenQuadVBO);
+	glGenBuffers(1, &screenQuadEBO);
+
+	glBindVertexArray(screenQuadVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, screenQuadVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * screenQuadVertexData.size(), screenQuadVertexData.data(), GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, screenQuadEBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned) * screenQuadIndicesData.size(), screenQuadIndicesData.data(), GL_STATIC_DRAW);
+
+	// layout (location = 0) in vec2 inFragPosition;
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4, (void*)0);
+	// layout (location = 1) in vec2 inTexCoords;
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4, (void*)(2 * sizeof(float)));
+
+	glBindVertexArray(0);
 
 	unsigned cubeVAO, cubeVBO, cubeEBO;
 
@@ -378,8 +437,6 @@ int main()
 		flashLight->setPosition(mainCamera.position - mainCamera.up * 0.3f);
 		flashLight->setDirection(mainCamera.front);
 
-		glClearColor(background.r, background.g, background.b, background.a);
-
 		// Вращение камеры:
 		view = mainCamera.getViewMatrix();
 
@@ -388,14 +445,22 @@ int main()
 
 		glm::mat4 pv = projection * view;
 
+		// Отрисовка в framebuffer:
+		glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+
+		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_STENCIL_TEST);
+		
+		glClearColor(background.r, background.g, background.b, background.a);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
 		// Отрисовка источников света:
 		
-		glEnable(GL_DEPTH_TEST);
+		// glEnable(GL_DEPTH_TEST); // <- Включается выше
 		// Если фейлим Stencil test, оставляем сохран. там значение.
 		// Если фейлим Depth test, оставляем сохран. в Stencil значение.
 		// Если прошли оба теста, применяем glStencilFunc, заменяя бит
 		glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 		glStencilMask(0x00);  // Отключаем запись в stencil buffer
 		glStencilFunc(GL_ALWAYS, 1, 0xFF);  // Говорим, что мы всегда будем проходить stencil-тест
@@ -467,7 +532,7 @@ int main()
 			singleColorShader->setFloatMat4("model", model);
 			glBindVertexArray(cubeVAO);
 			glDrawElements(GL_TRIANGLES, cubeIndicesData.size(), GL_UNSIGNED_INT, 0);
-			// lightCube.draw(*lightCubeShader);
+			// lightCube.draw(*lightCubeShader); 
 		}
 
 		// Для дальнейших объектов разрешаем им писать в stencil buffer и говорим, что они всегда будут его проходить, а также включаем depth_test
@@ -475,6 +540,17 @@ int main()
 		glStencilMask(0xFF);
 		glStencilFunc(GL_ALWAYS, 1, 0xFF);
 		glEnable(GL_DEPTH_TEST);
+
+		// Отрисовка в стандартный framebuffer:
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		screenRenderQuadShader->use();
+		glBindVertexArray(screenQuadVAO);
+		glDisable(GL_DEPTH_TEST);
+		glBindTexture(GL_TEXTURE_2D, texColorBuffer);
+		glDrawElements(GL_TRIANGLES, screenQuadIndicesData.size(), GL_UNSIGNED_INT, 0);
 
 		glfwSwapBuffers(win);
 		glfwPollEvents();

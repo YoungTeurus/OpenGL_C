@@ -136,5 +136,11 @@
     <None Include="shaders\shaderSingleColor.vert">
       <Filter>shaders</Filter>
     </None>
+    <None Include="shaders\screenRenderQuadShader.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\screenRenderQuadShader.frag">
+      <Filter>shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
