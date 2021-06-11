@@ -67,13 +67,13 @@ inline void Model::loadModel(string path, const bool isUV_flipped)
     		stbi_set_flip_vertically_on_load(true);
 	}
     const aiScene* scene;
-	if (isUV_flipped)
-	{
-		scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
-	} else
-	{
+	//if (isUV_flipped)
+	//{
+	//	scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+	//} else
+	//{
 		scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals  | aiProcess_CalcTangentSpace);
-	}
+	//}
 	
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
     {

@@ -6,6 +6,8 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
+
+#include "Cube.h"
 #include "PointLight.h"
 #include "classes/Shader.h"
 #include "classes/Camera.h"
@@ -197,6 +199,7 @@ int main()
 	glViewport(0, 0, windowWidth, windowHeight);
 
 	glEnable(GL_DEPTH_TEST);
+	// TODO: вернуть отбрасывание граней.
 	// glEnable(GL_CULL_FACE);
 	// Конец настройки glfw
 #pragma endregion
@@ -246,13 +249,24 @@ int main()
 		glm::vec3(0.01, 0.01f, 0.01f) };	// scale
 
 	// Загрузка внешних данных:
-	Shader* backpack_shader = new Shader("backpack_mixLight_new");
+	Shader* backpackShader = new Shader("backpack_mixLight_new");
+	Shader* lightCubeShader = new Shader("lightCube");
 	
-	Model backpack("models/backpack/backpack.obj", true);
-	// Model tank("models/сromwell/14079_WWII_Tank_UK_Cromwell_v1_L2.obj", false);
+	// Model backpack("models/backpack/backpack.obj", true);
+	Model backpack("models/tank/IS4.obj", true);
 
 	// Подготовка источников освещения:
 	vector<BaseLight*> lights;
+
+	PointLight* brightLamp = new PointLight(
+		glm::vec3(0.15f, 0.15f, 0.15f),
+		glm::vec3(0.75f, 0.75f, 0.75f),
+		glm::vec3(1.0f, 1.0f, 1.0f),
+		1.0f, 0.001f, 0.0009f,
+		glm::vec3(5.0f, 5.0f, 5.0f),
+		"BrightLamp"
+	);
+	lights.push_back(brightLamp);
 
 	PointLight* redLamp = new PointLight(
 		glm::vec3(0.1f, 0.1f, 0.1f),
@@ -286,14 +300,60 @@ int main()
 	SpotLight* flashLight = new SpotLight(
 		glm::radians(10.f), glm::radians(20.f),
 		glm::vec3(0.0f, 0.0f, 0.0f),
-		glm::vec3(0.0f, 0.0f, 0.0f),
+		glm::vec3(0.05f, 0.05f, 0.05f),
 		glm::vec3(0.7f, 0.7f, 0.6f),
-		glm::vec3(0.8f, 0.8f, 0.6f),
-		1.0f, 0.1f, 0.09f,
+		glm::vec3(0.8f, 0.8f, 0.7f),
+		1.0f, 0.001f, 0.0009f,
 		glm::vec3(0.0f, 0.0f, 0.0f),
 		"FlashLight"
 	);
 	lights.push_back(flashLight);
+
+	vector<Cube> lightCubes;
+	
+	for (auto && light : lights)
+	{
+		PositionedLight* positionedLight;
+		if((positionedLight = dynamic_cast<PositionedLight*>(light)) != nullptr)
+		{
+			lightCubes.emplace_back(
+			Cube(positionedLight->getPosition(), glm::vec3(0.25f), glm::vec3(0.0f), positionedLight->getDiffuse())
+			);
+		}
+	}
+
+	
+
+	unsigned cubeVAO, cubeVBO, cubeEBO;
+
+	vector<float> cubeVertexData = StaticFigures::getCubeVertexesWithNormalsAndUV();
+	vector<unsigned> cubeIndicesData = StaticFigures::getCubeIndices();
+	
+	glGenVertexArrays(1, &cubeVAO);
+	glGenBuffers(1, &cubeVBO);
+	glGenBuffers(1, &cubeEBO);
+
+	glBindVertexArray(cubeVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * cubeVertexData.size(), cubeVertexData.data(), GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cubeEBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned) * cubeIndicesData.size(), cubeIndicesData.data(), GL_STATIC_DRAW);
+
+	// layout (location = 0) in vec3 inFragPosition;
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * cubeVertexData.size(), (void*)0);
+	// layout (location = 1) in vec3 inNormal;
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * cubeVertexData.size(), (void*)(3 * sizeof(float)));
+	// layout (location = 2) in vec2 inTexCoords;
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * cubeVertexData.size(), (void*)(6 * sizeof(float)));
+
+	glBindVertexArray(0);
+
+
+	
 
 	// Model matrix: размещение объекта в мировых координатах:
 	glm::mat4 model;
@@ -312,9 +372,9 @@ int main()
 
 		processInput(win);
 
-		// // Изменение положения источников света:
-		// flashLight->setPosition(mainCamera.position - mainCamera.up * 0.3f);
-		// flashLight->setDirection(mainCamera.front);
+		// Изменение положения источников света:
+		flashLight->setPosition(mainCamera.position - mainCamera.up * 0.3f);
+		flashLight->setDirection(mainCamera.front);
 
 		glClearColor(background.r, background.g, background.b, background.a);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -332,25 +392,46 @@ int main()
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(1.0f,1.0f,1.0f));
-		backpack_shader->use();
-		backpack_shader->setFloatMat4("perspectiveAndView", pv);
-		backpack_shader->setFloatMat4("model", model);
-		backpack_shader->setFloat("shininess", 64.0f);
-		backpack_shader->setFloatVec3("viewPos", mainCamera.position);
+		backpackShader->use();
+		backpackShader->setFloatMat4("perspectiveAndView", pv);
+		backpackShader->setFloatMat4("model", model);
+		backpackShader->setFloat("shininess", 64.0f);
+		backpackShader->setFloatVec3("viewPos", mainCamera.position);
 
 		int activeLights = 0;
 		for (int i = 0; i < lights.size(); i++)
 		{
-			activeLights += lights[i]->useAndReturnSuccess(backpack_shader, activeLights);
+			activeLights += lights[i]->useAndReturnSuccess(backpackShader, activeLights);
 		}
-		backpack_shader->setInt("lightsCount", activeLights);
-		backpack.draw(*backpack_shader);
+		backpackShader->setInt("lightsCount", activeLights);
+		backpack.draw(*backpackShader);
+
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(5.0f, 0.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.8f,0.8f,0.8f));
+		backpackShader->setFloatMat4("model", model);
+		backpack.draw(*backpackShader);
+
+		// lightCubeShader->use();
+		// 
+		// for (auto && lightCube : lightCubes)
+		// {
+		// 	model = glm::mat4(1.0f);
+		// 	model = glm::translate(model, lightCube.position);
+		// 	model = glm::scale(model, lightCube.scale);
+		// 	lightCubeShader->setFloatMat4("perspectiveAndView", pv);
+		// 	lightCubeShader->setFloatMat4("model", model);
+		// 	lightCubeShader->setFloatVec3("uColor", lightCube.color);
+		// 	glBindVertexArray(cubeVAO);
+		// 	glDrawElements(GL_TRIANGLES, cubeIndicesData.size(), GL_UNSIGNED_INT, 0);
+		// 	// lightCube.draw(*lightCubeShader);
+		// }
 
 		glfwSwapBuffers(win);
 		glfwPollEvents();
 	}
 
-	delete backpack_shader;
+	delete backpackShader;
 
 	glfwTerminate();
 	return 0;

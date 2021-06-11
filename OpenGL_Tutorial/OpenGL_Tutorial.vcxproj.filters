@@ -83,6 +83,12 @@
     <ClInclude Include="AmbientLight.h">
       <Filter>Исходные файлы\classes\Lights</Filter>
     </ClInclude>
+    <ClInclude Include="StaticFigures.h">
+      <Filter>Исходные файлы\classes</Filter>
+    </ClInclude>
+    <ClInclude Include="Cube.h">
+      <Filter>Исходные файлы\classes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\basic.frag">
@@ -119,6 +125,9 @@
       <Filter>shaders</Filter>
     </None>
     <None Include="shaders\backpack_mixLight_new.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\lightCube.vert">
       <Filter>shaders</Filter>
     </None>
   </ItemGroup>

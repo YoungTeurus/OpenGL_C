@@ -24,4 +24,10 @@ public:
 	{
 		this->position = position;
 	}
+
+
+	glm::vec3 getPosition() const
+	{
+		return position;
+	}
 };

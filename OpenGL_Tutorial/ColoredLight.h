@@ -21,4 +21,20 @@ public:
 		shader->setFloatVec3("lights[" + lightNumber + "].diffuse",	diffuse);
 		shader->setFloatVec3("lights[" + lightNumber + "].specular",	specular);
 	}
+
+
+	glm::vec3 getAmbient() const
+	{
+		return ambient;
+	}
+
+	glm::vec3 getDiffuse() const
+	{
+		return diffuse;
+	}
+
+	glm::vec3 getSpecular() const
+	{
+		return specular;
+	}
 };

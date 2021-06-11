@@ -59,6 +59,11 @@ public:
 		return 1;
 	}
 
+	void draw(Shader* shader)
+	{
+		
+	}
+
 	virtual void setShaderParameters(Shader* shader, std::string lightNumber)
 	{
 		shader->setInt("lights[" + lightNumber + "].type", int(type));
