@@ -259,8 +259,8 @@ int main()
 	// 	glm::vec3(0.01, 0.01f, 0.01f) };	// scale
 
 	// Загрузка внешних данных:
-	Shader* backpackShader = new Shader("backpack_mixLight");
-	Shader* lightCubeShader = new Shader("lightCube");
+	Shader* backpackShader = new Shader("backpack_mixLightWithExplosion", true);
+	Shader* lightCubeShader = new Shader("lightCubeWithExplosion", true);
 	Shader* singleColorShader = new Shader("shaderSingleColor");
 	Shader* screenRenderQuadShader = new Shader("screenRenderQuadShader");
 	Shader* skyboxShader = new Shader("skybox");
@@ -555,6 +555,7 @@ int main()
 		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(1.0f,1.0f,1.0f));
 		backpackShader->use();
+		backpackShader->setFloat("uExplosionMagnitude", glm::sin(currentFrameTime));
 		backpackShader->setFloatMat4("perspectiveAndView", pv);
 		backpackShader->setFloatMat4("model", model);
 		backpackShader->setFloat("shininess", 64.0f);
@@ -583,20 +584,16 @@ int main()
 
 		// Отрисовываем кубы в stencil буфер
 
-		// lightCubeShader->use();
-		// 
-		// for (auto && lightCube : lightCubes)
-		// {
-		// 	model = glm::mat4(1.0f);
-		// 	model = glm::translate(model, lightCube.position);
-		// 	model = glm::scale(model, lightCube.scale);
-		// 	lightCubeShader->setFloatMat4("projectionAndView", pv);
-		// 	lightCubeShader->setFloatMat4("model", model);
-		// 	lightCubeShader->setFloatVec3("uColor", lightCube.color);
-		// 	glBindVertexArray(cubeVAO);
-		// 	glDrawElements(GL_TRIANGLES, cubeIndicesData.size(), GL_UNSIGNED_INT, 0);
-		// 	// lightCube.draw(*lightCubeShader);
-		// }
+		lightCubeShader->use();
+		
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(-5.0f, 0.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(1.0f));
+		lightCubeShader->setFloatMat4("projectionAndView", pv);
+		lightCubeShader->setFloatMat4("model", model);
+		lightCubeShader->setFloatVec3("uColor", glm::vec3(1.0f, 1.0f, 1.0f));
+		glBindVertexArray(cubeVAO);
+		glDrawElements(GL_TRIANGLES, cubeIndicesData.size(), GL_UNSIGNED_INT, 0);
 
 		// Теперь stencil буфер содержит 1-ки там, где видны кубы
 
@@ -672,6 +669,7 @@ int main()
 		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(1.0f,1.0f,1.0f));
 		backpackShader->use();
+		backpackShader->setFloat("uExplosionMagnitude", glm::sin(currentFrameTime));
 		backpackShader->setFloatMat4("perspectiveAndView", pv);
 		backpackShader->setFloatMat4("model", model);
 		backpackShader->setFloat("shininess", 64.0f);
@@ -700,20 +698,16 @@ int main()
 
 		// Отрисовываем кубы в stencil буфер
 
-		// lightCubeShader->use();
-		// 
-		// for (auto && lightCube : lightCubes)
-		// {
-		// 	model = glm::mat4(1.0f);
-		// 	model = glm::translate(model, lightCube.position);
-		// 	model = glm::scale(model, lightCube.scale);
-		// 	lightCubeShader->setFloatMat4("projectionAndView", pv);
-		// 	lightCubeShader->setFloatMat4("model", model);
-		// 	lightCubeShader->setFloatVec3("uColor", lightCube.color);
-		// 	glBindVertexArray(cubeVAO);
-		// 	glDrawElements(GL_TRIANGLES, cubeIndicesData.size(), GL_UNSIGNED_INT, 0);
-		// 	// lightCube.draw(*lightCubeShader);
-		// }
+		lightCubeShader->use();
+		
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(-5.0f, 0.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(1.0f));
+		lightCubeShader->setFloatMat4("projectionAndView", pv);
+		lightCubeShader->setFloatMat4("model", model);
+		lightCubeShader->setFloatVec3("uColor", glm::vec3(1.0f, 1.0f, 1.0f));
+		glBindVertexArray(cubeVAO);
+		glDrawElements(GL_TRIANGLES, cubeIndicesData.size(), GL_UNSIGNED_INT, 0);
 
 		// Теперь stencil буфер содержит 1-ки там, где видны кубы
 

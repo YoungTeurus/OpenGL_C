@@ -148,5 +148,23 @@
     <None Include="shaders\skybox.vert">
       <Filter>shaders</Filter>
     </None>
+    <None Include="shaders\backpack_mixLightWithExplosion.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\backpack_mixLightWithExplosion.geom">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\backpack_mixLightWithExplosion.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\lightCubeWithExplosion.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\lightCubeWithExplosion.geom">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\lightCubeWithExplosion.vert">
+      <Filter>shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

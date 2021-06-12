@@ -176,6 +176,9 @@
   <ItemGroup>
     <None Include="shaders\backpack_mixLight.frag" />
     <None Include="shaders\backpack_mixLight.vert" />
+    <None Include="shaders\backpack_mixLightWithExplosion.frag" />
+    <None Include="shaders\backpack_mixLightWithExplosion.geom" />
+    <None Include="shaders\backpack_mixLightWithExplosion.vert" />
     <None Include="shaders\basic.frag" />
     <None Include="shaders\basic.vert" />
     <None Include="shaders\cube.vert" />
@@ -185,6 +188,9 @@
     <None Include="shaders\cube_spotLight.frag" />
     <None Include="shaders\lightCube.frag" />
     <None Include="shaders\lightCube.vert" />
+    <None Include="shaders\lightCubeWithExplosion.frag" />
+    <None Include="shaders\lightCubeWithExplosion.geom" />
+    <None Include="shaders\lightCubeWithExplosion.vert" />
     <None Include="shaders\screenRenderQuadShader.frag" />
     <None Include="shaders\screenRenderQuadShader.vert" />
     <None Include="shaders\screenRenderQuadShaderWithKernel.frag" />

@@ -24,7 +24,7 @@ enum class ValueTypes
 class Shader
 {
 public:
-	Shader(const GLchar *name);
+	Shader(const GLchar *name, const bool withGeometry = false);
 	~Shader();
 
 	void use() const;
