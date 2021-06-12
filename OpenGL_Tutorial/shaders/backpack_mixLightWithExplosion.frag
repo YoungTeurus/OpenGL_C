@@ -78,6 +78,10 @@ void main(){
 	}
 
 	fragColor = vec4(result, 1.0);
+	
+	// Гамма-коррекция
+	float gamma = 2.2;
+	fragColor = vec4(pow(fragColor.rgb, vec3(1.0/gamma)), fragColor.a);
 }
 
 vec3 getColorFromLight(Light light, vec3 normal, vec3 fFragPosition, vec3 viewDir, vec3 diffuseTextureColor, vec3 specularTextureColor){
