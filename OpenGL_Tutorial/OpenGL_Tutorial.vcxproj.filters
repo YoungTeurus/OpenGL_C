@@ -121,12 +121,6 @@
     <None Include="shaders\backpack_mixLight.vert">
       <Filter>shaders</Filter>
     </None>
-    <None Include="shaders\backpack_mixLight_new.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shaders\backpack_mixLight_new.vert">
-      <Filter>shaders</Filter>
-    </None>
     <None Include="shaders\lightCube.vert">
       <Filter>shaders</Filter>
     </None>
@@ -146,6 +140,12 @@
       <Filter>shaders</Filter>
     </None>
     <None Include="shaders\screenRenderQuadShaderWithKernel.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\skybox.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\skybox.vert">
       <Filter>shaders</Filter>
     </None>
   </ItemGroup>

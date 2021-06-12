@@ -25,7 +25,7 @@ float lastCursorX = (float)windowInitialWidth / 2,
 
 bool firstMouse = true;
 
-Camera mainCamera = Camera((float)windowInitialWidth / windowInitialHeight, glm::vec3(0.0f, 0.0f, 5.0f));
+Camera mainCamera = Camera((float)windowInitialWidth / windowInitialHeight, glm::vec3(0.0f, 0.0f, 0.0f));
 
 bool wireframeMode = false;
 
@@ -157,6 +157,38 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
 	mainCamera.handleMouseMovement(dx, dy);
 }
 
+unsigned loadCubeMapFromPathsAndGetTextureId(std::vector<string> pathsToTextures)
+{
+	unsigned textureID;
+
+	glGenTextures(1, &textureID);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+
+	int width, height, nrChannels;
+	unsigned char* data;
+	for(unsigned i = 0; i < pathsToTextures.size(); i++)
+	{
+		data = stbi_load(pathsToTextures[i].c_str(), &width, &height, &nrChannels, 0);
+		if (data){
+			glTexImage2D(
+				GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+				0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data
+			);
+		} else {
+			std::cout << "Cubemap tex failed to load at path: " << pathsToTextures[i] << std::endl;
+		}
+		stbi_image_free(data);
+	}
+
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);  
+	
+	return textureID;
+}
+
 int main()
 {
 	using namespace std;
@@ -203,58 +235,49 @@ int main()
 	// Конец настройки glfw
 #pragma endregion
 
-	Material cubeMaterials[3] = {
-		{
-			glm::vec3(0.25, 0.20725, 0.20725),
-			glm::vec3(1, 0.829, 0.829),
-			glm::vec3(0.296648,	0.296648, 0.296648),
-			12.f
-		}, // pearl
-		{
-			glm::vec3(0.25, 0.25, 0.25),
-			glm::vec3(0.4, 0.4, 0.4),
-			glm::vec3(0.774597,	0.774597, 0.774597),
-			77.f
-		}, // chrome
-		{
-			glm::vec3(0.1745, 0.01175, 0.01175),
-			glm::vec3(0.61424, 0.04136, 0.04136),
-			glm::vec3(0.727811, 0.626959, 0.626959),
-			77.f
-		} // ruby
-	};
+	// const int cube_count = 200;
+	// 
+	// ModelTransform cubeTrans[cube_count];
+	// int cubeMat[cube_count];
+	// for (int i = 0; i < cube_count; i++)
+	// {
+	// 	float scale = (rand() % 6 + 1) / 20.0f;
+	// 	cubeTrans[i] = {
+	// 		glm::vec3((rand() % 201 - 100) / 50.0f, (rand() % 201 - 100) / 50.0f, (rand() % 201 - 100) / 50.0f),
+	// 		glm::vec3(rand() / 100.0f, rand() / 100.0f, rand() / 100.0f),
+	// 		glm::vec3(scale, scale, scale)
+	// 	};
+	// 	cubeMat[i] = rand() % 3;
+	// 
+	// 	if ((glm::vec3(0, 0, 0) - cubeTrans[i].position).length() < 0.7f)
+	// 		i--;
+	// }
 
-	const int cube_count = 200;
-
-	ModelTransform cubeTrans[cube_count];
-	int cubeMat[cube_count];
-	for (int i = 0; i < cube_count; i++)
-	{
-		float scale = (rand() % 6 + 1) / 20.0f;
-		cubeTrans[i] = {
-			glm::vec3((rand() % 201 - 100) / 50.0f, (rand() % 201 - 100) / 50.0f, (rand() % 201 - 100) / 50.0f),
-			glm::vec3(rand() / 100.0f, rand() / 100.0f, rand() / 100.0f),
-			glm::vec3(scale, scale, scale)
-		};
-		cubeMat[i] = rand() % 3;
-
-		if ((glm::vec3(0, 0, 0) - cubeTrans[i].position).length() < 0.7f)
-			i--;
-	}
-
-	ModelTransform lightTrans = {
-		glm::vec3(0.f, 0.f, 0.f),			// position
-		glm::vec3(0.f, 0.f, 0.f),			// rotation
-		glm::vec3(0.01, 0.01f, 0.01f) };	// scale
+	// ModelTransform lightTrans = {
+	// 	glm::vec3(0.f, 0.f, 0.f),			// position
+	// 	glm::vec3(0.f, 0.f, 0.f),			// rotation
+	// 	glm::vec3(0.01, 0.01f, 0.01f) };	// scale
 
 	// Загрузка внешних данных:
 	Shader* backpackShader = new Shader("backpack_mixLight");
 	Shader* lightCubeShader = new Shader("lightCube");
 	Shader* singleColorShader = new Shader("shaderSingleColor");
 	Shader* screenRenderQuadShader = new Shader("screenRenderQuadShader");
+	Shader* skyboxShader = new Shader("skybox");
 	
-	// Model backpack("models/backpack/backpack.obj", true);
-	Model backpack("models/tank/IS4.obj", true);
+	Model tankModel("models/tank/IS4.obj", true);
+
+	// Создание Cubemap-ы:
+	std::vector<string> cubeMapFacesTexturePaths = {
+		R"(./textures/skybox/right.jpg)",
+		R"(./textures/skybox/left.jpg)",
+		R"(./textures/skybox/top.jpg)",
+		R"(./textures/skybox/bottom.jpg)",
+		R"(./textures/skybox/front.jpg)",
+		R"(./textures/skybox/back.jpg)",
+	};
+
+	unsigned cubeMapTextureId = loadCubeMapFromPathsAndGetTextureId(cubeMapFacesTexturePaths);
 
 	// Подготовка источников освещения:
 	vector<BaseLight*> lights;
@@ -328,7 +351,6 @@ int main()
 	// Создание фреймбуффера:
 	glGenFramebuffers(1, &frameBuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
-	// Весь последующий рендер осуществляется в созданный frameBuffer.
 
 	// Создание текстуры, на котороую будут выводится рендер frameBuffer-а.
 	unsigned texColorBuffer;
@@ -415,7 +437,60 @@ int main()
 
 	glBindVertexArray(0);
 
+	
+	// Создаём VAO для skybox-а:
+	std::vector<float> skyboxVertexesData = {
+			//	  X		 Y		 Z	
+			// Передняя грань (z: +1)
+				 1.0f,	1.0f,	1.0f,
+				-1.0f,	1.0f,	1.0f,
+				-1.0f, -1.0f,	1.0f,
+				 1.0f, -1.0f,	1.0f,
+			// Правая грань (x: +1)
+				 1.0f,	1.0f,  -1.0f,
+				 1.0f,	1.0f,	1.0f,
+				 1.0f, -1.0f,	1.0f,
+				 1.0f, -1.0f,  -1.0f,
+			// Верхняя грань (y: +1)
+				 1.0f,	1.0f,  -1.0f,
+				-1.0f,	1.0f,  -1.0f,
+				-1.0f,	1.0f,   1.0f,
+				 1.0f,	1.0f,   1.0f,
+			// Левая грань (x: -1)
+				-1.0f,	1.0f,   1.0f,
+				-1.0f,	1.0f,  -1.0f,
+				-1.0f, -1.0f,  -1.0f,
+				-1.0f, -1.0f,   1.0f,
+			// Нижняя грань (y: -1)
+				 1.0f, -1.0f,   1.0f,
+				-1.0f, -1.0f,   1.0f,
+				-1.0f, -1.0f,  -1.0f,
+				 1.0f, -1.0f,  -1.0f,
+			// Задняя грань (z: -1)
+				-1.0f,	1.0f,  -1.0f,
+				 1.0f,	1.0f,  -1.0f,
+				 1.0f, -1.0f,  -1.0f,
+				-1.0f, -1.0f,  -1.0f,
+		};
+	
+	unsigned skyboxVAO, skyboxVBO, skyboxEBO;
 
+	glGenVertexArrays(1, &skyboxVAO);
+	glGenBuffers(1, &skyboxVBO);
+	glGenBuffers(1, &skyboxEBO);
+
+	glBindVertexArray(skyboxVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * skyboxVertexesData.size(), skyboxVertexesData.data(), GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, skyboxEBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned) * cubeIndicesData.size(), cubeIndicesData.data(), GL_STATIC_DRAW);
+
+	// layout (location = 0) in vec3 inFragPosition;
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (void*)0);
+
+	glBindVertexArray(0);
 	
 
 	// Model matrix: размещение объекта в мировых координатах:
@@ -439,7 +514,7 @@ int main()
 		flashLight->setPosition(mainCamera.position - mainCamera.up * 0.3f);
 		flashLight->setDirection(mainCamera.front);
 
-		// mainCamera.pitch += 180.0f;
+		// mainCamera.pitch -= 180.0f;
 		mainCamera.yaw += 180.0f;
 		mainCamera.handleMouseMovement(0, 0, false);
 		
@@ -451,7 +526,7 @@ int main()
 
 		glm::mat4 pv = projection * view;
 
-		// mainCamera.pitch -= 180.0f;
+		// mainCamera.pitch += 180.0f;
 		mainCamera.yaw -= 180.0f;
 		mainCamera.handleMouseMovement(0, 0, false);
 
@@ -492,13 +567,13 @@ int main()
 		}
 		backpackShader->setInt("lightsCount", activeLights);
 		
-		backpack.draw(*backpackShader);
+		tankModel.draw(*backpackShader);
 		
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(5.0f, 0.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(0.8f,0.8f,0.8f));
 		backpackShader->setFloatMat4("model", model);
-		backpack.draw(*backpackShader);
+		tankModel.draw(*backpackShader);
 
 		glStencilFunc(GL_ALWAYS, 1, 0xFF);  // Говорим, что мы всегда будем проходить stencil-тест
 		glStencilMask(0xFF);  // Разрешаем запись в Stencil буфер
@@ -508,20 +583,20 @@ int main()
 
 		// Отрисовываем кубы в stencil буфер
 
-		lightCubeShader->use();
-		
-		for (auto && lightCube : lightCubes)
-		{
-			model = glm::mat4(1.0f);
-			model = glm::translate(model, lightCube.position);
-			model = glm::scale(model, lightCube.scale);
-			lightCubeShader->setFloatMat4("projectionAndView", pv);
-			lightCubeShader->setFloatMat4("model", model);
-			lightCubeShader->setFloatVec3("uColor", lightCube.color);
-			glBindVertexArray(cubeVAO);
-			glDrawElements(GL_TRIANGLES, cubeIndicesData.size(), GL_UNSIGNED_INT, 0);
-			// lightCube.draw(*lightCubeShader);
-		}
+		// lightCubeShader->use();
+		// 
+		// for (auto && lightCube : lightCubes)
+		// {
+		// 	model = glm::mat4(1.0f);
+		// 	model = glm::translate(model, lightCube.position);
+		// 	model = glm::scale(model, lightCube.scale);
+		// 	lightCubeShader->setFloatMat4("projectionAndView", pv);
+		// 	lightCubeShader->setFloatMat4("model", model);
+		// 	lightCubeShader->setFloatVec3("uColor", lightCube.color);
+		// 	glBindVertexArray(cubeVAO);
+		// 	glDrawElements(GL_TRIANGLES, cubeIndicesData.size(), GL_UNSIGNED_INT, 0);
+		// 	// lightCube.draw(*lightCubeShader);
+		// }
 
 		// Теперь stencil буфер содержит 1-ки там, где видны кубы
 
@@ -531,25 +606,42 @@ int main()
 
 		// Увеличенные кубы будут рисоваться поверх всех объектов, но не в тех местах, где виден сам обрамляемый объект
 		
-		singleColorShader->use();
-
-		for (auto && lightCube : lightCubes)
-		{
-			model = glm::mat4(1.0f);
-			model = glm::translate(model, lightCube.position);
-			model = glm::scale(model, lightCube.scale + glm::vec3(0.1));
-			singleColorShader->setFloatMat4("projectionAndView", pv);
-			singleColorShader->setFloatMat4("model", model);
-			glBindVertexArray(cubeVAO);
-			glDrawElements(GL_TRIANGLES, cubeIndicesData.size(), GL_UNSIGNED_INT, 0);
-			// lightCube.draw(*lightCubeShader); 
-		}
+		// singleColorShader->use();
+		// 
+		// for (auto && lightCube : lightCubes)
+		// {
+		// 	model = glm::mat4(1.0f);
+		// 	model = glm::translate(model, lightCube.position);
+		// 	model = glm::scale(model, lightCube.scale + glm::vec3(0.1));
+		// 	singleColorShader->setFloatMat4("projectionAndView", pv);
+		// 	singleColorShader->setFloatMat4("model", model);
+		// 	glBindVertexArray(cubeVAO);
+		// 	glDrawElements(GL_TRIANGLES, cubeIndicesData.size(), GL_UNSIGNED_INT, 0);
+		// 	// lightCube.draw(*lightCubeShader); 
+		// }
 
 		// Для дальнейших объектов разрешаем им писать в stencil buffer и говорим, что они всегда будут его проходить, а также включаем depth_test
 
 		glStencilMask(0xFF);
 		glStencilFunc(GL_ALWAYS, 1, 0xFF);
 		glEnable(GL_DEPTH_TEST);
+
+		// Отрисовка skybox:
+		glDepthFunc(GL_LEQUAL);
+		skyboxShader->use();
+
+		glm::mat4 skyboxView = glm::mat4(glm::mat3(mainCamera.getViewMatrix()));
+
+		skyboxShader->setFloatMat4("projection", projection);
+		skyboxShader->setFloatMat4("view", skyboxView);
+
+		glBindVertexArray(skyboxVAO);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTextureId);
+		glDrawElements(GL_TRIANGLES, cubeIndicesData.size(), GL_UNSIGNED_INT, 0);
+		glDepthMask(GL_TRUE);  // Последующие элементы влияют на Depth
+
+		glDepthFunc(GL_LESS);
+		// Конец отрисовки skybox-а
 
 		// Отрисовка в стандартный framebuffer:
 		view = mainCamera.getViewMatrix();
@@ -592,13 +684,13 @@ int main()
 		}
 		backpackShader->setInt("lightsCount", activeLights);
 		
-		backpack.draw(*backpackShader);
+		tankModel.draw(*backpackShader);
 		
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(5.0f, 0.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(0.8f,0.8f,0.8f));
 		backpackShader->setFloatMat4("model", model);
-		backpack.draw(*backpackShader);
+		tankModel.draw(*backpackShader);
 
 		glStencilFunc(GL_ALWAYS, 1, 0xFF);  // Говорим, что мы всегда будем проходить stencil-тест
 		glStencilMask(0xFF);  // Разрешаем запись в Stencil буфер
@@ -608,20 +700,20 @@ int main()
 
 		// Отрисовываем кубы в stencil буфер
 
-		lightCubeShader->use();
-		
-		for (auto && lightCube : lightCubes)
-		{
-			model = glm::mat4(1.0f);
-			model = glm::translate(model, lightCube.position);
-			model = glm::scale(model, lightCube.scale);
-			lightCubeShader->setFloatMat4("projectionAndView", pv);
-			lightCubeShader->setFloatMat4("model", model);
-			lightCubeShader->setFloatVec3("uColor", lightCube.color);
-			glBindVertexArray(cubeVAO);
-			glDrawElements(GL_TRIANGLES, cubeIndicesData.size(), GL_UNSIGNED_INT, 0);
-			// lightCube.draw(*lightCubeShader);
-		}
+		// lightCubeShader->use();
+		// 
+		// for (auto && lightCube : lightCubes)
+		// {
+		// 	model = glm::mat4(1.0f);
+		// 	model = glm::translate(model, lightCube.position);
+		// 	model = glm::scale(model, lightCube.scale);
+		// 	lightCubeShader->setFloatMat4("projectionAndView", pv);
+		// 	lightCubeShader->setFloatMat4("model", model);
+		// 	lightCubeShader->setFloatVec3("uColor", lightCube.color);
+		// 	glBindVertexArray(cubeVAO);
+		// 	glDrawElements(GL_TRIANGLES, cubeIndicesData.size(), GL_UNSIGNED_INT, 0);
+		// 	// lightCube.draw(*lightCubeShader);
+		// }
 
 		// Теперь stencil буфер содержит 1-ки там, где видны кубы
 
@@ -631,25 +723,42 @@ int main()
 
 		// Увеличенные кубы будут рисоваться поверх всех объектов, но не в тех местах, где виден сам обрамляемый объект
 		
-		singleColorShader->use();
-
-		for (auto && lightCube : lightCubes)
-		{
-			model = glm::mat4(1.0f);
-			model = glm::translate(model, lightCube.position);
-			model = glm::scale(model, lightCube.scale + glm::vec3(0.1));
-			singleColorShader->setFloatMat4("projectionAndView", pv);
-			singleColorShader->setFloatMat4("model", model);
-			glBindVertexArray(cubeVAO);
-			glDrawElements(GL_TRIANGLES, cubeIndicesData.size(), GL_UNSIGNED_INT, 0);
-			// lightCube.draw(*lightCubeShader); 
-		}
+		// singleColorShader->use();
+		// 
+		// for (auto && lightCube : lightCubes)
+		// {
+		// 	model = glm::mat4(1.0f);
+		// 	model = glm::translate(model, lightCube.position);
+		// 	model = glm::scale(model, lightCube.scale + glm::vec3(0.1));
+		// 	singleColorShader->setFloatMat4("projectionAndView", pv);
+		// 	singleColorShader->setFloatMat4("model", model);
+		// 	glBindVertexArray(cubeVAO);
+		// 	glDrawElements(GL_TRIANGLES, cubeIndicesData.size(), GL_UNSIGNED_INT, 0);
+		// 	// lightCube.draw(*lightCubeShader); 
+		// }
 
 		// Для дальнейших объектов разрешаем им писать в stencil buffer и говорим, что они всегда будут его проходить, а также включаем depth_test
 
 		glStencilMask(0xFF);
 		glStencilFunc(GL_ALWAYS, 1, 0xFF);
 		glEnable(GL_DEPTH_TEST);
+
+		// Отрисовка skybox:
+		glDepthFunc(GL_LEQUAL);
+		skyboxShader->use();
+
+		skyboxView = glm::mat4(glm::mat3(mainCamera.getViewMatrix()));
+
+		skyboxShader->setFloatMat4("projection", projection);
+		skyboxShader->setFloatMat4("view", skyboxView);
+
+		glBindVertexArray(skyboxVAO);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTextureId);
+		glDrawElements(GL_TRIANGLES, cubeIndicesData.size(), GL_UNSIGNED_INT, 0);
+		glDepthMask(GL_TRUE);  // Последующие элементы влияют на Depth
+
+		glDepthFunc(GL_LESS);
+		// Конец отрисовки skybox-а
 		
 
 		screenRenderQuadShader->use();

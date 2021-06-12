@@ -83,6 +83,9 @@ inline void Model::loadModel(string path, const bool isUV_flipped)
     directory = path.substr(0, path.find_last_of('/'));
 
     processNode(scene->mRootNode, scene);
+	if (isUV_flipped){
+    		stbi_set_flip_vertically_on_load(false);
+	}
 }
 
 inline void Model::processNode(aiNode* node, const aiScene* scene)
