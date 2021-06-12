@@ -198,6 +198,7 @@ int main()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_SAMPLES, 4);
 
 	int windowWidth = windowInitialWidth, windowHeight = windowInitialHeight;
 
@@ -229,6 +230,7 @@ int main()
 	glfwSetFramebufferSizeCallback(win, OnResize);
 
 	glViewport(0, 0, windowWidth, windowHeight);
+	glEnable(GL_MULTISAMPLE);
 
 	// TODO: вернуть отбрасывание граней.
 	// glEnable(GL_CULL_FACE);
