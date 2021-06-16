@@ -45,15 +45,27 @@ struct Color
 
 Color background = {0.25f, 0.25f, 0.25f, 1.f};
 
-struct ModelTransform
+struct ModelTransformations
 {
 	glm::vec3 position;
-	glm::vec3 rotation;
+	glm::vec3 rotationVector;
+	float rotationAngleDegrees;
 	glm::vec3 scale;
 
-	void setScale(float s)
+	glm::mat4 createModelMatrixWithTransformations() const
 	{
-		scale = glm::vec3(s);
+		glm::mat4 model = glm::mat4(1.0f);
+		return getModelWithAppliedTransformations(model);
+	}
+
+	glm::mat4 getModelWithAppliedTransformations(glm::mat4 model) const{
+		glm::mat4 transformedModel = model;
+
+		transformedModel = glm::translate(transformedModel, position);
+		transformedModel = glm::rotate(transformedModel, glm::radians(rotationAngleDegrees), rotationVector);
+		transformedModel = glm::scale(transformedModel, scale);
+
+		return transformedModel;
 	}
 };
 
@@ -237,37 +249,15 @@ int main()
 	// Конец настройки glfw
 #pragma endregion
 
-	// const int cube_count = 200;
-	// 
-	// ModelTransform cubeTrans[cube_count];
-	// int cubeMat[cube_count];
-	// for (int i = 0; i < cube_count; i++)
-	// {
-	// 	float scale = (rand() % 6 + 1) / 20.0f;
-	// 	cubeTrans[i] = {
-	// 		glm::vec3((rand() % 201 - 100) / 50.0f, (rand() % 201 - 100) / 50.0f, (rand() % 201 - 100) / 50.0f),
-	// 		glm::vec3(rand() / 100.0f, rand() / 100.0f, rand() / 100.0f),
-	// 		glm::vec3(scale, scale, scale)
-	// 	};
-	// 	cubeMat[i] = rand() % 3;
-	// 
-	// 	if ((glm::vec3(0, 0, 0) - cubeTrans[i].position).length() < 0.7f)
-	// 		i--;
-	// }
-
-	// ModelTransform lightTrans = {
-	// 	glm::vec3(0.f, 0.f, 0.f),			// position
-	// 	glm::vec3(0.f, 0.f, 0.f),			// rotation
-	// 	glm::vec3(0.01, 0.01f, 0.01f) };	// scale
-
 	// Загрузка внешних данных:
-	Shader* backpackShader = new Shader("backpack_mixLightWithExplosion", true);
+	Shader* assimpModelWithLightsShader = new Shader("backpack_mixLightWithExplosion", true);
 	Shader* lightCubeShader = new Shader("lightCubeWithExplosion", true);
 	Shader* singleColorShader = new Shader("shaderSingleColor");
 	Shader* screenRenderQuadShader = new Shader("screenRenderQuadShader");
 	Shader* skyboxShader = new Shader("skybox");
 	
-	Model tankModel("models/tank/IS4.obj", true);
+	Model tankBase("models/tank/base.obj", true);
+	Model tankTurret("models/tank/turret.obj", true);
 
 	// Создание Cubemap-ы:
 	std::vector<string> cubeMapFacesTexturePaths = {
@@ -355,9 +345,9 @@ int main()
 	glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
 
 	// Создание текстуры, на котороую будут выводится рендер frameBuffer-а.
-	unsigned texColorBuffer;
-	glGenTextures(1, &texColorBuffer);
-	glBindTexture(GL_TEXTURE_2D, texColorBuffer);
+	unsigned frameBufferColorTextureID;
+	glGenTextures(1, &frameBufferColorTextureID);
+	glBindTexture(GL_TEXTURE_2D, frameBufferColorTextureID);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, windowWidth, windowHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -366,7 +356,7 @@ int main()
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	// Присоединяем созданную текстуру к framebuffer
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texColorBuffer, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, frameBufferColorTextureID, 0);
 
 	// Создание render-буфера для depth и stencil тестов:
 	// Render-буфер работает в режиме write-only.
@@ -385,7 +375,8 @@ int main()
 
 	// Переключаемся на стандартный framebuffer
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
+	
+	
 	// Создаём VAO для quad-а:
 	unsigned screenQuadVAO, screenQuadVBO, screenQuadEBO;
 	vector<float> screenQuadVertexData = StaticFigures::getQuadVertexesWithUV();
@@ -441,39 +432,7 @@ int main()
 
 	
 	// Создаём VAO для skybox-а:
-	std::vector<float> skyboxVertexesData = {
-			//	  X		 Y		 Z	
-			// Передняя грань (z: +1)
-				 1.0f,	1.0f,	1.0f,
-				-1.0f,	1.0f,	1.0f,
-				-1.0f, -1.0f,	1.0f,
-				 1.0f, -1.0f,	1.0f,
-			// Правая грань (x: +1)
-				 1.0f,	1.0f,  -1.0f,
-				 1.0f,	1.0f,	1.0f,
-				 1.0f, -1.0f,	1.0f,
-				 1.0f, -1.0f,  -1.0f,
-			// Верхняя грань (y: +1)
-				 1.0f,	1.0f,  -1.0f,
-				-1.0f,	1.0f,  -1.0f,
-				-1.0f,	1.0f,   1.0f,
-				 1.0f,	1.0f,   1.0f,
-			// Левая грань (x: -1)
-				-1.0f,	1.0f,   1.0f,
-				-1.0f,	1.0f,  -1.0f,
-				-1.0f, -1.0f,  -1.0f,
-				-1.0f, -1.0f,   1.0f,
-			// Нижняя грань (y: -1)
-				 1.0f, -1.0f,   1.0f,
-				-1.0f, -1.0f,   1.0f,
-				-1.0f, -1.0f,  -1.0f,
-				 1.0f, -1.0f,  -1.0f,
-			// Задняя грань (z: -1)
-				-1.0f,	1.0f,  -1.0f,
-				 1.0f,	1.0f,  -1.0f,
-				 1.0f, -1.0f,  -1.0f,
-				-1.0f, -1.0f,  -1.0f,
-		};
+	std::vector<float> skyboxVertexesData = StaticFigures::getCubeVertexes();
 	
 	unsigned skyboxVAO, skyboxVBO, skyboxEBO;
 
@@ -495,20 +454,30 @@ int main()
 	glBindVertexArray(0);
 	
 
-	// Model matrix: размещение объекта в мировых координатах:
-	glm::mat4 model;
-	// View matrix: размещение мира относительно камеры:
-	glm::mat4 view;
-	// Projection matrix: поправка объектов на перспективу и их клиппинг
-	glm::mat4 projection;
-
-	// glm::mat4 transformation;
+	ModelTransformations tankBaseTransformations = {
+		glm::vec3(0.0f),
+		glm::vec3(0.0f, 1.0f, 0.0f),
+		0.0f,
+		glm::vec3(1.0f)
+	};
+	ModelTransformations tankTurretTransformations = {
+		glm::vec3(0.0f),
+		glm::vec3(0.0f, 1.0f, 0.0f),
+		0.0f,
+		glm::vec3(1.0f)
+	};
+	ModelTransformations lightCubeTransformation = {
+		glm::vec3(-5.0f, 0.0f, 0.0f),
+		glm::vec3(0.0f, 1.0f, 0.0f),
+		0.0f,
+		glm::vec3(0.5f)
+	};
 
 	while (!glfwWindowShouldClose(win))
 	{
-		float currentFrameTime = (float)glfwGetTime();
-		deltaTime = currentFrameTime - lastFrameTime;
-		lastFrameTime = currentFrameTime;
+		float currentTime = (float)glfwGetTime();
+		deltaTime = currentTime - lastFrameTime;
+		lastFrameTime = currentTime;
 
 		processInput(win);
 
@@ -517,10 +486,10 @@ int main()
 		flashLight->setDirection(mainCamera.front);
 
 		// Вращение камеры:
-		view = mainCamera.getViewMatrix();
+		glm::mat4 view = mainCamera.getViewMatrix();
 
 		// Поправка на FOV камеры:
-		projection = mainCamera.getProjectionMatrix();
+		glm::mat4 projection = mainCamera.getProjectionMatrix();
 
 		glm::mat4 pv = projection * view;
 
@@ -532,41 +501,41 @@ int main()
 		glClearColor(background.r, background.g, background.b, background.a);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// Отрисовка рюкзака:
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(1.0f,1.0f,1.0f));
-		backpackShader->use();
-		backpackShader->setFloat("uExplosionMagnitude", glm::sin(currentFrameTime));
-		backpackShader->setFloatMat4("perspectiveAndView", pv);
-		backpackShader->setFloatMat4("model", model);
-		backpackShader->setFloat("shininess", 64.0f);
-		backpackShader->setFloatVec3("viewPos", mainCamera.position);
+		// Отрисовка модели:
+		tankBaseTransformations.position = glm::vec3(glm::cos(currentTime) * 2.5f, 0.0f, glm::cos(currentTime) * 2.5f);
+		tankBaseTransformations.rotationAngleDegrees = glm::cos(currentTime) * 30.0f;
+		glm::mat4 tankBaseModel = tankBaseTransformations.createModelMatrixWithTransformations();
+		
+		assimpModelWithLightsShader->use();
+		assimpModelWithLightsShader->setFloat("uExplosionMagnitude", 0.0f);
+		assimpModelWithLightsShader->setFloatMat4("perspectiveAndView", pv);
+		assimpModelWithLightsShader->setFloatMat4("model", tankBaseModel);
+		assimpModelWithLightsShader->setFloat("shininess", 64.0f);
+		assimpModelWithLightsShader->setFloatVec3("viewPos", mainCamera.position);
 		
 		int activeLights = 0;
 		for (int i = 0; i < lights.size(); i++)
 		{
-			activeLights += lights[i]->useAndReturnSuccess(backpackShader, activeLights);
+			activeLights += lights[i]->useAndReturnSuccess(assimpModelWithLightsShader, activeLights);
 		}
-		backpackShader->setInt("lightsCount", activeLights);
+		assimpModelWithLightsShader->setInt("lightsCount", activeLights);
 		
-		tankModel.draw(*backpackShader);
-		
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(5.0f, 0.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(0.8f,0.8f,0.8f));
-		backpackShader->setFloatMat4("model", model);
-		tankModel.draw(*backpackShader);
+		tankBase.draw(*assimpModelWithLightsShader);
+
+		tankTurretTransformations.rotationAngleDegrees = glm::cos(currentTime) * 90.0f;
+		glm::mat4 tankTurretModel = glm::mat4(1.0f);
+		tankTurretModel *= tankBaseModel;
+		tankTurretModel = tankTurretTransformations.getModelWithAppliedTransformations(tankTurretModel);
+		assimpModelWithLightsShader->setFloatMat4("model", tankTurretModel);
+		tankTurret.draw(*assimpModelWithLightsShader);
 		
 		// Отрисовываем кубы в stencil буфер
 
 		lightCubeShader->use();
 		
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(-5.0f, 0.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(1.0f));
+		glm::mat4 lightCubeModel = lightCubeTransformation.createModelMatrixWithTransformations();
 		lightCubeShader->setFloatMat4("projectionAndView", pv);
-		lightCubeShader->setFloatMat4("model", model);
+		lightCubeShader->setFloatMat4("model", lightCubeModel);
 		lightCubeShader->setFloatVec3("uColor", glm::vec3(1.0f, 1.0f, 1.0f));
 		glBindVertexArray(cubeVAO);
 		glDrawElements(GL_TRIANGLES, cubeIndicesData.size(), GL_UNSIGNED_INT, 0);
@@ -575,6 +544,7 @@ int main()
 		glDepthFunc(GL_LEQUAL);
 		skyboxShader->use();
 
+		// Избавляемся от перемещения камеры, сохраняя поворот
 		glm::mat4 skyboxView = glm::mat4(glm::mat3(view));
 
 		skyboxShader->setFloatMat4("projection", projection);
@@ -587,82 +557,23 @@ int main()
 
 		glDepthFunc(GL_LESS);
 		// Конец отрисовки skybox-а
+		// Конец отрисовки в framebuffer.
 
-		// Отрисовка в стандартный framebuffer:
-		
+		// Отрисовка в стандартный framebuffer quad-а, занимающего весь экран:
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		
 		glEnable(GL_DEPTH_TEST);
 		
-		glClearColor(background.r, background.g, background.b, background.a);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		// Отрисовка рюкзака:
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(1.0f,1.0f,1.0f));
-		backpackShader->use();
-		backpackShader->setFloat("uExplosionMagnitude", glm::sin(currentFrameTime));
-		backpackShader->setFloatMat4("perspectiveAndView", pv);
-		backpackShader->setFloatMat4("model", model);
-		backpackShader->setFloat("shininess", 64.0f);
-		backpackShader->setFloatVec3("viewPos", mainCamera.position);
-		
-		activeLights = 0;
-		for (int i = 0; i < lights.size(); i++)
-		{
-			activeLights += lights[i]->useAndReturnSuccess(backpackShader, activeLights);
-		}
-		backpackShader->setInt("lightsCount", activeLights);
-		
-		tankModel.draw(*backpackShader);
-		
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(5.0f, 0.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(0.8f,0.8f,0.8f));
-		backpackShader->setFloatMat4("model", model);
-		tankModel.draw(*backpackShader);
-
-		lightCubeShader->use();
-		
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(-5.0f, 0.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(1.0f));
-		lightCubeShader->setFloatMat4("projectionAndView", pv);
-		lightCubeShader->setFloatMat4("model", model);
-		lightCubeShader->setFloatVec3("uColor", glm::vec3(1.0f, 1.0f, 1.0f));
-		glBindVertexArray(cubeVAO);
-		glDrawElements(GL_TRIANGLES, cubeIndicesData.size(), GL_UNSIGNED_INT, 0);
-
-		// Отрисовка skybox:
-		glDepthFunc(GL_LEQUAL);
-		skyboxShader->use();
-
-		skyboxView = glm::mat4(glm::mat3(mainCamera.getViewMatrix()));
-
-		skyboxShader->setFloatMat4("projection", projection);
-		skyboxShader->setFloatMat4("view", skyboxView);
-
-		glBindVertexArray(skyboxVAO);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTextureId);
-		glDrawElements(GL_TRIANGLES, cubeIndicesData.size(), GL_UNSIGNED_INT, 0);
-		glDepthMask(GL_TRUE);  // Последующие элементы влияют на Depth
-
-		glDepthFunc(GL_LESS);
-		// Конец отрисовки skybox-а
-		
-		// Отрисовка "мини-окошка":
 		screenRenderQuadShader->use();
 		glBindVertexArray(screenQuadVAO);
 		glDisable(GL_DEPTH_TEST);
-		glBindTexture(GL_TEXTURE_2D, texColorBuffer);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, frameBufferColorTextureID);
 		glDrawElements(GL_TRIANGLES, screenQuadIndicesData.size(), GL_UNSIGNED_INT, 0);
+		// Конец отрисовки в стандартный framebuffer.
 
 		glfwSwapBuffers(win);
 		glfwPollEvents();
 	}
-
-	// delete backpackShader;
 
 	glfwTerminate();
 	return 0;
