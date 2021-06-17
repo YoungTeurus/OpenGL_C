@@ -34,8 +34,17 @@
     <Filter Include="Исходные файлы\window">
       <UniqueIdentifier>{6396acd5-d52b-4413-8c96-b08566845492}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Исходные файлы\world">
-      <UniqueIdentifier>{620c4345-0392-40ce-9cde-ab6935be765a}</UniqueIdentifier>
+    <Filter Include="Исходные файлы\game">
+      <UniqueIdentifier>{ce3899d0-7ea1-4c94-b1c9-06e9f6056456}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\renderer">
+      <UniqueIdentifier>{bac56afe-46de-479b-8958-601419665d1e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы ресурсов\shaders">
+      <UniqueIdentifier>{e952258b-3d43-483e-967b-29fd61db952b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\game\WorldObjects">
+      <UniqueIdentifier>{6f6bac1d-b367-49e6-bab5-bb492bcc688a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -51,8 +60,17 @@
     <ClCompile Include="source\shader\Shader.cpp">
       <Filter>Исходные файлы\shader</Filter>
     </ClCompile>
-    <ClCompile Include="source\world\WorldObject.cpp">
-      <Filter>Исходные файлы\world</Filter>
+    <ClCompile Include="source\window\Window.cpp">
+      <Filter>Исходные файлы\window</Filter>
+    </ClCompile>
+    <ClCompile Include="source\renderer\Renderer.cpp">
+      <Filter>Исходные файлы\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="source\game\Game.cpp">
+      <Filter>Исходные файлы\game</Filter>
+    </ClCompile>
+    <ClCompile Include="source\game\SceneObject.h">
+      <Filter>Исходные файлы\game</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -101,5 +119,103 @@
     <ClInclude Include="source\utility\FilePaths.h">
       <Filter>Исходные файлы\utility</Filter>
     </ClInclude>
+    <ClInclude Include="source\window\Window.h">
+      <Filter>Исходные файлы\window</Filter>
+    </ClInclude>
+    <ClInclude Include="source\window\InputHandler.h">
+      <Filter>Исходные файлы\window</Filter>
+    </ClInclude>
+    <ClInclude Include="source\renderer\Renderer.h">
+      <Filter>Исходные файлы\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="source\window\Clock.h">
+      <Filter>Исходные файлы\window</Filter>
+    </ClInclude>
+    <ClInclude Include="source\game\Game.h">
+      <Filter>Исходные файлы\game</Filter>
+    </ClInclude>
+    <ClInclude Include="source\model\ModelLoader.h">
+      <Filter>Исходные файлы\model</Filter>
+    </ClInclude>
+    <ClInclude Include="source\game\Scene.h">
+      <Filter>Исходные файлы\game</Filter>
+    </ClInclude>
+    <ClInclude Include="source\shader\ShaderLoader.h">
+      <Filter>Исходные файлы\shader</Filter>
+    </ClInclude>
+    <ClInclude Include="source\game\WorldObjects\Tank.h">
+      <Filter>Исходные файлы\game\WorldObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="source\renderer\DrawFrameBuffer.h">
+      <Filter>Исходные файлы\renderer</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\shaders\screenRenderQuadShaderWithKernel.vert">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\shaderSingleColor.frag">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\shaderSingleColor.vert">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\skybox.frag">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\skybox.vert">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\backpack_mixLight.frag">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\backpack_mixLight.vert">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\backpack_mixLightWithExplosion.frag">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\backpack_mixLightWithExplosion.geom">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\backpack_mixLightWithExplosion.vert">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\cube_mixLight.frag">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\cube_mixLight.vert">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\lightCube.frag">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\lightCube.vert">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\lightCubeWithExplosion.frag">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\lightCubeWithExplosion.geom">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\lightCubeWithExplosion.vert">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\screenRenderQuadShader.frag">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\screenRenderQuadShader.vert">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\screenRenderQuadShaderWithHDR.frag">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\screenRenderQuadShaderWithHDR.vert">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\screenRenderQuadShaderWithKernel.frag">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

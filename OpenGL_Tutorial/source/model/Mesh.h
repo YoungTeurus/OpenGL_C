@@ -4,7 +4,7 @@
 #include <map>
 #include <glm/glm.hpp>
 
-#include "shader/Shader.h"
+#include "../shader/Shader.h"
 
 using namespace std;
 
@@ -30,14 +30,14 @@ static std::map<TextureType, std::string> textureTypeShaderNames = {
 	{TextureType::HEIGHT, "texture_height"}
 };
 
-static std::map<std::string, TextureType> shaderNamesTextureType = {
-	{"texture_diffuse", TextureType::DIFFUSE},
-	{"texture_specular", TextureType::SPECULAR},
-	{"texture_normal", TextureType::NORMAL},
-	{"texture_height", TextureType::HEIGHT}
-};
+// static std::map<std::string, TextureType> shaderNamesTextureType = {
+// 	{"texture_diffuse", TextureType::DIFFUSE},
+// 	{"texture_specular", TextureType::SPECULAR},
+// 	{"texture_normal", TextureType::NORMAL},
+// 	{"texture_height", TextureType::HEIGHT}
+// };
 
-struct Texture_ {
+struct Texture {
     unsigned int id;
     TextureType type;
     string path;
@@ -49,10 +49,10 @@ class Mesh
 public:
     vector<Vertex>          vertices;
     vector<unsigned int>    indices;
-    vector<Texture_>        textures;
+    vector<Texture>        textures;
     unsigned int            VAO;
 
-    Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture_> textures);
+    Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture> textures);
     void draw(Shader& shader);
 private:
 
@@ -61,7 +61,7 @@ private:
     void setupMesh();
 };
 
-inline Mesh::Mesh(vector<Vertex> vertices, vector<unsigned> indices, vector<Texture_> textures)
+inline Mesh::Mesh(vector<Vertex> vertices, vector<unsigned> indices, vector<Texture> textures)
 {
     this->vertices = vertices;
     this->indices = indices;
@@ -81,7 +81,7 @@ inline void Mesh::draw(Shader& shader)
         glActiveTexture(GL_TEXTURE0 + i);
         string textureNumber;
 
-    	const Texture_ currentTexture = textures[i];
+    	const Texture currentTexture = textures[i];
     	const TextureType currentTextureType = currentTexture.type;
 
         switch (currentTextureType)

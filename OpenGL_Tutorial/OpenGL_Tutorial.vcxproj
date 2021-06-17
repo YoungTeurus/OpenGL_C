@@ -153,13 +153,19 @@
   <ItemGroup>
     <ClCompile Include="include\glad.c" />
     <ClCompile Include="source\camera\Camera.cpp" />
+    <ClCompile Include="source\game\Game.cpp" />
+    <ClCompile Include="source\game\SceneObject.h" />
     <ClCompile Include="source\Main.cpp" />
+    <ClCompile Include="source\renderer\Renderer.cpp" />
     <ClCompile Include="source\shader\Shader.cpp" />
-    <ClCompile Include="source\world\WorldObject.cpp" />
+    <ClCompile Include="source\window\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\stb_image.h" />
     <ClInclude Include="source\camera\Camera.h" />
+    <ClInclude Include="source\game\Game.h" />
+    <ClInclude Include="source\game\Scene.h" />
+    <ClInclude Include="source\game\WorldObjects\Tank.h" />
     <ClInclude Include="source\light\AmbientLight.h" />
     <ClInclude Include="source\light\AttenuatedLight.h" />
     <ClInclude Include="source\light\BaseLight.h" />
@@ -170,9 +176,40 @@
     <ClInclude Include="source\light\SpotLight.h" />
     <ClInclude Include="source\model\Mesh.h" />
     <ClInclude Include="source\model\Model.h" />
+    <ClInclude Include="source\model\ModelLoader.h" />
     <ClInclude Include="source\model\StaticFigures.h" />
+    <ClInclude Include="source\renderer\DrawFrameBuffer.h" />
+    <ClInclude Include="source\renderer\Renderer.h" />
     <ClInclude Include="source\shader\Shader.h" />
+    <ClInclude Include="source\shader\ShaderLoader.h" />
     <ClInclude Include="source\utility\FilePaths.h" />
+    <ClInclude Include="source\window\Clock.h" />
+    <ClInclude Include="source\window\InputHandler.h" />
+    <ClInclude Include="source\window\Window.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\shaders\backpack_mixLight.frag" />
+    <None Include="resources\shaders\backpack_mixLight.vert" />
+    <None Include="resources\shaders\backpack_mixLightWithExplosion.frag" />
+    <None Include="resources\shaders\backpack_mixLightWithExplosion.geom" />
+    <None Include="resources\shaders\backpack_mixLightWithExplosion.vert" />
+    <None Include="resources\shaders\cube_mixLight.frag" />
+    <None Include="resources\shaders\cube_mixLight.vert" />
+    <None Include="resources\shaders\lightCube.frag" />
+    <None Include="resources\shaders\lightCube.vert" />
+    <None Include="resources\shaders\lightCubeWithExplosion.frag" />
+    <None Include="resources\shaders\lightCubeWithExplosion.geom" />
+    <None Include="resources\shaders\lightCubeWithExplosion.vert" />
+    <None Include="resources\shaders\screenRenderQuadShader.frag" />
+    <None Include="resources\shaders\screenRenderQuadShader.vert" />
+    <None Include="resources\shaders\screenRenderQuadShaderWithHDR.frag" />
+    <None Include="resources\shaders\screenRenderQuadShaderWithHDR.vert" />
+    <None Include="resources\shaders\screenRenderQuadShaderWithKernel.frag" />
+    <None Include="resources\shaders\screenRenderQuadShaderWithKernel.vert" />
+    <None Include="resources\shaders\shaderSingleColor.frag" />
+    <None Include="resources\shaders\shaderSingleColor.vert" />
+    <None Include="resources\shaders\skybox.frag" />
+    <None Include="resources\shaders\skybox.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

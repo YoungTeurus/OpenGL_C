@@ -66,7 +66,6 @@ public:
 	// Изменение FOV камеры при скролле колёсика
 	void handleMouseScroll(float yOffset);
 
-private:
 	// Рассчитывает векторы
 	void updateCameraVectors();
 };
