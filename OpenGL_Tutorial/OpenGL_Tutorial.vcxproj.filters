@@ -13,158 +13,93 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="shaders">
-      <UniqueIdentifier>{523184c5-ea10-4f66-9250-1bbe7f857291}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Исходные файлы\classes">
-      <UniqueIdentifier>{bb55530a-8024-496b-b541-fb92f1e51356}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Исходные файлы\include">
       <UniqueIdentifier>{0de59806-4328-41b4-813f-6dc68a9afd36}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Исходные файлы\interfaces">
-      <UniqueIdentifier>{3c36dd5a-2c98-4aa6-8514-57053ee14f90}</UniqueIdentifier>
+    <Filter Include="Исходные файлы\camera">
+      <UniqueIdentifier>{39a3402c-28ed-4ccb-a8b5-20453151a887}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Исходные файлы\classes\Lights">
-      <UniqueIdentifier>{078e8370-1f18-4983-99f5-cbfdbc4014e6}</UniqueIdentifier>
+    <Filter Include="Исходные файлы\light">
+      <UniqueIdentifier>{db37d5cc-eca6-4b53-aa27-7da87b8f0bf1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\model">
+      <UniqueIdentifier>{1e056f0b-1afc-453e-abc0-d26d87548f05}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\shader">
+      <UniqueIdentifier>{6dd3b159-531c-4e17-9deb-0e2ad976ccb1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\utility">
+      <UniqueIdentifier>{ef1c213d-a4f9-41b1-b317-3d948a30cef2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\window">
+      <UniqueIdentifier>{6396acd5-d52b-4413-8c96-b08566845492}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\world">
+      <UniqueIdentifier>{620c4345-0392-40ce-9cde-ab6935be765a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="classes\Camera.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="classes\Shader.cpp">
-      <Filter>Исходные файлы\classes</Filter>
-    </ClCompile>
     <ClCompile Include="include\glad.c">
       <Filter>Исходные файлы\include</Filter>
     </ClCompile>
-    <ClCompile Include="Source.cpp">
+    <ClCompile Include="source\Main.cpp">
       <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="source\camera\Camera.cpp">
+      <Filter>Исходные файлы\camera</Filter>
+    </ClCompile>
+    <ClCompile Include="source\shader\Shader.cpp">
+      <Filter>Исходные файлы\shader</Filter>
+    </ClCompile>
+    <ClCompile Include="source\world\WorldObject.cpp">
+      <Filter>Исходные файлы\world</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="classes\Camera.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="classes\Shader.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="include\stb_image.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>Файлы заголовков</Filter>
+    <ClInclude Include="source\camera\Camera.h">
+      <Filter>Исходные файлы\camera</Filter>
     </ClInclude>
-    <ClInclude Include="Model.h">
-      <Filter>Файлы заголовков</Filter>
+    <ClInclude Include="source\light\AmbientLight.h">
+      <Filter>Исходные файлы\light</Filter>
     </ClInclude>
-    <ClInclude Include="AttenuatedLight.h">
-      <Filter>Исходные файлы\classes\Lights</Filter>
+    <ClInclude Include="source\light\AttenuatedLight.h">
+      <Filter>Исходные файлы\light</Filter>
     </ClInclude>
-    <ClInclude Include="BaseLight.h">
-      <Filter>Исходные файлы\classes\Lights</Filter>
+    <ClInclude Include="source\light\BaseLight.h">
+      <Filter>Исходные файлы\light</Filter>
     </ClInclude>
-    <ClInclude Include="PositionedLight.h">
-      <Filter>Исходные файлы\classes\Lights</Filter>
+    <ClInclude Include="source\light\ColoredLight.h">
+      <Filter>Исходные файлы\light</Filter>
     </ClInclude>
-    <ClInclude Include="PointLight.h">
-      <Filter>Исходные файлы\classes\Lights</Filter>
+    <ClInclude Include="source\light\DirectionalLight.h">
+      <Filter>Исходные файлы\light</Filter>
     </ClInclude>
-    <ClInclude Include="ColoredLight.h">
-      <Filter>Исходные файлы\classes\Lights</Filter>
+    <ClInclude Include="source\light\PointLight.h">
+      <Filter>Исходные файлы\light</Filter>
     </ClInclude>
-    <ClInclude Include="DirectionalLight.h">
-      <Filter>Исходные файлы\classes\Lights</Filter>
+    <ClInclude Include="source\light\PositionedLight.h">
+      <Filter>Исходные файлы\light</Filter>
     </ClInclude>
-    <ClInclude Include="SpotLight.h">
-      <Filter>Исходные файлы\classes\Lights</Filter>
+    <ClInclude Include="source\light\SpotLight.h">
+      <Filter>Исходные файлы\light</Filter>
     </ClInclude>
-    <ClInclude Include="AmbientLight.h">
-      <Filter>Исходные файлы\classes\Lights</Filter>
+    <ClInclude Include="source\model\Mesh.h">
+      <Filter>Исходные файлы\model</Filter>
     </ClInclude>
-    <ClInclude Include="StaticFigures.h">
-      <Filter>Исходные файлы\classes</Filter>
+    <ClInclude Include="source\model\Model.h">
+      <Filter>Исходные файлы\model</Filter>
     </ClInclude>
-    <ClInclude Include="Cube.h">
-      <Filter>Исходные файлы\classes</Filter>
+    <ClInclude Include="source\model\StaticFigures.h">
+      <Filter>Исходные файлы\model</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="shaders\basic.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shaders\basic.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shaders\cube.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shaders\lightCube.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shaders\cube_mixLight.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shaders\backpack_mixLight.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shaders\backpack_mixLight.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shaders\lightCube.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shaders\shaderSingleColor.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shaders\shaderSingleColor.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shaders\screenRenderQuadShader.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shaders\screenRenderQuadShader.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shaders\screenRenderQuadShaderWithKernel.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shaders\screenRenderQuadShaderWithKernel.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shaders\skybox.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shaders\skybox.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shaders\backpack_mixLightWithExplosion.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shaders\backpack_mixLightWithExplosion.geom">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shaders\backpack_mixLightWithExplosion.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shaders\lightCubeWithExplosion.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shaders\lightCubeWithExplosion.geom">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shaders\lightCubeWithExplosion.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shaders\screenRenderQuadShaderWithHDR.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shaders\screenRenderQuadShaderWithHDR.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shaders\cube_mixLight.vert">
-      <Filter>shaders</Filter>
-    </None>
+    <ClInclude Include="source\shader\Shader.h">
+      <Filter>Исходные файлы\shader</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utility\FilePaths.h">
+      <Filter>Исходные файлы\utility</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

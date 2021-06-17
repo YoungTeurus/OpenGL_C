@@ -83,7 +83,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>.\include;$(IncludePath)</IncludePath>
-    <LibraryPath>.\lib-vc2019;$(LibraryPath)</LibraryPath>
+    <LibraryPath>.\libs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -151,54 +151,28 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="classes\Camera.cpp" />
-    <ClCompile Include="classes\Shader.cpp" />
     <ClCompile Include="include\glad.c" />
-    <ClCompile Include="Source.cpp" />
+    <ClCompile Include="source\camera\Camera.cpp" />
+    <ClCompile Include="source\Main.cpp" />
+    <ClCompile Include="source\shader\Shader.cpp" />
+    <ClCompile Include="source\world\WorldObject.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AmbientLight.h" />
-    <ClInclude Include="BaseLight.h" />
-    <ClInclude Include="classes\Camera.h" />
-    <ClInclude Include="classes\Shader.h" />
-    <ClInclude Include="ColoredLight.h" />
-    <ClInclude Include="Cube.h" />
-    <ClInclude Include="DirectionalLight.h" />
-    <ClInclude Include="AttenuatedLight.h" />
-    <ClInclude Include="PointLight.h" />
-    <ClInclude Include="PositionedLight.h" />
     <ClInclude Include="include\stb_image.h" />
-    <ClInclude Include="Mesh.h" />
-    <ClInclude Include="Model.h" />
-    <ClInclude Include="SpotLight.h" />
-    <ClInclude Include="StaticFigures.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="shaders\backpack_mixLight.frag" />
-    <None Include="shaders\backpack_mixLight.vert" />
-    <None Include="shaders\backpack_mixLightWithExplosion.frag" />
-    <None Include="shaders\backpack_mixLightWithExplosion.geom" />
-    <None Include="shaders\backpack_mixLightWithExplosion.vert" />
-    <None Include="shaders\basic.frag" />
-    <None Include="shaders\basic.vert" />
-    <None Include="shaders\cube.vert" />
-    <None Include="shaders\cube_mixLight.frag" />
-    <None Include="shaders\cube_mixLight.vert" />
-    <None Include="shaders\lightCube.frag" />
-    <None Include="shaders\lightCube.vert" />
-    <None Include="shaders\lightCubeWithExplosion.frag" />
-    <None Include="shaders\lightCubeWithExplosion.geom" />
-    <None Include="shaders\lightCubeWithExplosion.vert" />
-    <None Include="shaders\screenRenderQuadShader.frag" />
-    <None Include="shaders\screenRenderQuadShader.vert" />
-    <None Include="shaders\screenRenderQuadShaderWithHDR.frag" />
-    <None Include="shaders\screenRenderQuadShaderWithHDR.vert" />
-    <None Include="shaders\screenRenderQuadShaderWithKernel.frag" />
-    <None Include="shaders\screenRenderQuadShaderWithKernel.vert" />
-    <None Include="shaders\shaderSingleColor.frag" />
-    <None Include="shaders\shaderSingleColor.vert" />
-    <None Include="shaders\skybox.frag" />
-    <None Include="shaders\skybox.vert" />
+    <ClInclude Include="source\camera\Camera.h" />
+    <ClInclude Include="source\light\AmbientLight.h" />
+    <ClInclude Include="source\light\AttenuatedLight.h" />
+    <ClInclude Include="source\light\BaseLight.h" />
+    <ClInclude Include="source\light\ColoredLight.h" />
+    <ClInclude Include="source\light\DirectionalLight.h" />
+    <ClInclude Include="source\light\PointLight.h" />
+    <ClInclude Include="source\light\PositionedLight.h" />
+    <ClInclude Include="source\light\SpotLight.h" />
+    <ClInclude Include="source\model\Mesh.h" />
+    <ClInclude Include="source\model\Model.h" />
+    <ClInclude Include="source\model\StaticFigures.h" />
+    <ClInclude Include="source\shader\Shader.h" />
+    <ClInclude Include="source\utility\FilePaths.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
