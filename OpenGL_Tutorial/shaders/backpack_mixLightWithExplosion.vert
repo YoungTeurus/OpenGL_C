@@ -11,12 +11,12 @@ out vec3 vNormal;
 out mat3 vTBN;
 out vec3 vFragPosition;
 
-uniform mat4 perspectiveAndView;
+uniform mat4 projectionAndView;
 uniform mat4 model;
 
 void main(){
 	vec4 vertPosition = model * vec4(inFragPosition, 1.0);
-	gl_Position = perspectiveAndView * vertPosition;
+	gl_Position = projectionAndView * vertPosition;
 
 	vTextureCoord = inTextureCoord;
 	vNormal = mat3(model) * inNormal;

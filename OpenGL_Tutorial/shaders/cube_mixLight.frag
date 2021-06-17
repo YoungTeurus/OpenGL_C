@@ -1,107 +1,87 @@
 #version 330 core
 
-#define NUMBER_OF_MAX_POINT_LIGHTS 8
+#define MAX_LIGHTS 8
 
-struct Material {
-	sampler2D	diffuse;	// Карта освещения (текстура)
-	sampler2D	specular;	// Карта для спекулярного света (текстура)
+struct Light{
+	int type;
 
-	sampler2D	emission;	// Карта свечения
-
-	float		shininess;	// Глянцевость поверхности
-};
-
-// Направленный свет
-struct DirLight {
-	vec3 direction; 
-
-	vec3 ambient;		// Цвет (сила?) мирового света
-	vec3 diffuse;		// Цвет (сила?) диффузного света
-	vec3 specular;		// Цвет (сила?) спекулярного света
-};
-
-// Точечный свет
-struct PointLight {
 	vec3 position;
 
-	vec3 ambient;		// Цвет (сила?) мирового света
-	vec3 diffuse;		// Цвет (сила?) диффузного света
-	vec3 specular;		// Цвет (сила?) спекулярного света
+	// Для Direction и Spot источников:
+	vec3 direction;
 
-	// Переменные для убывания интенсивности света:
+	// Для Spot источника:
+	float cutOffCosin;
+	float outerCutOffCosin;
+
+	// Цвет источника:
+	vec3 ambient;
+	vec3 diffuse;
+	vec3 specular;
+
+	// Для затухающих источников:
 	float constant;
 	float linear;
 	float quadratic;
 };
 
-// Конусный свет-фонарик
-struct SpotLight{
-	vec3 position;
-	vec3 direction;		// Направление света
-	float cutOffCosin;	// Косинус угла распространения света со 100% интенсивностью
-	float outerCutOffCosin;	// Косинус угла распространения света, за которым интенсивность = 0%
-
-	vec3 ambient;		// Цвет (сила?) мирового света
-	vec3 diffuse;		// Цвет (сила?) диффузного света
-	vec3 specular;		// Цвет (сила?) спекулярного света
-	
-	// Переменные для убывания интенсивности света:
-	float constant;
-	float linear;
-	float quadratic;
-};
-
-// Рассчитывает влияние направленного света на вертекс с указанной нормалью и направлением взгляда
-vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir);
-// Рассчитывает влияние точечного света на вертекс с указанной нормалью и направлением взгляда
-vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
-// Рассчитывает влияние spotlight света на вертекс с указанной нормалью и направлением взгляда
-vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
-
+int LightDirectionalType = 1;
+int LightPointType = 2;
+int LightSpotType = 3;
+int LightAmbientType = 4;
 
 in vec3 fNormal;
-in vec3 fragPosition;
+in vec3 fFragPosition;
 in vec2 fTextureCoord;
 
 out vec4 fragColor;
 
-uniform Material material;
-uniform bool hasDirLight = false;
-uniform DirLight dirLight;
-uniform int pointLightsNumber = 0;
-uniform PointLight pointLights[NUMBER_OF_MAX_POINT_LIGHTS];
-uniform bool hasSpotLight = false;
-uniform SpotLight spotLight;
+uniform int lightsCount;
+uniform Light lights[MAX_LIGHTS];
+
+uniform sampler2D textureDiffuse;
+uniform sampler2D textureSpecular;
+uniform float shininess;
 
 uniform vec3 viewPos;  // Положение камеры в мировых координатах
 
+// Объявление функций:
+
+vec3 getColorFromLight(Light light, vec3 normal, vec3 fFragPosition, vec3 viewDir, vec3 diffuseTextureColor, vec3 specularTextureColor);
+vec3 getColorFromDirLight(Light light, vec3 normal, vec3 viewDir, vec3 diffuseTextureColor, vec3 specularTextureColor);
+vec3 getColorFromPointLight(Light light, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 diffuseTextureColor, vec3 specularTextureColor);
+vec3 getColorFromSpotLight(Light light, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 diffuseTextureColor, vec3 specularTextureColor);
+
 void main(){
-	vec3 normal = normalize(fNormal);  // Нормальная к грани
-	vec3 viewDir = normalize(viewPos - fragPosition);  // Угол между взглядом и вертексом
+	vec3 normal, diffuseTextureColor, specularTextureColor, viewDir;
 
-	vec3 result = vec3(0.0, 0.0, 0.0);
+	normal = fNormal;
+	diffuseTextureColor = texture(textureDiffuse, fTextureCoord).rgb;
+	specularTextureColor = texture(textureSpecular, fTextureCoord).rgb;
+	viewDir = normalize(viewPos - fFragPosition);
 
-	// 1. За основу берётся направленное освещение
-	if (hasDirLight){
-		result += CalcDirLight(dirLight, normal, viewDir);
-	}
-	// 2. Прибавление света от точечных источников
-	for(int i = 0; i < pointLightsNumber; i++){
-		result += CalcPointLight(pointLights[i], normal, fragPosition, viewDir);
-	}
-	// 3. Прибавление света от фонарика
-	if (hasSpotLight){
-		result += CalcSpotLight(spotLight, normal, fragPosition, viewDir);
-	}
+	vec3 result = vec3(0, 0, 0);
 
-	// 4. Прибавление собственного свечения
-	vec3 emission = vec3(texture(material.emission, fTextureCoord));
-	result += emission;
+	for(int i = 0; i < lightsCount; i++){
+		result += getColorFromLight(lights[i], normal, fFragPosition, viewDir, diffuseTextureColor, specularTextureColor);
+	}
 
 	fragColor = vec4(result, 1.0);
 }
 
-vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir){
+vec3 getColorFromLight(Light light, vec3 normal, vec3 fFragPosition, vec3 viewDir, vec3 diffuseTextureColor, vec3 specularTextureColor){
+	if (light.type == LightDirectionalType){
+		return getColorFromDirLight(light, normal, viewDir, diffuseTextureColor, specularTextureColor);
+	} else if (light.type == LightPointType){
+		return getColorFromPointLight(light, normal, fFragPosition, viewDir, diffuseTextureColor, specularTextureColor);
+	} else if (light.type == LightSpotType){
+		return getColorFromSpotLight(light, normal, fFragPosition, viewDir, diffuseTextureColor, specularTextureColor);
+	} else if (light.type == LightAmbientType){
+		return vec3(0, 0, 0);
+	}
+}
+
+vec3 getColorFromDirLight(Light light, vec3 normal, vec3 viewDir, vec3 diffuseTextureColor, vec3 specularTextureColor){
 	vec3 lightDir = normalize(-light.direction); // Вектор направления света
 
 	// Скалярное произведение, даёт косинус угла [0,1], так как оба вектора нормализованы
@@ -111,16 +91,16 @@ vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir){
 	// Отражаем падающий свет отнсоительно вектора нормали
 	vec3 reflectDir = reflect(-lightDir, normal);
 	// shininess - степень глянцевости поверхности. Чем больше, тем более чётко выделено светлое пятно
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+	float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
 
 	// Комбинируем результаты:
-	vec3 ambient = light.ambient * vec3(texture(material.diffuse, fTextureCoord));
-	vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuse, fTextureCoord));
-	vec3 specular = light.specular * spec * vec3(texture(material.specular, fTextureCoord));
-	return (ambient + diffuse + specular);
+	vec3 _ambient = light.ambient * diffuseTextureColor;
+	vec3 _diffuse = light.diffuse * diff * diffuseTextureColor;
+	vec3 _specular = light.specular * spec * specularTextureColor;
+	return (_ambient + _diffuse + _specular);
 }
 
-vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir){
+vec3 getColorFromPointLight(Light light, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 diffuseTextureColor, vec3 specularTextureColor){
 	vec3 fragToLight = light.position - fragPos;  // Вектор, направленный из позиции вертекса к источнику света
 	vec3 lightDir = normalize(fragToLight); // Вектор направления света
 	float distanceToLight = length(fragToLight);
@@ -134,16 +114,16 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir){
 	// Отражаем падающий свет отнсоительно вектора нормали
 	vec3 reflectDir = reflect(-lightDir, normal);
 	// shininess - степень глянцевости поверхности. Чем больше, тем более чётко выделено светлое пятно
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-	vec3 specularMap = vec3(texture(material.specular, fTextureCoord));
+	float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
+	vec3 specularMap = specularTextureColor;
 	
-	vec3 ambient = light.ambient * vec3(texture(material.diffuse, fTextureCoord)) * attenuation;
-	vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuse, fTextureCoord)) * attenuation;
+	vec3 ambient = light.ambient * diffuseTextureColor * attenuation;
+	vec3 diffuse = light.diffuse * diff * diffuseTextureColor * attenuation;
 	vec3 specular = light.specular * spec * specularMap * attenuation;
 	return (ambient + diffuse + specular);
 }
 
-vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir){
+vec3 getColorFromSpotLight(Light light, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 diffuseTextureColor, vec3 specularTextureColor){
 	vec3 vertToLightVec = light.position - fragPos;  // Вектор, направленный из позиции вертекса к источнику света
 	float vertToLightDistance = length(vertToLightVec);
 
@@ -166,11 +146,10 @@ vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir){
 	// Отражаем падающий свет отнсоительно вектора нормали
 	vec3 reflectDir = reflect(-lightDir, normal);
 	// shininess - степень глянцевости поверхности. Чем больше, тем более чётко выделено светлое пятно
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-	vec3 specularMap = vec3(texture(material.specular, fTextureCoord));
+	float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
 
-	vec3 ambient = light.ambient * vec3(texture(material.diffuse, fTextureCoord)) * intensity_angle * attenuation;
-	vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuse, fTextureCoord)) * intensity_angle * attenuation;
-	vec3 specular = light.specular * spec * specularMap * intensity_angle * attenuation;
+	vec3 ambient = light.ambient * diffuseTextureColor * intensity_angle * attenuation;
+	vec3 diffuse = light.diffuse * diff * diffuseTextureColor * intensity_angle * attenuation;
+	vec3 specular = light.specular * spec * specularTextureColor * intensity_angle * attenuation;
 	return (ambient + diffuse + specular);
 }

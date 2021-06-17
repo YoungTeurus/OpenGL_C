@@ -29,6 +29,8 @@ Camera mainCamera = Camera((float)windowInitialWidth / windowInitialHeight, glm:
 
 bool wireframeMode = false;
 
+float globalExposure = 1.0f;
+
 void setPolygoneDrawMode() {
 	if (wireframeMode) {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -118,10 +120,10 @@ void processInput(GLFWwindow* window)
 
 	// TODO: сделать поворот камеры вокруг оси Z
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
-		mainCamera.handleKeyboard(MovementDirection::ROLL_LEFT, deltaTime);
+		globalExposure = min( globalExposure + 1.0f * deltaTime, 10.0f );
 	}
 	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
-		mainCamera.handleKeyboard(MovementDirection::ROLL_RIGHT, deltaTime);
+		globalExposure = max( globalExposure - 1.0f * deltaTime, 0.01f );
 	}
 
 	// Поднятие-спуск камеры:
@@ -201,6 +203,45 @@ unsigned loadCubeMapFromPathsAndGetTextureId(std::vector<string> pathsToTextures
 	return textureID;
 }
 
+unsigned loadTextureFromPathAndGetTextureId(const std::string& pathToTexture)
+{
+	unsigned textureID;
+	glGenTextures(1, &textureID);
+	glBindTexture(GL_TEXTURE_2D, textureID);
+
+	int width, height, nrChannels;
+	unsigned char* data = stbi_load(pathToTexture.c_str(), &width, &height, &nrChannels, 0);
+	if (data){
+		GLenum format;
+		switch (nrChannels) {
+		case 1:
+			format = GL_RED;
+			break;
+		case 3:
+			format = GL_RGB;
+			break;
+		case 4:
+		default:
+			format = GL_RGBA;
+		}
+		glTexImage2D(
+			GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data
+		);
+	} else {
+		std::cout << "Texture failed to load at path: " << pathToTexture << std::endl;
+	}
+	stbi_image_free(data);
+
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	return textureID;
+}
+
 int main()
 {
 	using namespace std;
@@ -250,11 +291,14 @@ int main()
 #pragma endregion
 
 	// Загрузка внешних данных:
-	Shader* assimpModelWithLightsShader = new Shader("backpack_mixLightWithExplosion", true);
-	Shader* lightCubeShader = new Shader("lightCubeWithExplosion", true);
-	Shader* singleColorShader = new Shader("shaderSingleColor");
+	Shader* assimpModelWithLightsAndExplosionShader = new Shader("backpack_mixLightWithExplosion", true);
+	// Shader* lightCubeShader = new Shader("lightCube", true);
+	Shader* lightCubeWithExplosionShader = new Shader("lightCubeWithExplosion", true);
+	// Shader* singleColorShader = new Shader("shaderSingleColor");
 	Shader* screenRenderQuadShader = new Shader("screenRenderQuadShader");
+	Shader* screenRenderQuadWithHDRShader = new Shader("screenRenderQuadShaderWithHDR");
 	Shader* skyboxShader = new Shader("skybox");
+	Shader* cubeWithLightsShader = new Shader("cube_mixLight");
 	
 	Model tankBase("models/tank/base.obj", true);
 	Model tankTurret("models/tank/turret.obj", true);
@@ -271,72 +315,83 @@ int main()
 
 	unsigned cubeMapTextureId = loadCubeMapFromPathsAndGetTextureId(cubeMapFacesTexturePaths);
 
+	unsigned containerTextureID = loadTextureFromPathAndGetTextureId("./textures/container2.png");
+	unsigned containerSpecularTextureID = loadTextureFromPathAndGetTextureId("./textures/container2_specular.png");
+
+	
 	// Подготовка источников освещения:
 	vector<BaseLight*> lights;
 
-	// PointLight* brightLamp = new PointLight(
-	// 	glm::vec3(0.15f, 0.15f, 0.15f),
-	// 	glm::vec3(0.75f, 0.75f, 0.75f),
-	// 	glm::vec3(1.0f, 1.0f, 1.0f),
-	// 	1.0f, 0.001f, 0.0009f,
-	// 	glm::vec3(5.0f, 5.0f, 5.0f),
-	// 	"BrightLamp"
-	// );
-	// lights.push_back(brightLamp);
-	// 
-	// PointLight* redLamp = new PointLight(
-	// 	glm::vec3(0.1f, 0.1f, 0.1f),
-	// 	glm::vec3(1.0f, 0.2f, 0.2f),
-	// 	glm::vec3(1.0f, 0.2f, 0.2f),
-	// 	1.0f, 0.1f, 0.09f,
-	// 	glm::vec3(0.0f, 0.0f, 0.0f),
-	// 	"RedLamp"
-	// );
-	// lights.push_back(redLamp);
-	// 
-	// PointLight* blueLamp = new PointLight(
-	// 	glm::vec3(0.1f, 0.1f, 0.1f),
-	// 	glm::vec3(0.2f, 0.2f, 1.0f),
-	// 	glm::vec3(0.2f, 0.2f, 1.0f),
-	// 	1.0f, 0.1f, 0.09f,
-	// 	glm::vec3(0.0f, 0.0f, 0.0f),
-	// 	"BlueLamp"
-	// );
-	// lights.push_back(blueLamp);
-	// 
-	// DirectionalLight* sunLight = new DirectionalLight(
-	// 	glm::vec3(-1.0f, -1.0f, -1.0f),
-	// 	glm::vec3(0.1f, 0.1f, 0.1f),
-	// 	glm::vec3(0.5f, 0.5f, 0.5f),
-	// 	glm::vec3(0.0f, 0.0f, 0.0f),
-	// 	"Sun"
-	// );
-	// lights.push_back(sunLight);
+	lights.push_back(
+		new PointLight(
+			glm::vec3(0.1f),
+			glm::vec3(20.0f),
+			glm::vec3(20.0f),
+			1.0f, 0.01f, 0.009f,
+			glm::vec3(0.0f, 3.0f, -10.0f),
+			"VERY bright white lamp"
+		)
+	);
+
+	lights.push_back(
+		new PointLight(
+			glm::vec3(0.0f),
+			glm::vec3(0.1f, 0.0f, 0.0f),
+			glm::vec3(0.1f, 0.0f, 0.0f),
+			1.0f, 0.001f, 0.0009f,
+			glm::vec3(0.0f, 3.0f, -5.0f),
+			"Dim red lamp"
+		)
+	);
+	
+	lights.push_back(
+		new PointLight(
+			glm::vec3(0.0f),
+			glm::vec3(0.0f, 0.0f, 0.2f),
+			glm::vec3(0.0f, 0.0f, 0.2f),
+			1.0f, 0.001f, 0.0009f,
+			glm::vec3(0.0f, 3.0f, -3.0f),
+			"Dim green lamp"
+		)
+	);
+	
+	lights.push_back(
+		new PointLight(
+			glm::vec3(0.0f),
+			glm::vec3(0.0f, 0.1f, 0.0f),
+			glm::vec3(0.0f, 0.1f, 0.0f),
+			1.0f, 0.001f, 0.0009f,
+			glm::vec3(0.0f, 3.0f, -1.0f),
+			"Dim blue lamp"
+		)
+	);
 	
 	SpotLight* flashLight = new SpotLight(
-		glm::radians(10.f), glm::radians(20.f),
+		glm::radians(15.f), glm::radians(30.f),
 		glm::vec3(0.0f, 0.0f, 0.0f),
 		glm::vec3(0.05f, 0.05f, 0.05f),
 		glm::vec3(0.7f, 0.7f, 0.6f),
 		glm::vec3(0.8f, 0.8f, 0.7f),
-		1.0f, 0.001f, 0.0009f,
+		1.0f, 0.05f, 0.009f,
 		glm::vec3(0.0f, 0.0f, 0.0f),
 		"FlashLight"
 	);
 	lights.push_back(flashLight);
 
-	vector<Cube> lightCubes;
-	
-	for (auto && light : lights)
-	{
-		PositionedLight* positionedLight;
-		if((positionedLight = dynamic_cast<PositionedLight*>(light)) != nullptr)
-		{
-			lightCubes.emplace_back(
-			Cube(positionedLight->getPosition(), glm::vec3(0.25f), glm::vec3(0.0f), positionedLight->getDiffuse())
-			);
-		}
-	}
+	// vector<Cube> lightCubes;
+	// 
+	// for (auto && light : lights)
+	// {
+	// 	PositionedLight* positionedLight;
+	// 	if((positionedLight = dynamic_cast<PositionedLight*>(light)) != nullptr)
+	// 	{
+	// 		lightCubes.emplace_back(
+	// 		Cube(positionedLight->getPosition(), glm::vec3(0.25f), glm::vec3(0.0f), positionedLight->getDiffuse())
+	// 		);
+	// 	}
+	// }
+
+#pragma region Инициализация Framebuffer-а и разных VAO
 
 	// Рендеринг в текстуру:
 	unsigned frameBuffer;
@@ -348,7 +403,7 @@ int main()
 	unsigned frameBufferColorTextureID;
 	glGenTextures(1, &frameBufferColorTextureID);
 	glBindTexture(GL_TEXTURE_2D, frameBufferColorTextureID);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, windowWidth, windowHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, windowWidth, windowHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -402,6 +457,7 @@ int main()
 
 	glBindVertexArray(0);
 
+	// VAO для куба:
 	unsigned cubeVAO, cubeVBO, cubeEBO;
 
 	vector<float> cubeVertexData = StaticFigures::getCubeVertexesWithNormalsAndUV();
@@ -430,6 +486,33 @@ int main()
 
 	glBindVertexArray(0);
 
+	// VAO для куба с инвертированными нормалями:
+	unsigned cubeWithInvertedNormalsVAO, cubeWithInvertedNormalsVBO, cubeWithInvertedNormalsEBO;
+
+	vector<float> cubeWithInvertedNormalsVertexData = StaticFigures::getCubeVertexesWithInvertedNormalsAndUV();
+	
+	glGenVertexArrays(1, &cubeWithInvertedNormalsVAO);
+	glGenBuffers(1, &cubeWithInvertedNormalsVBO);
+	glGenBuffers(1, &cubeWithInvertedNormalsEBO);
+
+	glBindVertexArray(cubeWithInvertedNormalsVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, cubeWithInvertedNormalsVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * cubeWithInvertedNormalsVertexData.size(), cubeWithInvertedNormalsVertexData.data(), GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cubeEBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned) * cubeIndicesData.size(), cubeIndicesData.data(), GL_STATIC_DRAW);
+
+	// layout (location = 0) in vec3 inFragPosition;
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)0);
+	// layout (location = 1) in vec3 inNormal;
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)(3 * sizeof(float)));
+	// layout (location = 2) in vec2 inTexCoords;
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)(6 * sizeof(float)));
+
+	glBindVertexArray(0);
 	
 	// Создаём VAO для skybox-а:
 	std::vector<float> skyboxVertexesData = StaticFigures::getCubeVertexes();
@@ -452,6 +535,10 @@ int main()
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (void*)0);
 
 	glBindVertexArray(0);
+
+
+	
+#pragma endregion 
 	
 
 	ModelTransformations tankBaseTransformations = {
@@ -461,6 +548,30 @@ int main()
 		glm::vec3(1.0f)
 	};
 	ModelTransformations tankTurretTransformations = {
+		glm::vec3(0.0f),
+		glm::vec3(0.0f, 1.0f, 0.0f),
+		0.0f,
+		glm::vec3(1.0f)
+	};
+	ModelTransformations tankBaseTransformations2 = {
+		glm::vec3(-5.0f, 0.0f, -15.0f),
+		glm::vec3(0.0f, 1.0f, 0.0f),
+		0.0f,
+		glm::vec3(1.0f)
+	};
+	ModelTransformations tankTurretTransformations2 = {
+		glm::vec3(0.0f),
+		glm::vec3(0.0f, 1.0f, 0.0f),
+		0.0f,
+		glm::vec3(1.0f)
+	};
+	ModelTransformations tankBaseTransformations3 = {
+		glm::vec3(-15.0f, 0.0f, -30.0f),
+		glm::vec3(0.0f, 1.0f, 0.0f),
+		0.0f,
+		glm::vec3(1.0f)
+	};
+	ModelTransformations tankTurretTransformations3 = {
 		glm::vec3(0.0f),
 		glm::vec3(0.0f, 1.0f, 0.0f),
 		0.0f,
@@ -482,7 +593,9 @@ int main()
 		processInput(win);
 
 		// Изменение положения источников света:
-		flashLight->setPosition(mainCamera.position - mainCamera.up * 0.3f);
+		flashLight->setPosition(mainCamera.position
+			- mainCamera.up * 0.3f
+		);
 		flashLight->setDirection(mainCamera.front);
 
 		// Вращение камеры:
@@ -506,64 +619,89 @@ int main()
 		tankBaseTransformations.rotationAngleDegrees = glm::cos(currentTime) * 30.0f;
 		glm::mat4 tankBaseModel = tankBaseTransformations.createModelMatrixWithTransformations();
 		
-		assimpModelWithLightsShader->use();
-		assimpModelWithLightsShader->setFloat("uExplosionMagnitude", 0.0f);
-		assimpModelWithLightsShader->setFloatMat4("perspectiveAndView", pv);
-		assimpModelWithLightsShader->setFloatMat4("model", tankBaseModel);
-		assimpModelWithLightsShader->setFloat("shininess", 64.0f);
-		assimpModelWithLightsShader->setFloatVec3("viewPos", mainCamera.position);
+		assimpModelWithLightsAndExplosionShader->use();
+		assimpModelWithLightsAndExplosionShader->setFloat("uExplosionMagnitude", 0.0f);
+		assimpModelWithLightsAndExplosionShader->setFloatMat4("projectionAndView", pv);
+		assimpModelWithLightsAndExplosionShader->setFloatMat4("model", tankBaseModel);
+		assimpModelWithLightsAndExplosionShader->setFloat("shininess", 64.0f);
+		assimpModelWithLightsAndExplosionShader->setFloatVec3("viewPos", mainCamera.position);
 		
 		int activeLights = 0;
 		for (int i = 0; i < lights.size(); i++)
 		{
-			activeLights += lights[i]->useAndReturnSuccess(assimpModelWithLightsShader, activeLights);
+			activeLights += lights[i]->useAndReturnSuccess(assimpModelWithLightsAndExplosionShader, activeLights);
 		}
-		assimpModelWithLightsShader->setInt("lightsCount", activeLights);
+		assimpModelWithLightsAndExplosionShader->setInt("lightsCount", activeLights);
 		
-		tankBase.draw(*assimpModelWithLightsShader);
-
+		tankBase.draw(*assimpModelWithLightsAndExplosionShader);
+		
 		tankTurretTransformations.rotationAngleDegrees = glm::cos(currentTime) * 90.0f;
 		glm::mat4 tankTurretModel = glm::mat4(1.0f);
 		tankTurretModel *= tankBaseModel;
 		tankTurretModel = tankTurretTransformations.getModelWithAppliedTransformations(tankTurretModel);
-		assimpModelWithLightsShader->setFloatMat4("model", tankTurretModel);
-		tankTurret.draw(*assimpModelWithLightsShader);
-		
-		// Отрисовываем кубы в stencil буфер
+		assimpModelWithLightsAndExplosionShader->setFloatMat4("model", tankTurretModel);
+		tankTurret.draw(*assimpModelWithLightsAndExplosionShader);
 
-		lightCubeShader->use();
-		
-		glm::mat4 lightCubeModel = lightCubeTransformation.createModelMatrixWithTransformations();
-		lightCubeShader->setFloatMat4("projectionAndView", pv);
-		lightCubeShader->setFloatMat4("model", lightCubeModel);
-		lightCubeShader->setFloatVec3("uColor", glm::vec3(1.0f, 1.0f, 1.0f));
-		glBindVertexArray(cubeVAO);
-		glDrawElements(GL_TRIANGLES, cubeIndicesData.size(), GL_UNSIGNED_INT, 0);
+		// Копии:
+		tankBaseModel = tankBaseTransformations2.createModelMatrixWithTransformations();
+		assimpModelWithLightsAndExplosionShader->setFloatMat4("model", tankBaseModel);
+		tankBase.draw(*assimpModelWithLightsAndExplosionShader);
+
+		tankTurretModel = glm::mat4(1.0f);
+		tankTurretModel *= tankBaseModel;
+		tankTurretModel = tankTurretTransformations2.getModelWithAppliedTransformations(tankTurretModel);
+		assimpModelWithLightsAndExplosionShader->setFloatMat4("model", tankTurretModel);
+		tankTurret.draw(*assimpModelWithLightsAndExplosionShader);
+
+		tankBaseModel = tankBaseTransformations3.createModelMatrixWithTransformations();
+		assimpModelWithLightsAndExplosionShader->setFloatMat4("model", tankBaseModel);
+		tankBase.draw(*assimpModelWithLightsAndExplosionShader);
+
+		tankTurretModel = glm::mat4(1.0f);
+		tankTurretModel *= tankBaseModel;
+		tankTurretModel = tankTurretTransformations3.getModelWithAppliedTransformations(tankTurretModel);
+		assimpModelWithLightsAndExplosionShader->setFloatMat4("model", tankTurretModel);
+		tankTurret.draw(*assimpModelWithLightsAndExplosionShader);
+
+		// // Отрисовка "светящегося куба".
+		// glm::mat4 lightCubeModel = lightCubeTransformation.createModelMatrixWithTransformations();
+		// lightCubeWithExplosionShader->use();
+		// lightCubeWithExplosionShader->setFloatMat4("projectionAndView", pv);
+		// lightCubeWithExplosionShader->setFloatMat4("model", lightCubeModel);
+		// lightCubeWithExplosionShader->setFloatVec3("uColor", glm::vec3(1.0f, 1.0f, 1.0f));
+		// glBindVertexArray(cubeVAO);
+		// glDrawElements(GL_TRIANGLES, cubeIndicesData.size(), GL_UNSIGNED_INT, 0);
+
 
 		// Отрисовка skybox:
 		glDepthFunc(GL_LEQUAL);
 		skyboxShader->use();
-
+		
 		// Избавляемся от перемещения камеры, сохраняя поворот
 		glm::mat4 skyboxView = glm::mat4(glm::mat3(view));
-
+		
 		skyboxShader->setFloatMat4("projection", projection);
 		skyboxShader->setFloatMat4("view", skyboxView);
-
+		
 		glBindVertexArray(skyboxVAO);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTextureId);
 		glDrawElements(GL_TRIANGLES, cubeIndicesData.size(), GL_UNSIGNED_INT, 0);
 		glDepthMask(GL_TRUE);  // Последующие элементы влияют на Depth
-
+		
 		glDepthFunc(GL_LESS);
 		// Конец отрисовки skybox-а
 		// Конец отрисовки в framebuffer.
 
 		// Отрисовка в стандартный framebuffer quad-а, занимающего весь экран:
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		
 		glEnable(GL_DEPTH_TEST);
 		
-		screenRenderQuadShader->use();
+		screenRenderQuadWithHDRShader->use();
+		screenRenderQuadWithHDRShader->setFloat("exposure", globalExposure);
 		glBindVertexArray(screenQuadVAO);
 		glDisable(GL_DEPTH_TEST);
 		glActiveTexture(GL_TEXTURE0);

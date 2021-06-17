@@ -183,9 +183,7 @@
     <None Include="shaders\basic.vert" />
     <None Include="shaders\cube.vert" />
     <None Include="shaders\cube_mixLight.frag" />
-    <None Include="shaders\cube_parallelLight.frag" />
-    <None Include="shaders\cube_pointLight.frag" />
-    <None Include="shaders\cube_spotLight.frag" />
+    <None Include="shaders\cube_mixLight.vert" />
     <None Include="shaders\lightCube.frag" />
     <None Include="shaders\lightCube.vert" />
     <None Include="shaders\lightCubeWithExplosion.frag" />
@@ -193,6 +191,8 @@
     <None Include="shaders\lightCubeWithExplosion.vert" />
     <None Include="shaders\screenRenderQuadShader.frag" />
     <None Include="shaders\screenRenderQuadShader.vert" />
+    <None Include="shaders\screenRenderQuadShaderWithHDR.frag" />
+    <None Include="shaders\screenRenderQuadShaderWithHDR.vert" />
     <None Include="shaders\screenRenderQuadShaderWithKernel.frag" />
     <None Include="shaders\screenRenderQuadShaderWithKernel.vert" />
     <None Include="shaders\shaderSingleColor.frag" />

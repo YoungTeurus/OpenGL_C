@@ -103,15 +103,6 @@
     <None Include="shaders\lightCube.frag">
       <Filter>shaders</Filter>
     </None>
-    <None Include="shaders\cube_parallelLight.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shaders\cube_pointLight.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shaders\cube_spotLight.frag">
-      <Filter>shaders</Filter>
-    </None>
     <None Include="shaders\cube_mixLight.frag">
       <Filter>shaders</Filter>
     </None>
@@ -164,6 +155,15 @@
       <Filter>shaders</Filter>
     </None>
     <None Include="shaders\lightCubeWithExplosion.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\screenRenderQuadShaderWithHDR.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\screenRenderQuadShaderWithHDR.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\cube_mixLight.vert">
       <Filter>shaders</Filter>
     </None>
   </ItemGroup>
