@@ -37,6 +37,9 @@
     <Filter Include="Исходные файлы\world">
       <UniqueIdentifier>{620c4345-0392-40ce-9cde-ab6935be765a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы ресурсов\shaders">
+      <UniqueIdentifier>{570c4a12-a73f-475e-91d5-c09b14f50206}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="include\glad.c">
@@ -101,5 +104,79 @@
     <ClInclude Include="source\utility\FilePaths.h">
       <Filter>Исходные файлы\utility</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\shaders\lightCube.vert">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\lightCubeWithExplosion.frag">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\lightCubeWithExplosion.geom">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\lightCubeWithExplosion.vert">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\screenRenderQuadShader.frag">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\screenRenderQuadShader.vert">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\screenRenderQuadShaderWithHDR.frag">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\screenRenderQuadShaderWithHDR.vert">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\screenRenderQuadShaderWithKernel.frag">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\screenRenderQuadShaderWithKernel.vert">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\shaderSingleColor.frag">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\shaderSingleColor.vert">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\skybox.frag">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\skybox.vert">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\backpack_mixLight.frag">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\backpack_mixLight.vert">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\backpack_mixLightWithExplosion.frag">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\backpack_mixLightWithExplosion.geom">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\backpack_mixLightWithExplosion.vert">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\cube_mixLight.frag">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\cube_mixLight.vert">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\lightCube.frag">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\screenRenderQuadShaderWithBlur.frag">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\screenRenderQuadShaderWithBlur.vert">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

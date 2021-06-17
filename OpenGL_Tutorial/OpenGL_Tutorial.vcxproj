@@ -174,6 +174,32 @@
     <ClInclude Include="source\shader\Shader.h" />
     <ClInclude Include="source\utility\FilePaths.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\shaders\backpack_mixLight.frag" />
+    <None Include="resources\shaders\backpack_mixLight.vert" />
+    <None Include="resources\shaders\backpack_mixLightWithExplosion.frag" />
+    <None Include="resources\shaders\backpack_mixLightWithExplosion.geom" />
+    <None Include="resources\shaders\backpack_mixLightWithExplosion.vert" />
+    <None Include="resources\shaders\cube_mixLight.frag" />
+    <None Include="resources\shaders\cube_mixLight.vert" />
+    <None Include="resources\shaders\lightCube.frag" />
+    <None Include="resources\shaders\lightCube.vert" />
+    <None Include="resources\shaders\lightCubeWithExplosion.frag" />
+    <None Include="resources\shaders\lightCubeWithExplosion.geom" />
+    <None Include="resources\shaders\lightCubeWithExplosion.vert" />
+    <None Include="resources\shaders\screenRenderQuadShader.frag" />
+    <None Include="resources\shaders\screenRenderQuadShader.vert" />
+    <None Include="resources\shaders\screenRenderQuadShaderWithBlur.frag" />
+    <None Include="resources\shaders\screenRenderQuadShaderWithBlur.vert" />
+    <None Include="resources\shaders\screenRenderQuadShaderWithHDR.frag" />
+    <None Include="resources\shaders\screenRenderQuadShaderWithHDR.vert" />
+    <None Include="resources\shaders\screenRenderQuadShaderWithKernel.frag" />
+    <None Include="resources\shaders\screenRenderQuadShaderWithKernel.vert" />
+    <None Include="resources\shaders\shaderSingleColor.frag" />
+    <None Include="resources\shaders\shaderSingleColor.vert" />
+    <None Include="resources\shaders\skybox.frag" />
+    <None Include="resources\shaders\skybox.vert" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

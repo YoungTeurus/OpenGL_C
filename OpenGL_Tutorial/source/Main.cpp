@@ -300,6 +300,7 @@ int main()
 	// Shader* lightCubeWithExplosionShader = new Shader("lightCubeWithExplosion", pathToShaderFolder, true);
 	// Shader* singleColorShader = new Shader("shaderSingleColor", pathToShaderFolder);
 	// Shader* screenRenderQuadShader = new Shader("screenRenderQuadShader", pathToShaderFolder);
+	Shader* screenRenderQuadShaderWithBlur = new Shader("screenRenderQuadShaderWithBlur", pathToShaderFolder);
 	Shader* screenRenderQuadWithHDRShader = new Shader("screenRenderQuadShaderWithHDR", pathToShaderFolder);
 	Shader* skyboxShader = new Shader("skybox", pathToShaderFolder);
 	// Shader* cubeWithLightsShader = new Shader("cube_mixLight", pathToShaderFolder);
@@ -405,19 +406,24 @@ int main()
 	glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
 
 	// Создание текстуры, на котороую будут выводится рендер frameBuffer-а.
-	unsigned frameBufferColorTextureID;
-	glGenTextures(1, &frameBufferColorTextureID);
-	glBindTexture(GL_TEXTURE_2D, frameBufferColorTextureID);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, windowWidth, windowHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	unsigned frameBufferColorTexturesID[2];
+	glGenTextures(2, frameBufferColorTexturesID);
+	for(unsigned i = 0; i < 2; i++)
+	{
+		glBindTexture(GL_TEXTURE_2D, frameBufferColorTexturesID[i]);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, windowWidth, windowHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		// Присоединяем созданную текстуру к framebuffer
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, frameBufferColorTexturesID[i], 0);
+	}
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	// Присоединяем созданную текстуру к framebuffer
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, frameBufferColorTextureID, 0);
-
+	unsigned attachments[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
+	glDrawBuffers(2, attachments);
+	
 	// Создание render-буфера для depth и stencil тестов:
 	// Render-буфер работает в режиме write-only.
 	unsigned int rbo;
@@ -435,7 +441,29 @@ int main()
 
 	// Переключаемся на стандартный framebuffer
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	
+
+	// Создание framebuffer-ов для размытия Гаусса:
+	unsigned pingpongFrameBuffers[2];
+	unsigned pingpongTextureIds[2];
+	glGenFramebuffers(2, pingpongFrameBuffers);
+	glGenTextures(2, pingpongTextureIds);
+	for(unsigned i = 0; i < 2; i++)
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, pingpongFrameBuffers[i]);
+	    glBindTexture(GL_TEXTURE_2D, pingpongTextureIds[i]);
+	    glTexImage2D(
+	        GL_TEXTURE_2D, 0, GL_RGBA16F, windowWidth, windowHeight, 0, GL_RGBA, GL_FLOAT, NULL
+	    );
+	    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	    glFramebufferTexture2D(
+	        GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pingpongTextureIds[i], 0
+	    );
+	}
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	
 	// Создаём VAO для quad-а:
 	unsigned screenQuadVAO, screenQuadVBO, screenQuadEBO;
@@ -697,6 +725,26 @@ int main()
 		// Конец отрисовки skybox-а
 		// Конец отрисовки в framebuffer.
 
+		// Отрисовка в frambuffer для размытия:
+		bool horizontal = true, firstIteration = true;
+		int amount = 5;
+		screenRenderQuadShaderWithBlur->use();
+		for(unsigned i = 0; i < amount * 2; i++)
+		{
+			glBindFramebuffer(GL_FRAMEBUFFER, pingpongFrameBuffers[horizontal]);
+			screenRenderQuadShaderWithBlur->setInt("horizontal", horizontal);
+			glBindTexture(GL_TEXTURE_2D, firstIteration ? frameBufferColorTexturesID[1] : pingpongTextureIds[!horizontal]);
+
+			glBindVertexArray(screenQuadVAO);
+			glDrawElements(GL_TRIANGLES, screenQuadIndicesData.size(), GL_UNSIGNED_INT, 0);
+			
+			horizontal = !horizontal;
+			if (firstIteration)
+			{
+				firstIteration = false;
+			}
+		}
+		
 		// Отрисовка в стандартный framebuffer quad-а, занимающего весь экран:
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -707,10 +755,14 @@ int main()
 		
 		screenRenderQuadWithHDRShader->use();
 		screenRenderQuadWithHDRShader->setFloat("exposure", globalExposure);
-		glBindVertexArray(screenQuadVAO);
 		glDisable(GL_DEPTH_TEST);
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, frameBufferColorTextureID);
+		glBindTexture(GL_TEXTURE_2D, frameBufferColorTexturesID[0]);
+		screenRenderQuadWithHDRShader->setInt("hdrBuffer", 0);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, pingpongTextureIds[0]);
+		screenRenderQuadWithHDRShader->setInt("blurBuffer", 1);
+		glBindVertexArray(screenQuadVAO);
 		glDrawElements(GL_TRIANGLES, screenQuadIndicesData.size(), GL_UNSIGNED_INT, 0);
 		// Конец отрисовки в стандартный framebuffer.
 

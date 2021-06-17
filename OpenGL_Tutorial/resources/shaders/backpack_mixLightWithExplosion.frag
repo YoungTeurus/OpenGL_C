@@ -35,7 +35,8 @@ in vec3 gFragPosition;
 in vec2 gTextureCoord;
 in mat3 gTBN;
 
-out vec4 fragColor;
+layout (location = 0) out vec4 fragColor;
+layout (location = 1) out vec4 brightColor;
 
 uniform int lightsCount;
 uniform Light lights[MAX_LIGHTS];
@@ -78,10 +79,13 @@ void main(){
 	}
 
 	fragColor = vec4(result, 1.0);
-	
-	// Гамма-коррекция
-	float gamma = 2.2;
-	fragColor = vec4(pow(fragColor.rgb, vec3(1.0/gamma)), fragColor.a);
+
+	float brightness = dot(fragColor.rgb, vec3(0.2126, 0.7152, 0.0722));
+	if (brightness > 1.0){
+		brightColor = vec4(fragColor.rgb, 1.0);
+	} else {
+		brightColor = vec4(0.0, 0.0, 0.0, 1.0);
+	}
 }
 
 vec3 getColorFromLight(Light light, vec3 normal, vec3 fFragPosition, vec3 viewDir, vec3 diffuseTextureColor, vec3 specularTextureColor){
