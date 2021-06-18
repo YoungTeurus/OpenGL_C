@@ -16,9 +16,10 @@
 #include "model/Model.h"
 #include "model/ModelTransformations.h"
 #include "model/StaticFigures.h"
+#include "model/VAOBuilder.h"
+#include "model/VOsAndIndices.h"
 #include "utility/FilePaths.h"
 
-class LightCube;
 float deltaTime = 0.0f;									 // Разница во времени между последним и предпоследним кадрами
 float lastFrameTime = 0.0f;								 // Время последнего кадра
 
@@ -356,8 +357,8 @@ int main()
 
 	PointLight *pointLight = new PointLight(
 			glm::vec3(0.1f),
-			glm::vec3(20.0f),
-			glm::vec3(20.0f),
+			glm::vec3(20.0f, 20.0f, 5.0f),
+			glm::vec3(20.0f, 20.0f, 5.0f),
 			1.0f, 0.01f, 0.009f,
 			glm::vec3(0.0f, 10.0f, -10.0f),
 			"VERY bright white lamp"
@@ -504,138 +505,10 @@ int main()
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	
-	// Создаём VAO для 2D quad-а:
-	unsigned screenQuadVAO, screenQuadVBO, screenQuadEBO;
-	vector<float> screenQuadVertexData = StaticFigures::getQuadVertexesWithUV();
-	vector<unsigned> quadIndicesData = StaticFigures::getQuadIndices();
-
-	glGenVertexArrays(1, &screenQuadVAO);
-	glGenBuffers(1, &screenQuadVBO);
-	glGenBuffers(1, &screenQuadEBO);
-
-	glBindVertexArray(screenQuadVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, screenQuadVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * screenQuadVertexData.size(), screenQuadVertexData.data(), GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, screenQuadEBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned) * quadIndicesData.size(), quadIndicesData.data(), GL_STATIC_DRAW);
-
-	// layout (location = 0) in vec2 inFragPosition;
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4, (void*)0);
-	// layout (location = 1) in vec2 inTexCoords;
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4, (void*)(2 * sizeof(float)));
-
-	glBindVertexArray(0);
-
-	// Создаём VAO для 3D quad-а:
-	unsigned worldQuadVAO, worldQuadVBO, worldQuadEBO;
-	vector<float> worldQuadVertexData = StaticFigures::getWorldQuadVertexesWithNormalsAndUV();
-
-	glGenVertexArrays(1, &worldQuadVAO);
-	glGenBuffers(1, &worldQuadVBO);
-	glGenBuffers(1, &worldQuadEBO);
-
-	glBindVertexArray(worldQuadVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, worldQuadVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * worldQuadVertexData.size(), worldQuadVertexData.data(), GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, worldQuadEBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned) * quadIndicesData.size(), quadIndicesData.data(), GL_STATIC_DRAW);
-
-	// layout (location = 0) in vec3 inFragPosition;
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)0);
-	// layout (location = 1) in vec3 inNormal;
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)(3 * sizeof(float)));
-	// layout (location = 2) in vec2 inTextureCoord;
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)(6 * sizeof(float)));
-
-	glBindVertexArray(0);
-
-	// VAO для куба:
-	unsigned cubeVAO, cubeVBO, cubeEBO;
-
-	vector<float> cubeVertexData = StaticFigures::getCubeVertexesWithNormalsAndUV();
-	vector<unsigned> cubeIndicesData = StaticFigures::getCubeIndices();
-	
-	glGenVertexArrays(1, &cubeVAO);
-	glGenBuffers(1, &cubeVBO);
-	glGenBuffers(1, &cubeEBO);
-
-	glBindVertexArray(cubeVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * cubeVertexData.size(), cubeVertexData.data(), GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cubeEBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned) * cubeIndicesData.size(), cubeIndicesData.data(), GL_STATIC_DRAW);
-
-	// layout (location = 0) in vec3 inFragPosition;
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)0);
-	// layout (location = 1) in vec3 inNormal;
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)(3 * sizeof(float)));
-	// layout (location = 2) in vec2 inTexCoords;
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)(6 * sizeof(float)));
-
-	glBindVertexArray(0);
-
-	// VAO для куба с инвертированными нормалями:
-	unsigned cubeWithInvertedNormalsVAO, cubeWithInvertedNormalsVBO, cubeWithInvertedNormalsEBO;
-
-	vector<float> cubeWithInvertedNormalsVertexData = StaticFigures::getCubeVertexesWithInvertedNormalsAndUV();
-	
-	glGenVertexArrays(1, &cubeWithInvertedNormalsVAO);
-	glGenBuffers(1, &cubeWithInvertedNormalsVBO);
-	glGenBuffers(1, &cubeWithInvertedNormalsEBO);
-
-	glBindVertexArray(cubeWithInvertedNormalsVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, cubeWithInvertedNormalsVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * cubeWithInvertedNormalsVertexData.size(), cubeWithInvertedNormalsVertexData.data(), GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cubeEBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned) * cubeIndicesData.size(), cubeIndicesData.data(), GL_STATIC_DRAW);
-
-	// layout (location = 0) in vec3 inFragPosition;
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)0);
-	// layout (location = 1) in vec3 inNormal;
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)(3 * sizeof(float)));
-	// layout (location = 2) in vec2 inTexCoords;
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)(6 * sizeof(float)));
-
-	glBindVertexArray(0);
-	
-	// Создаём VAO для skybox-а:
-	std::vector<float> skyboxVertexesData = StaticFigures::getCubeVertexes();
-	
-	unsigned skyboxVAO, skyboxVBO, skyboxEBO;
-
-	glGenVertexArrays(1, &skyboxVAO);
-	glGenBuffers(1, &skyboxVBO);
-	glGenBuffers(1, &skyboxEBO);
-
-	glBindVertexArray(skyboxVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * skyboxVertexesData.size(), skyboxVertexesData.data(), GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, skyboxEBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned) * cubeIndicesData.size(), cubeIndicesData.data(), GL_STATIC_DRAW);
-
-	// layout (location = 0) in vec3 inFragPosition;
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (void*)0);
-
-	glBindVertexArray(0);
-
-
+	VOsAndIndices *screenQuadVOsAndIndices = VAOBuilder::get2DQuad();
+	VOsAndIndices *worldQuadVOsAndIndices = VAOBuilder::get3DQuad();
+	VOsAndIndices *cubeVOsAndIndices = VAOBuilder::getCube();
+	VOsAndIndices *skyboxVOsAndIndices = VAOBuilder::getSkybox();
 	
 #pragma endregion 
 	
@@ -777,8 +650,8 @@ int main()
 			lightCubeShader->setFloatMat4("projectionAndView", pv);
 			lightCubeShader->setFloatMat4("model", lightCubeModel);
 			lightCubeShader->setFloatVec3("uColor", lightCube->light->getDiffuse());
-			glBindVertexArray(cubeVAO);
-			glDrawElements(GL_TRIANGLES, cubeIndicesData.size(), GL_UNSIGNED_INT, 0);
+			glBindVertexArray(cubeVOsAndIndices->vao);
+			glDrawElements(GL_TRIANGLES, cubeVOsAndIndices->indices.size(), GL_UNSIGNED_INT, 0);
 		}
 		
 		// Отрисовка "земли".
@@ -804,8 +677,8 @@ int main()
 		glBindTexture(GL_TEXTURE_2D, groundSpecularTextureID);
 		groundQuad_mixLight->setInt("texture_specular", 1);
 
-		glBindVertexArray(worldQuadVAO);
-		glDrawElements(GL_TRIANGLES, quadIndicesData.size(), GL_UNSIGNED_INT, 0);
+		glBindVertexArray(worldQuadVOsAndIndices->vao);
+		glDrawElements(GL_TRIANGLES, worldQuadVOsAndIndices->indices.size(), GL_UNSIGNED_INT, 0);
 
 		// Отрисовка skybox:
 		glDepthFunc(GL_LEQUAL);
@@ -817,10 +690,10 @@ int main()
 		skyboxShader->setFloatMat4("projection", projection);
 		skyboxShader->setFloatMat4("view", skyboxView);
 		
-		glBindVertexArray(skyboxVAO);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTextureId);
-		glDrawElements(GL_TRIANGLES, cubeIndicesData.size(), GL_UNSIGNED_INT, 0);
+		glBindVertexArray(skyboxVOsAndIndices->vao);
+		glDrawElements(GL_TRIANGLES, skyboxVOsAndIndices->indices.size(), GL_UNSIGNED_INT, 0);
 		glDepthMask(GL_TRUE);  // Последующие элементы влияют на Depth
 		
 		glDepthFunc(GL_LESS);
@@ -837,8 +710,8 @@ int main()
 			screenRenderQuadShaderWithBlur->setInt("horizontal", horizontal);
 			glBindTexture(GL_TEXTURE_2D, firstIteration ? frameBufferColorTexturesID[1] : pingpongTextureIds[!horizontal]);
 
-			glBindVertexArray(screenQuadVAO);
-			glDrawElements(GL_TRIANGLES, quadIndicesData.size(), GL_UNSIGNED_INT, 0);
+			glBindVertexArray(screenQuadVOsAndIndices->vao);
+			glDrawElements(GL_TRIANGLES, screenQuadVOsAndIndices->indices.size(), GL_UNSIGNED_INT, 0);
 			
 			horizontal = !horizontal;
 			if (firstIteration)
@@ -865,8 +738,8 @@ int main()
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, pingpongTextureIds[0]);
 		screenRenderQuadWithHDRShader->setInt("blurBuffer", 1);
-		glBindVertexArray(screenQuadVAO);
-		glDrawElements(GL_TRIANGLES, quadIndicesData.size(), GL_UNSIGNED_INT, 0);
+		glBindVertexArray(screenQuadVOsAndIndices->vao);
+		glDrawElements(GL_TRIANGLES, screenQuadVOsAndIndices->indices.size(), GL_UNSIGNED_INT, 0);
 		// Конец отрисовки в стандартный framebuffer.
 
 		glfwSwapBuffers(win);

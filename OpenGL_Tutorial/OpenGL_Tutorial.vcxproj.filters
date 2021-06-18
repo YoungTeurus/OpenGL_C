@@ -110,6 +110,12 @@
     <ClInclude Include="source\world\Cube.h">
       <Filter>Исходные файлы\world</Filter>
     </ClInclude>
+    <ClInclude Include="source\model\VOsAndIndices.h">
+      <Filter>Исходные файлы\model</Filter>
+    </ClInclude>
+    <ClInclude Include="source\model\VAOBuilder.h">
+      <Filter>Исходные файлы\model</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\shaders\lightCube.vert">
