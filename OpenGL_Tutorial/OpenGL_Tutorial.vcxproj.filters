@@ -63,6 +63,9 @@
     <ClCompile Include="source\shader\ShaderLoader.cpp">
       <Filter>Исходные файлы\shader</Filter>
     </ClCompile>
+    <ClCompile Include="source\utility\FilePaths.cpp">
+      <Filter>Исходные файлы\utility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\stb_image.h">
@@ -107,9 +110,6 @@
     <ClInclude Include="source\shader\Shader.h">
       <Filter>Исходные файлы\shader</Filter>
     </ClInclude>
-    <ClInclude Include="source\utility\FilePaths.h">
-      <Filter>Исходные файлы\utility</Filter>
-    </ClInclude>
     <ClInclude Include="source\model\ModelTransformations.h">
       <Filter>Исходные файлы\model</Filter>
     </ClInclude>
@@ -130,6 +130,9 @@
     </ClInclude>
     <ClInclude Include="source\shader\ShaderLoader.h">
       <Filter>Исходные файлы\shader</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utility\FilePaths.h">
+      <Filter>Исходные файлы\utility</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,3 +1,5 @@
+#pragma once
+
 #include <string>
 
 using namespace std;
@@ -5,12 +7,12 @@ using namespace std;
 class FilePaths
 {
 private:
-	static const string resourcesFolderName;
-	static const string modelsFolderName;
-	static const string shadersFolderName;
-	static const string texturesFolderName;
+	static string resourcesFolderName;
+	static string modelsFolderName;
+	static string shadersFolderName;
+	static string texturesFolderName;
 
-	static const string splitter;
+	static string splitter;
 public:
 	static string getPathToModel(const string& modelName)
 	{
@@ -37,9 +39,3 @@ public:
 		return resourcesFolderName + splitter + texturesFolderName + splitter;
 	}
 };
-
-const string FilePaths::resourcesFolderName = "resources";
-const string FilePaths::modelsFolderName = "models";
-const string FilePaths::shadersFolderName = "shaders";
-const string FilePaths::texturesFolderName = "textures";
-const string FilePaths::splitter = R"(/)";

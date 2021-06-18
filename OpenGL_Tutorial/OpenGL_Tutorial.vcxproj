@@ -157,6 +157,7 @@
     <ClCompile Include="source\model\VAOBuilder.cpp" />
     <ClCompile Include="source\shader\Shader.cpp" />
     <ClCompile Include="source\shader\ShaderLoader.cpp" />
+    <ClCompile Include="source\utility\FilePaths.cpp" />
     <ClCompile Include="source\world\LightCube.h" />
   </ItemGroup>
   <ItemGroup>

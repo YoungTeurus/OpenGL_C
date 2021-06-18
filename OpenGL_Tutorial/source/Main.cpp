@@ -18,7 +18,6 @@
 #include "model/VAOBuilder.h"
 #include "model/VOsAndIndices.h"
 #include "shader/ShaderLoader.h"
-#include "utility/FilePaths.h"
 
 float deltaTime = 0.0f;									 // Разница во времени между последним и предпоследним кадрами
 float lastFrameTime = 0.0f;								 // Время последнего кадра
@@ -318,7 +317,6 @@ int main()
 	// Загрузка внешних данных:
 	std::string pathToShaderFolder = FilePaths::getPathToShaderFolderWithTrailingSplitter();
 	Shader* assimpModelWithLightsAndExplosionShader = ShaderLoader::getInstance()->load("backpack_mixLightWithExplosion", pathToShaderFolder, true);
-	Shader* lightCubeShader = ShaderLoader::getInstance()->load("lightCube", pathToShaderFolder);
 	Shader* screenRenderQuadShaderWithBlur = ShaderLoader::getInstance()->load("screenRenderQuadShaderWithBlur", pathToShaderFolder);
 	Shader* screenRenderQuadWithHDRShader = ShaderLoader::getInstance()->load("screenRenderQuadShaderWithHDR", pathToShaderFolder);
 	Shader* skyboxShader = ShaderLoader::getInstance()->load("skybox", pathToShaderFolder);
@@ -634,7 +632,7 @@ int main()
 		// Отрисовка "светящегося куба".
 		for(auto *lightCube : lightCubes)
 		{
-			lightCube->draw(lightCubeShader, pv);
+			lightCube->draw(pv);
 		}
 		
 		// Отрисовка "земли".
