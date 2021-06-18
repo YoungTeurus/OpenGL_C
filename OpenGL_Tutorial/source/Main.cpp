@@ -26,11 +26,12 @@ float lastCursorX = (float)windowInitialWidth / 2,
 
 bool firstMouse = true;
 
-Camera mainCamera = Camera((float)windowInitialWidth / windowInitialHeight, glm::vec3(0.0f, 0.0f, 0.0f));
+Camera mainCamera = Camera((float)windowInitialWidth / windowInitialHeight, glm::vec3(0.0f, 5.0f, 0.0f));
 
 bool wireframeMode = false;
 
 float globalExposure = 1.0f;
+float globalGamma = 2.2f;
 
 void setPolygoneDrawMode() {
 	if (wireframeMode) {
@@ -119,7 +120,6 @@ void processInput(GLFWwindow* window)
 		mainCamera.handleKeyboard(MovementDirection::STRAFE_RIGHT, deltaTime);
 	}
 
-	// TODO: сделать поворот камеры вокруг оси Z
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
 		globalExposure = min( globalExposure + 1.0f * deltaTime, 10.0f );
 	}
@@ -127,6 +127,13 @@ void processInput(GLFWwindow* window)
 		globalExposure = max( globalExposure - 1.0f * deltaTime, 0.01f );
 	}
 
+	if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS) {
+		globalGamma = min( globalGamma + 0.5f * deltaTime, 5.0f );
+	}
+	if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS) {
+		globalGamma = max( globalGamma - 0.5f * deltaTime, 0.01f );
+	}
+	
 	// Поднятие-спуск камеры:
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
 		mainCamera.handleKeyboard(MovementDirection::UP, deltaTime);
@@ -303,6 +310,7 @@ int main()
 	Shader* screenRenderQuadShaderWithBlur = new Shader("screenRenderQuadShaderWithBlur", pathToShaderFolder);
 	Shader* screenRenderQuadWithHDRShader = new Shader("screenRenderQuadShaderWithHDR", pathToShaderFolder);
 	Shader* skyboxShader = new Shader("skybox", pathToShaderFolder);
+	Shader* groundQuad_mixLight = new Shader("groundQuad_mixLight", pathToShaderFolder);
 	// Shader* cubeWithLightsShader = new Shader("cube_mixLight", pathToShaderFolder);
 	
 	Model tankBase(FilePaths::getPathToModel("tank/base.obj"), true);
@@ -323,7 +331,8 @@ int main()
 
 	// unsigned containerTextureID = loadTextureFromPathAndGetTextureId(FilePaths::getPathToTexture("container2.png"));
 	// unsigned containerSpecularTextureID = loadTextureFromPathAndGetTextureId(FilePaths::getPathToTexture("container2_specular.png"));
-
+	unsigned groundTextureID = loadTextureFromPathAndGetTextureId(FilePaths::getPathToTexture("grass.png"));
+	unsigned groundSpecularTextureID = loadTextureFromPathAndGetTextureId(FilePaths::getPathToTexture("grass_specular.png"));
 	
 	// Подготовка источников освещения:
 	vector<BaseLight*> lights;
@@ -465,10 +474,10 @@ int main()
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	
-	// Создаём VAO для quad-а:
+	// Создаём VAO для 2D quad-а:
 	unsigned screenQuadVAO, screenQuadVBO, screenQuadEBO;
 	vector<float> screenQuadVertexData = StaticFigures::getQuadVertexesWithUV();
-	vector<unsigned> screenQuadIndicesData = StaticFigures::getQuadIndices();
+	vector<unsigned> quadIndicesData = StaticFigures::getQuadIndices();
 
 	glGenVertexArrays(1, &screenQuadVAO);
 	glGenBuffers(1, &screenQuadVBO);
@@ -479,7 +488,7 @@ int main()
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * screenQuadVertexData.size(), screenQuadVertexData.data(), GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, screenQuadEBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned) * screenQuadIndicesData.size(), screenQuadIndicesData.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned) * quadIndicesData.size(), quadIndicesData.data(), GL_STATIC_DRAW);
 
 	// layout (location = 0) in vec2 inFragPosition;
 	glEnableVertexAttribArray(0);
@@ -487,6 +496,33 @@ int main()
 	// layout (location = 1) in vec2 inTexCoords;
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4, (void*)(2 * sizeof(float)));
+
+	glBindVertexArray(0);
+
+	// Создаём VAO для 3D quad-а:
+	unsigned worldQuadVAO, worldQuadVBO, worldQuadEBO;
+	vector<float> worldQuadVertexData = StaticFigures::getWorldQuadVertexesWithNormalsAndUV();
+
+	glGenVertexArrays(1, &worldQuadVAO);
+	glGenBuffers(1, &worldQuadVBO);
+	glGenBuffers(1, &worldQuadEBO);
+
+	glBindVertexArray(worldQuadVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, worldQuadVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * worldQuadVertexData.size(), worldQuadVertexData.data(), GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, worldQuadEBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned) * quadIndicesData.size(), quadIndicesData.data(), GL_STATIC_DRAW);
+
+	// layout (location = 0) in vec3 inFragPosition;
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)0);
+	// layout (location = 1) in vec3 inNormal;
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)(3 * sizeof(float)));
+	// layout (location = 2) in vec2 inTextureCoord;
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)(6 * sizeof(float)));
 
 	glBindVertexArray(0);
 
@@ -617,6 +653,13 @@ int main()
 		glm::vec3(0.5f)
 	};
 
+	ModelTransformations groundTransformation = {
+		glm::vec3(0.0f),
+		glm::vec3(1.0f, 0.0f, 0.0f),
+		90.0f,
+		glm::vec3(100.0f)
+	};
+
 	while (!glfwWindowShouldClose(win))
 	{
 		float currentTime = (float)glfwGetTime();
@@ -646,6 +689,31 @@ int main()
 		
 		glClearColor(background.r, background.g, background.b, background.a);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		// Отрисовка "земли".
+		glm::mat4 groundModel = groundTransformation.createModelMatrixWithTransformations();
+		groundQuad_mixLight->use();
+		groundQuad_mixLight->setFloatMat4("projectionAndView", pv);
+		groundQuad_mixLight->setFloatMat4("model", groundModel);
+		groundQuad_mixLight->setFloat("shininess", 64.0f);
+		groundQuad_mixLight->setFloatVec3("viewPos", mainCamera.position);
+
+		int activeLights0 = 0;
+		for (int i = 0; i < lights.size(); i++)
+		{
+			activeLights0 += lights[i]->useAndReturnSuccess(groundQuad_mixLight, activeLights0);
+		}
+		groundQuad_mixLight->setInt("lightsCount", activeLights0);
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, groundTextureID);
+		groundQuad_mixLight->setInt("texture_diffuse1", 0);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, groundSpecularTextureID);
+		groundQuad_mixLight->setInt("texture_specular1", 1);
+
+		glBindVertexArray(worldQuadVAO);
+		glDrawElements(GL_TRIANGLES, quadIndicesData.size(), GL_UNSIGNED_INT, 0);
 
 		// Отрисовка модели:
 		tankBaseTransformations.position = glm::vec3(glm::cos(currentTime) * 2.5f, 0.0f, glm::cos(currentTime) * 2.5f);
@@ -705,7 +773,6 @@ int main()
 		// glBindVertexArray(cubeVAO);
 		// glDrawElements(GL_TRIANGLES, cubeIndicesData.size(), GL_UNSIGNED_INT, 0);
 
-
 		// Отрисовка skybox:
 		glDepthFunc(GL_LEQUAL);
 		skyboxShader->use();
@@ -717,6 +784,7 @@ int main()
 		skyboxShader->setFloatMat4("view", skyboxView);
 		
 		glBindVertexArray(skyboxVAO);
+		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTextureId);
 		glDrawElements(GL_TRIANGLES, cubeIndicesData.size(), GL_UNSIGNED_INT, 0);
 		glDepthMask(GL_TRUE);  // Последующие элементы влияют на Depth
@@ -736,7 +804,7 @@ int main()
 			glBindTexture(GL_TEXTURE_2D, firstIteration ? frameBufferColorTexturesID[1] : pingpongTextureIds[!horizontal]);
 
 			glBindVertexArray(screenQuadVAO);
-			glDrawElements(GL_TRIANGLES, screenQuadIndicesData.size(), GL_UNSIGNED_INT, 0);
+			glDrawElements(GL_TRIANGLES, quadIndicesData.size(), GL_UNSIGNED_INT, 0);
 			
 			horizontal = !horizontal;
 			if (firstIteration)
@@ -755,6 +823,7 @@ int main()
 		
 		screenRenderQuadWithHDRShader->use();
 		screenRenderQuadWithHDRShader->setFloat("exposure", globalExposure);
+		screenRenderQuadWithHDRShader->setFloat("gamma", globalGamma);
 		glDisable(GL_DEPTH_TEST);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, frameBufferColorTexturesID[0]);
@@ -763,7 +832,7 @@ int main()
 		glBindTexture(GL_TEXTURE_2D, pingpongTextureIds[0]);
 		screenRenderQuadWithHDRShader->setInt("blurBuffer", 1);
 		glBindVertexArray(screenQuadVAO);
-		glDrawElements(GL_TRIANGLES, screenQuadIndicesData.size(), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, quadIndicesData.size(), GL_UNSIGNED_INT, 0);
 		// Конец отрисовки в стандартный framebuffer.
 
 		glfwSwapBuffers(win);

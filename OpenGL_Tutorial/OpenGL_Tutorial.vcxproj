@@ -182,6 +182,8 @@
     <None Include="resources\shaders\backpack_mixLightWithExplosion.vert" />
     <None Include="resources\shaders\cube_mixLight.frag" />
     <None Include="resources\shaders\cube_mixLight.vert" />
+    <None Include="resources\shaders\groundQuad_mixLight.frag" />
+    <None Include="resources\shaders\groundQuad_mixLight.vert" />
     <None Include="resources\shaders\lightCube.frag" />
     <None Include="resources\shaders\lightCube.vert" />
     <None Include="resources\shaders\lightCubeWithExplosion.frag" />

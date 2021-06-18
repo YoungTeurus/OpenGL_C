@@ -178,5 +178,11 @@
     <None Include="resources\shaders\screenRenderQuadShaderWithBlur.vert">
       <Filter>Файлы ресурсов\shaders</Filter>
     </None>
+    <None Include="resources\shaders\groundQuad_mixLight.frag">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\groundQuad_mixLight.vert">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
