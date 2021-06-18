@@ -14,6 +14,11 @@ private:
 
 	static string splitter;
 public:
+	static string getSplitter()
+	{
+		return splitter;
+	}
+	
 	static string getPathToModel(const string& modelName)
 	{
 		return resourcesFolderName + splitter + modelsFolderName + splitter + modelName;
@@ -26,7 +31,12 @@ public:
 
 	static string getPathToShaderFolderWithTrailingSplitter()
 	{
-		return resourcesFolderName + splitter + shadersFolderName + splitter;
+		return getPathToShaderFolder() + splitter;
+	}
+
+	static string getPathToShaderFolder()
+	{
+		return resourcesFolderName + splitter + shadersFolderName;
 	}
 
 	static string getPathToTexture(const string& textureName)
@@ -36,6 +46,11 @@ public:
 
 	static string getPathToTexturesFolderWithTrailingSplitter()
 	{
-		return resourcesFolderName + splitter + texturesFolderName + splitter;
+		return getPathToTexturesFolder() + splitter;
+	}
+
+	static string getPathToTexturesFolder()
+	{
+		return resourcesFolderName + splitter + texturesFolderName;
 	}
 };

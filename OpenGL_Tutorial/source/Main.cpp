@@ -228,45 +228,6 @@ unsigned loadCubeMapFromPathsAndGetTextureId(const std::vector<string>& textureF
 	return textureID;
 }
 
-unsigned loadTextureFromPathAndGetTextureId(const std::string& pathToTexture)
-{
-	unsigned textureID;
-	glGenTextures(1, &textureID);
-	glBindTexture(GL_TEXTURE_2D, textureID);
-
-	int width, height, nrChannels;
-	unsigned char* data = stbi_load(pathToTexture.c_str(), &width, &height, &nrChannels, 0);
-	if (data){
-		GLenum format;
-		switch (nrChannels) {
-		case 1:
-			format = GL_RED;
-			break;
-		case 3:
-			format = GL_RGB;
-			break;
-		case 4:
-		default:
-			format = GL_RGBA;
-		}
-		glTexImage2D(
-			GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data
-		);
-	} else {
-		std::cout << "Texture failed to load at path: " << pathToTexture << std::endl;
-	}
-	stbi_image_free(data);
-
-	glGenerateMipmap(GL_TEXTURE_2D);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-	return textureID;
-}
-
 int main()
 {
 	using namespace std;
@@ -343,8 +304,10 @@ int main()
 	string pathToTexturesFolder = FilePaths::getPathToTexturesFolderWithTrailingSplitter();
 	unsigned cubeMapTextureId = loadCubeMapFromPathsAndGetTextureId(cubeMapFacesTexturePaths, pathToTexturesFolder);
 
-	unsigned groundTextureID = loadTextureFromPathAndGetTextureId(FilePaths::getPathToTexture("grass.png"));
-	unsigned groundSpecularTextureID = loadTextureFromPathAndGetTextureId(FilePaths::getPathToTexture("grass_specular.png"));
+	Texture groundTexture;
+	groundTexture.loadFromFile2DTexture("grass.png", FilePaths::getPathToTexturesFolder(), TextureType::DIFFUSE);
+	Texture groundSpecularTexture;
+	groundSpecularTexture.loadFromFile2DTexture("grass_specular.png", FilePaths::getPathToTexturesFolder(), TextureType::SPECULAR);
 
 	
 	// Подготовка источников освещения:
@@ -635,10 +598,10 @@ int main()
 		groundQuad_mixLight->setInt("lightsCount", activeLights0);
 
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, groundTextureID);
+		glBindTexture(GL_TEXTURE_2D, groundTexture.getId());
 		groundQuad_mixLight->setInt("texture_diffuse", 0);
 		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, groundSpecularTextureID);
+		glBindTexture(GL_TEXTURE_2D, groundSpecularTexture.getId());
 		groundQuad_mixLight->setInt("texture_specular", 1);
 
 		glBindVertexArray(worldQuadVOsAndIndices->vao);

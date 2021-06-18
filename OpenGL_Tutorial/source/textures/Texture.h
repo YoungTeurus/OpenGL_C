@@ -41,6 +41,7 @@ public:
 	{
 		if(isInitialized)
 		{
+			std::cout << "There was an attempt to reload texture '" << pathToFolder << "/" << fileName << "'." << std::endl;
 			return;
 		}
 
@@ -48,7 +49,7 @@ public:
 		this->path = pathToFolder;
 		this->type = type;
 
-		string pathToFile = pathToFolder + "/" + fileName;
+		const string pathToFile = pathToFolder + FilePaths::getSplitter() + fileName;
 
 	    glGenTextures(1, &id);
 
