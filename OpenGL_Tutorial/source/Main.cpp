@@ -322,7 +322,7 @@ int main()
 	renderer->addLight(flashlight);
 	positionedLights.push_back(flashlight);
 
-	Ground ground(100.f);
+	Ground ground("grass.png", "grass_specular.png", 100.f);
 	Skybox skybox("skyboxNew", "sky.jpg");
 
 #pragma region Инициализация Framebuffer-а и разных VAO

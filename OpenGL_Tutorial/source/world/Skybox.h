@@ -13,10 +13,9 @@ private:
 	std::string cubeMapFileName;
 public:
 	Skybox(const std::string& cubeMapFolderName, const std::string& cubeMapFileName)
-		:DrawableObject(ModelTransformations{}, "skybox")
+		:DrawableObject(ModelTransformations{}, "skybox"),
+		 cubeMapFolderName(cubeMapFolderName), cubeMapFileName(cubeMapFileName)
 	{
-		this->cubeMapFolderName = cubeMapFolderName;
-		this->cubeMapFileName = cubeMapFileName;
 	}
 
 	void draw(Renderer* renderer) override

@@ -9,8 +9,10 @@ private:
 	VOsAndIndices* groundVOsAndIndices = VAOBuilder::getInstance()->getGroundQuad();
 	Texture* groundTexture = nullptr;
 	Texture* groundSpecularTexture = nullptr;
+	std::string textureFilename;
+	std::string textureSpecularFilename;
 public:
-	Ground(float width)
+	Ground(const std::string& textureFilename, const std::string& textureSpecularFilename, float width)
 		:DrawableObject(
 			ModelTransformations{
 				glm::vec3(0.f),
@@ -19,7 +21,8 @@ public:
 				glm::vec3(width)
 			},
 			"groundQuad_mixLight"
-		)
+		),
+		textureFilename(textureFilename), textureSpecularFilename(textureSpecularFilename)
 	{
 	}
 
@@ -30,11 +33,11 @@ public:
 		// Проверка загруженности текстур:
 		if(groundTexture == nullptr)
 		{
-			groundTexture = renderer->getTexturesLoader()->getOrLoadByFileNameAndDirectory2DTexture("grass.png", FilePaths::getPathToTexturesFolder());
+			groundTexture = renderer->getTexturesLoader()->getOrLoadByFileNameAndDirectory2DTexture(textureFilename, FilePaths::getPathToTexturesFolder());
 		}
 		if (groundSpecularTexture == nullptr)
 		{
-			groundSpecularTexture = renderer->getTexturesLoader()->getOrLoadByFileNameAndDirectory2DTexture("grass_specular.png", FilePaths::getPathToTexturesFolder());
+			groundSpecularTexture = renderer->getTexturesLoader()->getOrLoadByFileNameAndDirectory2DTexture(textureSpecularFilename, FilePaths::getPathToTexturesFolder());
 		}
 		
 		glm::mat4 groundModel = transformations.createModelMatrixWithTransformations();
