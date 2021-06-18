@@ -104,6 +104,12 @@
     <ClInclude Include="source\utility\FilePaths.h">
       <Filter>Исходные файлы\utility</Filter>
     </ClInclude>
+    <ClInclude Include="source\model\ModelTransformations.h">
+      <Filter>Исходные файлы\model</Filter>
+    </ClInclude>
+    <ClInclude Include="source\world\Cube.h">
+      <Filter>Исходные файлы\world</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\shaders\lightCube.vert">

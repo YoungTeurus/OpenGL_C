@@ -14,6 +14,7 @@
 #include "shader/Shader.h"
 #include "camera/Camera.h"
 #include "model/Model.h"
+#include "model/ModelTransformations.h"
 #include "model/StaticFigures.h"
 #include "utility/FilePaths.h"
 
@@ -65,30 +66,6 @@ struct Color
 };
 
 Color background = {0.25f, 0.25f, 0.25f, 1.f};
-
-struct ModelTransformations
-{
-	glm::vec3 position;
-	glm::vec3 rotationVector;
-	float rotationAngleDegrees;
-	glm::vec3 scale;
-
-	glm::mat4 createModelMatrixWithTransformations() const
-	{
-		glm::mat4 model = glm::mat4(1.0f);
-		return getModelWithAppliedTransformations(model);
-	}
-
-	glm::mat4 getModelWithAppliedTransformations(glm::mat4 model) const{
-		glm::mat4 transformedModel = model;
-
-		transformedModel = glm::translate(transformedModel, position);
-		transformedModel = glm::rotate(transformedModel, glm::radians(rotationAngleDegrees), rotationVector);
-		transformedModel = glm::scale(transformedModel, scale);
-
-		return transformedModel;
-	}
-};
 
 struct Material
 {
@@ -341,6 +318,7 @@ int main()
 	std::string pathToShaderFolder = FilePaths::getPathToShaderFolderWithTrailingSplitter();
 	Shader* assimpModelWithLightsAndExplosionShader = new Shader("backpack_mixLightWithExplosion", pathToShaderFolder, true);
 	// Shader* lightCubeShader = new Shader("lightCube", pathToShaderFolder, true);
+	Shader* lightCubeShader = new Shader("lightCube", pathToShaderFolder);
 	// Shader* lightCubeWithExplosionShader = new Shader("lightCubeWithExplosion", pathToShaderFolder, true);
 	// Shader* singleColorShader = new Shader("shaderSingleColor", pathToShaderFolder);
 	// Shader* screenRenderQuadShader = new Shader("screenRenderQuadShader", pathToShaderFolder);
@@ -378,10 +356,10 @@ int main()
 
 	PointLight *pointLight = new PointLight(
 			glm::vec3(0.1f),
-			glm::vec3(200.0f),
-			glm::vec3(200.0f),
+			glm::vec3(20.0f),
+			glm::vec3(20.0f),
 			1.0f, 0.01f, 0.009f,
-			glm::vec3(20.0f, 50.0f, -10.0f),
+			glm::vec3(0.0f, 10.0f, -10.0f),
 			"VERY bright white lamp"
 		);
 	
@@ -443,6 +421,7 @@ int main()
 		"FlashLight"
 	);
 	lights.push_back(flashlight);
+	positionedLights.push_back(flashlight);
 
 	// vector<Cube> lightCubes;
 	// 
@@ -697,12 +676,6 @@ int main()
 		0.0f,
 		glm::vec3(1.0f)
 	};
-	ModelTransformations lightCubeTransformation = {
-		glm::vec3(-5.0f, 0.0f, 0.0f),
-		glm::vec3(0.0f, 1.0f, 0.0f),
-		0.0f,
-		glm::vec3(0.5f)
-	};
 
 	ModelTransformations groundTransformation = {
 		glm::vec3(0.0f),
@@ -793,14 +766,20 @@ int main()
 		assimpModelWithLightsAndExplosionShader->setFloatMat4("model", tankTurretModel);
 		tankTurret.draw(*assimpModelWithLightsAndExplosionShader);
 
-		// // Отрисовка "светящегося куба".
-		// glm::mat4 lightCubeModel = lightCubeTransformation.createModelMatrixWithTransformations();
-		// lightCubeWithExplosionShader->use();
-		// lightCubeWithExplosionShader->setFloatMat4("projectionAndView", pv);
-		// lightCubeWithExplosionShader->setFloatMat4("model", lightCubeModel);
-		// lightCubeWithExplosionShader->setFloatVec3("uColor", glm::vec3(1.0f, 1.0f, 1.0f));
-		// glBindVertexArray(cubeVAO);
-		// glDrawElements(GL_TRIANGLES, cubeIndicesData.size(), GL_UNSIGNED_INT, 0);
+		// Отрисовка "светящегося куба".
+		for(auto *lightCube : lightCubes)
+		{
+			ModelTransformations lightCubeTransformation = {
+				lightCube->light->getPosition()
+			};
+			glm::mat4 lightCubeModel = lightCubeTransformation.createModelMatrixWithTransformations();
+			lightCubeShader->use();
+			lightCubeShader->setFloatMat4("projectionAndView", pv);
+			lightCubeShader->setFloatMat4("model", lightCubeModel);
+			lightCubeShader->setFloatVec3("uColor", lightCube->light->getDiffuse());
+			glBindVertexArray(cubeVAO);
+			glDrawElements(GL_TRIANGLES, cubeIndicesData.size(), GL_UNSIGNED_INT, 0);
+		}
 		
 		// Отрисовка "земли".
 		glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);

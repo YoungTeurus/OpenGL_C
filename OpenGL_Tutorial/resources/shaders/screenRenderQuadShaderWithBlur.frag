@@ -6,7 +6,8 @@ out vec4 fragColor;
 uniform sampler2D image;
 
 uniform bool horizontal;
-uniform float weight[5] = float[] (0.227027, 0.1945946, 0.1216216, 0.054054, 0.016216);
+uniform float weight[6] = float[] (0.227027, 0.1945946, 0.1216216, 0.054054, 0.016216,
+                                    0.013);
 
 void main(){
 	vec2 texture_offset = 1.0 / textureSize(image, 0);
@@ -14,7 +15,7 @@ void main(){
 
 	if(horizontal)
     {
-        for(int i = 1; i < 5; ++i)
+        for(int i = 1; i < 6; ++i)
         {
             result += texture(image, fTexCoords + vec2(texture_offset.x * i, 0.0)).rgb * weight[i];
             result += texture(image, fTexCoords - vec2(texture_offset.x * i, 0.0)).rgb * weight[i];
@@ -22,7 +23,7 @@ void main(){
     }
     else
     {
-        for(int i = 1; i < 5; ++i)
+        for(int i = 1; i < 6; ++i)
         {
             result += texture(image, fTexCoords + vec2(0.0, texture_offset.y * i)).rgb * weight[i];
             result += texture(image, fTexCoords - vec2(0.0, texture_offset.y * i)).rgb * weight[i];

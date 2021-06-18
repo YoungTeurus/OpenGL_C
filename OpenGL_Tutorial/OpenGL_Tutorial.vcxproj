@@ -170,9 +170,11 @@
     <ClInclude Include="source\light\SpotLight.h" />
     <ClInclude Include="source\model\Mesh.h" />
     <ClInclude Include="source\model\Model.h" />
+    <ClInclude Include="source\model\ModelTransformations.h" />
     <ClInclude Include="source\model\StaticFigures.h" />
     <ClInclude Include="source\shader\Shader.h" />
     <ClInclude Include="source\utility\FilePaths.h" />
+    <ClInclude Include="source\world\Cube.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\shaders\backpack_mixLight.frag" />
