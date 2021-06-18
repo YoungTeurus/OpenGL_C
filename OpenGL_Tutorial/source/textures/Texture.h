@@ -1,19 +1,16 @@
 #pragma once
+
 #include <map>
 #include <string>
-
-#ifndef STB_IMAGE_IMPLEMENTATION
-#define STB_IMAGE_IMPLEMENTATION
-#include "../include/stb_image.h"
-#endif
-
+#include <iostream>
 
 enum class TextureType : unsigned {
 	UNDEFINED = 0,
 	DIFFUSE = 1,
 	SPECULAR = 2,
 	NORMAL = 3,
-	HEIGHT = 4
+	HEIGHT = 4,
+	CUBE_MAP = 5,
 };
 
 static std::map<TextureType, std::string> textureTypeShaderNames = {
@@ -26,61 +23,52 @@ static std::map<TextureType, std::string> textureTypeShaderNames = {
 class Texture
 {
 private:
+	void setSTBIFilpState(const bool flipState);
+protected:
 	bool isInitialized = false;
+
+	void setSTBIFilp(const bool flipState);
+
+	virtual void loadTextureAndSetFields(const std::string& fileName, const std::string& directory);
+
+	unsigned char* loadImageData(std::string pathToFile, int* width, int*height, int* nrComponents);
+	
+	void freeSTBIImageData(unsigned char* data);
+	
 public:
 	unsigned int id;
-	TextureType type;
-	std::string path;
-	std::string name;
+	TextureType type = TextureType::UNDEFINED;
+	std::string directory;
+	std::string fileName;
 
 	Texture()
 	{
 	}
 
-	void loadFromFile2DTexture(const std::string& fileName, const std::string& pathToFolder, TextureType type)
+	void loadFromFile(const std::string& fileName, const std::string& directory, const bool isUV_flipped = false)
 	{
 		if(isInitialized)
-		{
-			std::cout << "There was an attempt to reload texture '" << pathToFolder << "/" << fileName << "'." << std::endl;
-			return;
-		}
+	{
+		std::cout << "Texture::loadFromFile: There was an attempt to reload texture '" << directory << "/" << fileName << "'." << std::endl;
+		return;
+	}
 
-		this->name = fileName;
-		this->path = pathToFolder;
+	if (isUV_flipped)
+	{
+		setSTBIFilpState(true);
+	}
+
+	loadTextureAndSetFields(fileName, directory);
+
+	if (isUV_flipped)
+	{
+		setSTBIFilpState(false);
+	}
+	}
+
+	void setType(TextureType type)
+	{
 		this->type = type;
-
-		const string pathToFile = pathToFolder + FilePaths::getSplitter() + fileName;
-
-	    glGenTextures(1, &id);
-
-	    int width, height, nrComponents;
-	    unsigned char* data = stbi_load(pathToFile.c_str(), &width, &height, &nrComponents, 0);
-	    if (data)
-	    {
-	        GLenum format;
-	        if (nrComponents == 1)
-	            format = GL_RED;
-	        else if (nrComponents == 3)
-	            format = GL_RGB;
-	        else if (nrComponents == 4)
-	            format = GL_RGBA;
-
-	        glBindTexture(GL_TEXTURE_2D, id);
-	        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-	        glGenerateMipmap(GL_TEXTURE_2D);
-
-	        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	    	isInitialized = true;
-	    }
-	    else
-	    {
-	        std::cout << "Texture failed to load at path: " << pathToFile << std::endl;
-	    }
-	    stbi_image_free(data);
 	}
 
 	unsigned getId() const

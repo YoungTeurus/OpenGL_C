@@ -75,6 +75,15 @@
     <ClCompile Include="source\renderer\Renderer.cpp">
       <Filter>Исходные файлы\renderer</Filter>
     </ClCompile>
+    <ClCompile Include="source\textures\TexturesLoader.cpp">
+      <Filter>Исходные файлы\textures</Filter>
+    </ClCompile>
+    <ClCompile Include="source\textures\Texture.cpp">
+      <Filter>Исходные файлы\textures</Filter>
+    </ClCompile>
+    <ClCompile Include="source\textures\CubeMap.cpp">
+      <Filter>Исходные файлы\textures</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\stb_image.h">
@@ -153,6 +162,9 @@
       <Filter>Исходные файлы\textures</Filter>
     </ClInclude>
     <ClInclude Include="source\textures\TexturesLoader.h">
+      <Filter>Исходные файлы\textures</Filter>
+    </ClInclude>
+    <ClInclude Include="source\textures\CubeMap.h">
       <Filter>Исходные файлы\textures</Filter>
     </ClInclude>
   </ItemGroup>

@@ -158,6 +158,9 @@
     <ClCompile Include="source\renderer\Renderer.cpp" />
     <ClCompile Include="source\shader\Shader.cpp" />
     <ClCompile Include="source\shader\ShaderLoader.cpp" />
+    <ClCompile Include="source\textures\CubeMap.cpp" />
+    <ClCompile Include="source\textures\Texture.cpp" />
+    <ClCompile Include="source\textures\TexturesLoader.cpp" />
     <ClCompile Include="source\utility\FilePaths.cpp" />
     <ClCompile Include="source\world\LightCube.h" />
   </ItemGroup>
@@ -181,6 +184,7 @@
     <ClInclude Include="source\renderer\Renderer.h" />
     <ClInclude Include="source\shader\Shader.h" />
     <ClInclude Include="source\shader\ShaderLoader.h" />
+    <ClInclude Include="source\textures\CubeMap.h" />
     <ClInclude Include="source\textures\Texture.h" />
     <ClInclude Include="source\textures\TexturesLoader.h" />
     <ClInclude Include="source\utility\FilePaths.h" />

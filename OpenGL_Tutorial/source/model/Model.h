@@ -1,4 +1,5 @@
 #pragma once
+#include "../textures/Texture.h"
 #include "Mesh.h"
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -22,9 +23,9 @@ private:
     string directory;
 
     void loadModel(string path, const bool isUV_flipped);
-    void processNode(aiNode* node, const aiScene* scene);
-    Mesh processMesh(aiMesh* mesh, const aiScene* scene);
-    vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, TextureType textureType);
+    void processNode(aiNode* node, const aiScene* scene, const bool isUV_flipped);
+    Mesh processMesh(aiMesh* mesh, const aiScene* scene, const bool isUV_flipped);
+    vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, TextureType textureType, const bool isUV_flipped);
 };
 
 inline void Model::draw(Shader& shader)
@@ -58,9 +59,6 @@ inline void Model::drawSelected(Shader &shader, Shader &coloringShader) {
 inline void Model::loadModel(string path, const bool isUV_flipped)
 {
     Assimp::Importer importer;
-	if (isUV_flipped){
-    		stbi_set_flip_vertically_on_load(true);
-	}
     const aiScene* scene;
 	//if (isUV_flipped)
 	//{
@@ -77,26 +75,23 @@ inline void Model::loadModel(string path, const bool isUV_flipped)
     }
     directory = path.substr(0, path.find_last_of('/'));
 
-    processNode(scene->mRootNode, scene);
-	if (isUV_flipped){
-    		stbi_set_flip_vertically_on_load(false);
-	}
+    processNode(scene->mRootNode, scene, isUV_flipped);
 }
 
-inline void Model::processNode(aiNode* node, const aiScene* scene)
+inline void Model::processNode(aiNode* node, const aiScene* scene, const bool isUV_flipped)
 {
     for (unsigned int i = 0; i < node->mNumMeshes; i++)
     {
         aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-        meshes.push_back(processMesh(mesh, scene));
+        meshes.push_back(processMesh(mesh, scene, isUV_flipped));
     }
     for (unsigned int i = 0; i < node->mNumChildren; i++)
     {
-        processNode(node->mChildren[i], scene);
+        processNode(node->mChildren[i], scene, isUV_flipped);
     }
 }
 
-inline Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
+inline Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene, const bool isUV_flipped)
 {
     vector<Vertex> vertices;
     vector<unsigned int> indices;
@@ -165,22 +160,22 @@ inline Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
     }
     aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
-    vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, TextureType::DIFFUSE);
+    vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, TextureType::DIFFUSE, isUV_flipped);
     textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
-    vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, TextureType::SPECULAR);
+    vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, TextureType::SPECULAR, isUV_flipped);
     textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 
-    std::vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, TextureType::NORMAL);
+    std::vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, TextureType::NORMAL, isUV_flipped);
     textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
 
-    std::vector<Texture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, TextureType::HEIGHT);
+    std::vector<Texture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, TextureType::HEIGHT, isUV_flipped);
     textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 
     return Mesh(vertices, indices, textures);
 }
 
-inline vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type, TextureType textureType)
+inline vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type, TextureType textureType, const bool isUV_flipped)
 {
     vector<Texture> textures;
     for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
@@ -190,7 +185,7 @@ inline vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureTyp
         bool skip = false;
         for (unsigned int j = 0; j < textures_loaded.size(); j++)
         {
-            if (std::strcmp(textures_loaded[j].path.data(), str.C_Str()) == 0)
+            if (std::strcmp(textures_loaded[j].directory.data(), str.C_Str()) == 0)
             {
                 textures.push_back(textures_loaded[j]);
                 skip = true;
@@ -200,7 +195,8 @@ inline vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureTyp
         if (!skip)
         {
             Texture texture;
-            texture.loadFromFile2DTexture(string(str.C_Str()), this->directory, textureType);
+            texture.loadFromFile(string(str.C_Str()), this->directory, isUV_flipped);
+        	texture.setType(textureType);
         	
             textures.push_back(texture);
             textures_loaded.push_back(texture);

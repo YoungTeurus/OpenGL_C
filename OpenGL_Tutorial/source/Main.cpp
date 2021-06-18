@@ -6,7 +6,6 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
-
 #include "light/PointLight.h"
 #include "light/SpotLight.h"
 #include "light/DirectionalLight.h"
@@ -19,6 +18,8 @@
 #include "model/VOsAndIndices.h"
 #include "renderer/Renderer.h"
 #include "shader/ShaderLoader.h"
+#include "textures/Texture.h"
+#include "textures/CubeMap.h"
 
 float deltaTime = 0.0f;									 // Разница во времени между последним и предпоследним кадрами
 float lastFrameTime = 0.0f;								 // Время последнего кадра
@@ -195,39 +196,6 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
 	mainCamera.handleMouseMovement(dx, dy);
 }
 
-unsigned loadCubeMapFromPathsAndGetTextureId(const std::vector<string>& textureFileNames, const std::string& pathToTexturesFolder)
-{
-	unsigned textureID;
-
-	glGenTextures(1, &textureID);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
-
-	int width, height, nrChannels;
-	unsigned char* data;
-	for(unsigned i = 0; i < textureFileNames.size(); i++)
-	{
-		string pathToTexture = pathToTexturesFolder + textureFileNames[i];
-		data = stbi_load(pathToTexture.c_str(), &width, &height, &nrChannels, 0);
-		if (data){
-			glTexImage2D(
-				GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-				0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data
-			);
-		} else {
-			std::cout << "Cubemap tex failed to load at path: " << textureFileNames[i] << std::endl;
-		}
-		stbi_image_free(data);
-	}
-
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);  
-	
-	return textureID;
-}
-
 int main()
 {
 	using namespace std;
@@ -291,23 +259,13 @@ int main()
 	Model tankBase(FilePaths::getPathToModel("tank/base.obj"), true);
 	Model tankTurret(FilePaths::getPathToModel("tank/turret.obj"), true);
 
-	// Создание Cubemap-ы:
-	std::vector<string> cubeMapFacesTexturePaths = {
-		R"(skybox/right.jpg)",
-		R"(skybox/left.jpg)",
-		R"(skybox/top.jpg)",
-		R"(skybox/bottom.jpg)",
-		R"(skybox/front.jpg)",
-		R"(skybox/back.jpg)",
-	};
-
-	string pathToTexturesFolder = FilePaths::getPathToTexturesFolderWithTrailingSplitter();
-	unsigned cubeMapTextureId = loadCubeMapFromPathsAndGetTextureId(cubeMapFacesTexturePaths, pathToTexturesFolder);
+	CubeMap cubeMapTexture;
+	cubeMapTexture.loadFromFile("sky.jpg", FilePaths::getPathToTexturesFolderWithTrailingSplitter() + "skyboxNew");
 
 	Texture groundTexture;
-	groundTexture.loadFromFile2DTexture("grass.png", FilePaths::getPathToTexturesFolder(), TextureType::DIFFUSE);
+	groundTexture.loadFromFile("grass.png", FilePaths::getPathToTexturesFolder());
 	Texture groundSpecularTexture;
-	groundSpecularTexture.loadFromFile2DTexture("grass_specular.png", FilePaths::getPathToTexturesFolder(), TextureType::SPECULAR);
+	groundSpecularTexture.loadFromFile("grass_specular.png", FilePaths::getPathToTexturesFolder());
 
 	
 	// Подготовка источников освещения:
@@ -618,7 +576,7 @@ int main()
 		skyboxShader->setFloatMat4("view", skyboxView);
 		
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTextureId);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTexture.getId());
 		glBindVertexArray(skyboxVOsAndIndices->vao);
 		glDrawElements(GL_TRIANGLES, skyboxVOsAndIndices->indices.size(), GL_UNSIGNED_INT, NULL);
 		glDepthMask(GL_TRUE);  // Последующие элементы влияют на Depth
