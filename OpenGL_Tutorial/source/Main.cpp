@@ -10,12 +10,14 @@
 #include "light/PointLight.h"
 #include "light/SpotLight.h"
 #include "light/DirectionalLight.h"
+#include "world/LightCube.h"
 #include "shader/Shader.h"
 #include "camera/Camera.h"
 #include "model/Model.h"
 #include "model/StaticFigures.h"
 #include "utility/FilePaths.h"
 
+class LightCube;
 float deltaTime = 0.0f;									 // Разница во времени между последним и предпоследним кадрами
 float lastFrameTime = 0.0f;								 // Время последнего кадра
 
@@ -33,6 +35,9 @@ bool wireframeMode = false;
 float globalExposure = 1.0f;
 float globalGamma = 2.2f;
 
+float globalExplosionForce = 0.0f;
+float globalTimeSinceExplosion = 0.0f;
+
 void setPolygoneDrawMode() {
 	if (wireframeMode) {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -40,6 +45,18 @@ void setPolygoneDrawMode() {
 	else {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
+}
+
+void changeSpotlightState(SpotLight *spotLight)
+{
+	spotLight->setIsActive(!spotLight->getIsActive());
+}
+
+SpotLight *flashlight;
+
+void changeFlashlightState()
+{
+	changeSpotlightState(flashlight);
 }
 
 struct Color
@@ -133,6 +150,19 @@ void processInput(GLFWwindow* window)
 	if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS) {
 		globalGamma = max( globalGamma - 0.5f * deltaTime, 0.01f );
 	}
+
+	if (glfwGetKey(window, GLFW_KEY_EQUAL) == GLFW_PRESS) {
+		globalExplosionForce = min( globalExplosionForce + 1.f * deltaTime, 20.0f );
+	}
+	if (glfwGetKey(window, GLFW_KEY_MINUS) == GLFW_PRESS) {
+		globalExplosionForce = max( globalExplosionForce - 1.f * deltaTime, 0.0f );
+	}
+	if (glfwGetKey(window, GLFW_KEY_RIGHT_BRACKET) == GLFW_PRESS) {
+		globalTimeSinceExplosion = min( globalTimeSinceExplosion + 0.5f * deltaTime, 10.0f );
+	}
+	if (glfwGetKey(window, GLFW_KEY_LEFT_BRACKET) == GLFW_PRESS) {
+		globalTimeSinceExplosion = max( globalTimeSinceExplosion - 0.5f * deltaTime, 0.0f );
+	}
 	
 	// Поднятие-спуск камеры:
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
@@ -150,6 +180,13 @@ void onKeyAction(GLFWwindow* window, int key, int scancode, int action, int mods
 		case GLFW_KEY_M:
 			wireframeMode = !wireframeMode;
 			setPolygoneDrawMode();
+			break;
+		case GLFW_KEY_0:
+			globalExplosionForce = 0.0f;
+			globalTimeSinceExplosion = 0.0f;
+			break;
+		case GLFW_KEY_F:
+			changeFlashlightState();
 			break;
 		default:
 			break;
@@ -336,62 +373,76 @@ int main()
 	
 	// Подготовка источников освещения:
 	vector<BaseLight*> lights;
+	vector<PositionedLight*> positionedLights;
+	vector<LightCube*> lightCubes;
 
-	lights.push_back(
-		new PointLight(
+	PointLight *pointLight = new PointLight(
 			glm::vec3(0.1f),
-			glm::vec3(20.0f),
-			glm::vec3(20.0f),
+			glm::vec3(200.0f),
+			glm::vec3(200.0f),
 			1.0f, 0.01f, 0.009f,
-			glm::vec3(0.0f, 3.0f, -10.0f),
+			glm::vec3(20.0f, 50.0f, -10.0f),
 			"VERY bright white lamp"
-		)
-	);
-
-	lights.push_back(
-		new PointLight(
-			glm::vec3(0.0f),
-			glm::vec3(0.1f, 0.0f, 0.0f),
-			glm::vec3(0.1f, 0.0f, 0.0f),
-			1.0f, 0.001f, 0.0009f,
-			glm::vec3(0.0f, 3.0f, -5.0f),
-			"Dim red lamp"
-		)
-	);
+		);
 	
-	lights.push_back(
-		new PointLight(
-			glm::vec3(0.0f),
-			glm::vec3(0.0f, 0.0f, 0.2f),
-			glm::vec3(0.0f, 0.0f, 0.2f),
-			1.0f, 0.001f, 0.0009f,
-			glm::vec3(0.0f, 3.0f, -3.0f),
-			"Dim green lamp"
-		)
-	);
+	lights.push_back(pointLight);
+	positionedLights.push_back(pointLight);
+	lightCubes.push_back( new LightCube(pointLight) );
 	
-	lights.push_back(
-		new PointLight(
-			glm::vec3(0.0f),
-			glm::vec3(0.0f, 0.1f, 0.0f),
-			glm::vec3(0.0f, 0.1f, 0.0f),
-			1.0f, 0.001f, 0.0009f,
-			glm::vec3(0.0f, 3.0f, -1.0f),
-			"Dim blue lamp"
-		)
-	);
+	// lights.push_back(
+	// 	new PointLight(
+	// 		glm::vec3(0.0f),
+	// 		glm::vec3(0.1f, 0.0f, 0.0f),
+	// 		glm::vec3(0.1f, 0.0f, 0.0f),
+	// 		1.0f, 0.001f, 0.0009f,
+	// 		glm::vec3(0.0f, 3.0f, -5.0f),
+	// 		"Dim red lamp"
+	// 	)
+	// );
+	// 
+	// lights.push_back(
+	// 	new PointLight(
+	// 		glm::vec3(0.0f),
+	// 		glm::vec3(0.0f, 0.0f, 0.2f),
+	// 		glm::vec3(0.0f, 0.0f, 0.2f),
+	// 		1.0f, 0.001f, 0.0009f,
+	// 		glm::vec3(0.0f, 3.0f, -3.0f),
+	// 		"Dim green lamp"
+	// 	)
+	// );
+	// 
+	// lights.push_back(
+	// 	new PointLight(
+	// 		glm::vec3(0.0f),
+	// 		glm::vec3(0.0f, 0.1f, 0.0f),
+	// 		glm::vec3(0.0f, 0.1f, 0.0f),
+	// 		1.0f, 0.001f, 0.0009f,
+	// 		glm::vec3(0.0f, 3.0f, -1.0f),
+	// 		"Dim blue lamp"
+	// 	)
+	// );
 	
-	SpotLight* flashLight = new SpotLight(
-		glm::radians(15.f), glm::radians(30.f),
+	// SpotLight* flashLight = new SpotLight(
+	// 	glm::radians(15.f), glm::radians(30.f),
+	// 	glm::vec3(0.0f, 0.0f, 0.0f),
+	// 	glm::vec3(0.05f, 0.05f, 0.05f),
+	// 	glm::vec3(0.7f, 0.7f, 0.6f),
+	// 	glm::vec3(0.8f, 0.8f, 0.7f),
+	// 	1.0f, 0.05f, 0.009f,
+	// 	glm::vec3(0.0f, 0.0f, 0.0f),
+	// 	"FlashLight"
+	// );
+	flashlight = new SpotLight(
+		glm::radians(10.f), glm::radians(20.f),
 		glm::vec3(0.0f, 0.0f, 0.0f),
 		glm::vec3(0.05f, 0.05f, 0.05f),
-		glm::vec3(0.7f, 0.7f, 0.6f),
-		glm::vec3(0.8f, 0.8f, 0.7f),
+		glm::vec3(3.7f, 3.7f, 3.6f),
+		glm::vec3(8.8f, 8.8f, 8.7f),
 		1.0f, 0.05f, 0.009f,
 		glm::vec3(0.0f, 0.0f, 0.0f),
 		"FlashLight"
 	);
-	lights.push_back(flashLight);
+	lights.push_back(flashlight);
 
 	// vector<Cube> lightCubes;
 	// 
@@ -669,10 +720,10 @@ int main()
 		processInput(win);
 
 		// Изменение положения источников света:
-		flashLight->setPosition(mainCamera.position
+		flashlight->setPosition(mainCamera.position
 			- mainCamera.up * 0.3f
 		);
-		flashLight->setDirection(mainCamera.front);
+		flashlight->setDirection(mainCamera.front);
 
 		// Вращение камеры:
 		glm::mat4 view = mainCamera.getViewMatrix();
@@ -690,38 +741,14 @@ int main()
 		glClearColor(background.r, background.g, background.b, background.a);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// Отрисовка "земли".
-		glm::mat4 groundModel = groundTransformation.createModelMatrixWithTransformations();
-		groundQuad_mixLight->use();
-		groundQuad_mixLight->setFloatMat4("projectionAndView", pv);
-		groundQuad_mixLight->setFloatMat4("model", groundModel);
-		groundQuad_mixLight->setFloat("shininess", 64.0f);
-		groundQuad_mixLight->setFloatVec3("viewPos", mainCamera.position);
-
-		int activeLights0 = 0;
-		for (int i = 0; i < lights.size(); i++)
-		{
-			activeLights0 += lights[i]->useAndReturnSuccess(groundQuad_mixLight, activeLights0);
-		}
-		groundQuad_mixLight->setInt("lightsCount", activeLights0);
-
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, groundTextureID);
-		groundQuad_mixLight->setInt("texture_diffuse1", 0);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, groundSpecularTextureID);
-		groundQuad_mixLight->setInt("texture_specular1", 1);
-
-		glBindVertexArray(worldQuadVAO);
-		glDrawElements(GL_TRIANGLES, quadIndicesData.size(), GL_UNSIGNED_INT, 0);
-
 		// Отрисовка модели:
 		tankBaseTransformations.position = glm::vec3(glm::cos(currentTime) * 2.5f, 0.0f, glm::cos(currentTime) * 2.5f);
 		tankBaseTransformations.rotationAngleDegrees = glm::cos(currentTime) * 30.0f;
 		glm::mat4 tankBaseModel = tankBaseTransformations.createModelMatrixWithTransformations();
 		
 		assimpModelWithLightsAndExplosionShader->use();
-		assimpModelWithLightsAndExplosionShader->setFloat("uExplosionMagnitude", 0.0f);
+		assimpModelWithLightsAndExplosionShader->setFloat("uExplosionMagnitude", globalExplosionForce);
+		assimpModelWithLightsAndExplosionShader->setFloat("uTimeSinceExplosion", globalTimeSinceExplosion);
 		assimpModelWithLightsAndExplosionShader->setFloatMat4("projectionAndView", pv);
 		assimpModelWithLightsAndExplosionShader->setFloatMat4("model", tankBaseModel);
 		assimpModelWithLightsAndExplosionShader->setFloat("shininess", 64.0f);
@@ -745,6 +772,8 @@ int main()
 
 		// Копии:
 		tankBaseModel = tankBaseTransformations2.createModelMatrixWithTransformations();
+		assimpModelWithLightsAndExplosionShader->setFloat("uExplosionMagnitude", 0.0f);
+		assimpModelWithLightsAndExplosionShader->setFloat("uTimeSinceExplosion", 0.0f);
 		assimpModelWithLightsAndExplosionShader->setFloatMat4("model", tankBaseModel);
 		tankBase.draw(*assimpModelWithLightsAndExplosionShader);
 
@@ -772,6 +801,32 @@ int main()
 		// lightCubeWithExplosionShader->setFloatVec3("uColor", glm::vec3(1.0f, 1.0f, 1.0f));
 		// glBindVertexArray(cubeVAO);
 		// glDrawElements(GL_TRIANGLES, cubeIndicesData.size(), GL_UNSIGNED_INT, 0);
+		
+		// Отрисовка "земли".
+		glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+		glm::mat4 groundModel = groundTransformation.createModelMatrixWithTransformations();
+		groundQuad_mixLight->use();
+		groundQuad_mixLight->setFloatMat4("projectionAndView", pv);
+		groundQuad_mixLight->setFloatMat4("model", groundModel);
+		groundQuad_mixLight->setFloat("shininess", 64.0f);
+		groundQuad_mixLight->setFloatVec3("viewPos", mainCamera.position);
+
+		int activeLights0 = 0;
+		for (int i = 0; i < lights.size(); i++)
+		{
+			activeLights0 += lights[i]->useAndReturnSuccess(groundQuad_mixLight, activeLights0);
+		}
+		groundQuad_mixLight->setInt("lightsCount", activeLights0);
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, groundTextureID);
+		groundQuad_mixLight->setInt("texture_diffuse", 0);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, groundSpecularTextureID);
+		groundQuad_mixLight->setInt("texture_specular", 1);
+
+		glBindVertexArray(worldQuadVAO);
+		glDrawElements(GL_TRIANGLES, quadIndicesData.size(), GL_UNSIGNED_INT, 0);
 
 		// Отрисовка skybox:
 		glDepthFunc(GL_LEQUAL);

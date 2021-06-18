@@ -34,13 +34,14 @@ in vec3 fNormal;
 in vec3 fFragPosition;
 in vec2 fTextureCoord;
 
-out vec4 fragColor;
+layout (location = 0) out vec4 fragColor;
+layout (location = 1) out vec4 brightColor;
 
 uniform int lightsCount;
 uniform Light lights[MAX_LIGHTS];
 
-uniform sampler2D texture_diffuse1;
-uniform sampler2D texture_specular1;
+uniform sampler2D texture_diffuse;
+uniform sampler2D texture_specular;
 uniform float shininess;
 
 uniform vec3 viewPos;  // ѕоложение камеры в мировых координатах
@@ -62,18 +63,24 @@ vec3 getColorFromSpotLight(Light light, vec3 normal, vec3 fragPos, vec3 viewDir,
 void main(){
 	vec3 normal, diffuseTextureColor, specularTextureColor, viewDir;
 
-	diffuseTextureColor = texture(texture_diffuse1, fTextureCoord).rgb;
-	specularTextureColor = texture(texture_specular1, fTextureCoord).rgb;
+	diffuseTextureColor = texture(texture_diffuse, fTextureCoord).rgb;
+	specularTextureColor = texture(texture_specular, fTextureCoord).rgb;
 	viewDir = normalize(viewPos - fFragPosition);
 
-	// vec3 result = vec3(0, 0, 0);
-	// 
-	// for(int i = 0; i < lightsCount; i++){
-	// 	result += getColorFromLight(lights[i], normal, fFragPosition, viewDir, diffuseTextureColor, specularTextureColor);
-	// }
+	vec3 result = vec3(0.0, 0.0, 0.0);
+	
+	for(int i = 0; i < lightsCount; i++){
+		result += getColorFromLight(lights[i], normal, fFragPosition, viewDir, diffuseTextureColor, specularTextureColor);
+	}
 
-	fragColor = vec4(diffuseTextureColor, 1.0);
-	// fragColor = vec4(result, 1.0);
+	fragColor = vec4(result, 1.0);
+
+	float brightness = dot(fragColor.rgb, vec3(0.2126, 0.7152, 0.0722));
+	if (brightness > 1.0){
+		brightColor = vec4(fragColor.rgb, 1.0);
+	} else {
+		brightColor = vec4(0.0, 0.0, 0.0, 1.0);
+	}
 }
 
 vec3 getColorFromLight(Light light, vec3 normal, vec3 fFragPosition, vec3 viewDir, vec3 diffuseTextureColor, vec3 specularTextureColor){

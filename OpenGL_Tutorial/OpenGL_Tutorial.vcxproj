@@ -155,7 +155,7 @@
     <ClCompile Include="source\camera\Camera.cpp" />
     <ClCompile Include="source\Main.cpp" />
     <ClCompile Include="source\shader\Shader.cpp" />
-    <ClCompile Include="source\world\WorldObject.cpp" />
+    <ClCompile Include="source\world\LightCube.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\stb_image.h" />

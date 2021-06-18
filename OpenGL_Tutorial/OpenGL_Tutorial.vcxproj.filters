@@ -54,7 +54,7 @@
     <ClCompile Include="source\shader\Shader.cpp">
       <Filter>Исходные файлы\shader</Filter>
     </ClCompile>
-    <ClCompile Include="source\world\WorldObject.cpp">
+    <ClCompile Include="source\world\LightCube.h">
       <Filter>Исходные файлы\world</Filter>
     </ClCompile>
   </ItemGroup>
