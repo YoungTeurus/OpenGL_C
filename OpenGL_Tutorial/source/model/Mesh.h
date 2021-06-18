@@ -56,7 +56,7 @@ inline void Mesh::draw(Shader& shader)
         string textureNumber;
 
     	const Texture currentTexture = textures[i];
-    	const TextureType currentTextureType = currentTexture.type;
+    	const TextureType currentTextureType = currentTexture.getType();
 
         switch (currentTextureType)
         {
@@ -70,7 +70,7 @@ inline void Mesh::draw(Shader& shader)
     	string currentTextureShaderName = textureTypeShaderNames.at(currentTextureType) + textureNumber;
     	shader.setInt(currentTextureShaderName, i);
 
-        glBindTexture(GL_TEXTURE_2D, currentTexture.id);
+        glBindTexture(GL_TEXTURE_2D, currentTexture.getId());
     }
     glActiveTexture(GL_TEXTURE0);
 

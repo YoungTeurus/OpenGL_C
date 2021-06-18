@@ -266,7 +266,7 @@ int main()
 	groundTexture.loadFromFile("grass.png", FilePaths::getPathToTexturesFolder());
 	Texture groundSpecularTexture;
 	groundSpecularTexture.loadFromFile("grass_specular.png", FilePaths::getPathToTexturesFolder());
-
+	
 	
 	// Подготовка источников освещения:
 	vector<PositionedLight*> positionedLights;

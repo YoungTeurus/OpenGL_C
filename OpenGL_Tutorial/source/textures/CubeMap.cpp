@@ -3,6 +3,15 @@
 #include <glad/glad.h>
 #include "../utility/FilePaths.h"
 
+std::vector<std::string> CubeMap::fileSuffixes = {
+	"",					// R"(skybox/right.jpg)",
+	"_left",			// R"(skybox/left.jpg)",
+	"_top",				// R"(skybox/top.jpg)",
+	"_bottom",			// R"(skybox/bottom.jpg)",
+	"_front",			// R"(skybox/front.jpg)",
+	"_back"				// R"(skybox/back.jpg)",
+};
+
 void CubeMap::loadTextureAndSetFields(const std::string& fileName, const std::string& directory)
 {
 	this->fileName = fileName;
@@ -44,12 +53,3 @@ void CubeMap::loadTextureAndSetFields(const std::string& fileName, const std::st
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 }
-
-std::vector<std::string> CubeMap::fileSuffixes = {
-	"",					// R"(skybox/right.jpg)",
-	"_left",			// R"(skybox/left.jpg)",
-	"_top",				// R"(skybox/top.jpg)",
-	"_bottom",			// R"(skybox/bottom.jpg)",
-	"_front",			// R"(skybox/front.jpg)",
-	"_back"				// R"(skybox/back.jpg)",
-};

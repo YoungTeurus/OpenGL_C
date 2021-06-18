@@ -1,4 +1,3 @@
-// #include "TexturesLoader.h"
-// 
-// TexturesLoader* TexturesLoader::instance = nullptr;
-// 
+#include "TexturesLoader.h"
+
+TexturesLoader* TexturesLoader::instance = nullptr;

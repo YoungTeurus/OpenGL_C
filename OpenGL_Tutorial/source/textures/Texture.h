@@ -25,6 +25,11 @@ class Texture
 private:
 	void setSTBIFilpState(const bool flipState);
 protected:
+	unsigned int id;
+	TextureType type = TextureType::UNDEFINED;
+	std::string directory;
+	std::string fileName;
+	
 	bool isInitialized = false;
 
 	void setSTBIFilp(const bool flipState);
@@ -36,14 +41,8 @@ protected:
 	void freeSTBIImageData(unsigned char* data);
 	
 public:
-	unsigned int id;
-	TextureType type = TextureType::UNDEFINED;
-	std::string directory;
-	std::string fileName;
 
-	Texture()
-	{
-	}
+	Texture() = default;
 
 	void loadFromFile(const std::string& fileName, const std::string& directory, const bool isUV_flipped = false)
 	{
@@ -83,5 +82,20 @@ public:
 	bool getIsInitialized() const
 	{
 		return isInitialized;
+	}
+
+	TextureType getType() const
+	{
+		return type;
+	}
+
+	std::string getDirectory() const
+	{
+		return directory;
+	}
+
+	std::string getFileName() const
+	{
+		return fileName;
 	}
 };

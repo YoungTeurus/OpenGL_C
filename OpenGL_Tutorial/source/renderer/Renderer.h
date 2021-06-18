@@ -5,6 +5,7 @@
 
 #include "../camera/Camera.h"
 #include "../light/BaseLight.h"
+#include "../textures/TexturesLoader.h"
 
 class Renderer
 {
@@ -18,6 +19,7 @@ private:
 	std::vector<BaseLight*> lights;
 
 	Camera mainCamera;
+	TexturesLoader *texturesLoader = TexturesLoader::getInstance();
 
 	Renderer()
 	{
@@ -52,6 +54,11 @@ public:
 	Camera getMainCamera() const
 	{
 		return mainCamera;
+	}
+
+	TexturesLoader* getTexturesLoader() const
+	{
+		return texturesLoader;
 	}
 
 	glm::mat4 getPV()
