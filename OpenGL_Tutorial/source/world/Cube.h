@@ -1,26 +1,19 @@
 #pragma once
-#include <exception>
 #include <vector>
 
+
+#include "DrawableObject.h"
 #include "../model/ModelTransformations.h"
 
-class Cube
+class Cube : public DrawableObject
 {
 protected:
-	static unsigned cubeVAO;
-	static std::vector<unsigned> indices;
-	ModelTransformations cubeTransformations;
 
 public:
 	Cube(ModelTransformations transformations)
-		:cubeTransformations(transformations)
+		:DrawableObject(transformations)
 	{
 	}
 
 	virtual ~Cube() = default;
-
-	virtual void draw()
-	{
-		throw new std::exception("Not implemented!");
-	}
 };

@@ -57,6 +57,9 @@
     <ClCompile Include="source\world\LightCube.h">
       <Filter>Исходные файлы\world</Filter>
     </ClCompile>
+    <ClCompile Include="source\model\VAOBuilder.cpp">
+      <Filter>Исходные файлы\model</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\stb_image.h">
@@ -115,6 +118,12 @@
     </ClInclude>
     <ClInclude Include="source\model\VAOBuilder.h">
       <Filter>Исходные файлы\model</Filter>
+    </ClInclude>
+    <ClInclude Include="source\world\WorldObject.h">
+      <Filter>Исходные файлы\world</Filter>
+    </ClInclude>
+    <ClInclude Include="source\world\DrawableObject.h">
+      <Filter>Исходные файлы\world</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

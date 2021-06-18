@@ -15,7 +15,6 @@
 #include "camera/Camera.h"
 #include "model/Model.h"
 #include "model/ModelTransformations.h"
-#include "model/StaticFigures.h"
 #include "model/VAOBuilder.h"
 #include "model/VOsAndIndices.h"
 #include "utility/FilePaths.h"
@@ -505,10 +504,9 @@ int main()
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	
-	VOsAndIndices *screenQuadVOsAndIndices = VAOBuilder::get2DQuad();
-	VOsAndIndices *worldQuadVOsAndIndices = VAOBuilder::get3DQuad();
-	VOsAndIndices *cubeVOsAndIndices = VAOBuilder::getCube();
-	VOsAndIndices *skyboxVOsAndIndices = VAOBuilder::getSkybox();
+	VOsAndIndices *screenQuadVOsAndIndices = VAOBuilder::getInstance()->get2DQuad();
+	VOsAndIndices *worldQuadVOsAndIndices = VAOBuilder::getInstance()->get3DQuad();
+	VOsAndIndices *skyboxVOsAndIndices = VAOBuilder::getInstance()->getSkybox();
 	
 #pragma endregion 
 	
@@ -642,16 +640,7 @@ int main()
 		// Отрисовка "светящегося куба".
 		for(auto *lightCube : lightCubes)
 		{
-			ModelTransformations lightCubeTransformation = {
-				lightCube->light->getPosition()
-			};
-			glm::mat4 lightCubeModel = lightCubeTransformation.createModelMatrixWithTransformations();
-			lightCubeShader->use();
-			lightCubeShader->setFloatMat4("projectionAndView", pv);
-			lightCubeShader->setFloatMat4("model", lightCubeModel);
-			lightCubeShader->setFloatVec3("uColor", lightCube->light->getDiffuse());
-			glBindVertexArray(cubeVOsAndIndices->vao);
-			glDrawElements(GL_TRIANGLES, cubeVOsAndIndices->indices.size(), GL_UNSIGNED_INT, 0);
+			lightCube->draw(lightCubeShader, pv);
 		}
 		
 		// Отрисовка "земли".

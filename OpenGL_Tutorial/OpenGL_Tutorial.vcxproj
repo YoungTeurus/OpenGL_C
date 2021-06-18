@@ -154,6 +154,7 @@
     <ClCompile Include="include\glad.c" />
     <ClCompile Include="source\camera\Camera.cpp" />
     <ClCompile Include="source\Main.cpp" />
+    <ClCompile Include="source\model\VAOBuilder.cpp" />
     <ClCompile Include="source\shader\Shader.cpp" />
     <ClCompile Include="source\world\LightCube.h" />
   </ItemGroup>
@@ -177,6 +178,8 @@
     <ClInclude Include="source\shader\Shader.h" />
     <ClInclude Include="source\utility\FilePaths.h" />
     <ClInclude Include="source\world\Cube.h" />
+    <ClInclude Include="source\world\DrawableObject.h" />
+    <ClInclude Include="source\world\WorldObject.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\shaders\backpack_mixLight.frag" />

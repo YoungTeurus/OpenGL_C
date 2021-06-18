@@ -1,18 +1,29 @@
 #pragma once
+#include <map>
+#include <string>
+
+#include "StaticFigures.h"
 #include "VOsAndIndices.h"
 
 class VAOBuilder
 {
 private:
-	
-	static std::map<std::string, VOsAndIndices*>* loadedVOs;
 
-	static void addInLoaded(const std::string& name, VOsAndIndices* vOsAndIndices)
+	static VAOBuilder* instance;
+	
+	std::map<std::string, VOsAndIndices*>* loadedVOs;
+
+	VAOBuilder()
+	{
+		loadedVOs = new std::map<std::string, VOsAndIndices*>();
+	}
+
+	void addInLoaded(const std::string& name, VOsAndIndices* vOsAndIndices)
 	{
 		loadedVOs->insert(std::pair<std::string, VOsAndIndices*>(name, vOsAndIndices));
 	}
 
-	static VOsAndIndices* generateForCube()
+	VOsAndIndices* generateForCube()
 	{
 		// VAO для куба:
 		unsigned cubeVAO, cubeVBO, cubeEBO;
@@ -55,7 +66,7 @@ private:
 		return generatedVOs;
 	}
 
-	static VOsAndIndices* generateFor2DQuad()
+	VOsAndIndices* generateFor2DQuad()
 	{
 		// Создаём VAO для 2D quad-а:
 		unsigned screenQuadVAO, screenQuadVBO, screenQuadEBO;
@@ -94,12 +105,12 @@ private:
 		return generatedVOs;
 	}
 
-	static VOsAndIndices* generateFor3DQuad()
+	VOsAndIndices* generateFor3DQuad()
 	{
 		// Создаём VAO для 3D quad-а:
 		unsigned worldQuadVAO, worldQuadVBO, worldQuadEBO;
-		vector<float> worldQuadVertexData = StaticFigures::getWorldQuadVertexesWithNormalsAndUV();
-		vector<unsigned> quadIndices = StaticFigures::getQuadIndices();
+		std::vector<float> worldQuadVertexData = StaticFigures::getWorldQuadVertexesWithNormalsAndUV();
+		std::vector<unsigned> quadIndices = StaticFigures::getQuadIndices();
 
 		glGenVertexArrays(1, &worldQuadVAO);
 		glGenBuffers(1, &worldQuadVBO);
@@ -136,7 +147,7 @@ private:
 		return generatedVOs;
 	}
 
-	static VOsAndIndices* generateForSkybox()
+	VOsAndIndices* generateForSkybox()
 	{
 		// Создаём VAO для skybox-а:
 		std::vector<float> skyboxVertexesData = StaticFigures::getCubeVertexes();
@@ -174,8 +185,17 @@ private:
 	}
 
 public:
+
+	static VAOBuilder* getInstance()
+	{
+		if (instance == nullptr)
+		{
+			instance = new VAOBuilder();
+		}
+		return instance;
+	}
 	
-	static VOsAndIndices* getByName(const std::string& name)
+	VOsAndIndices* getByName(const std::string& name)
 	{
 		const auto it = loadedVOs->find(name);
 		if(it != loadedVOs->end())
@@ -185,7 +205,7 @@ public:
 		return nullptr;
 	}
 	
-	static VOsAndIndices* getCube()
+	VOsAndIndices* getCube()
 	{
 		VOsAndIndices *returnValue = getByName("Cube");
 		if (returnValue == nullptr)
@@ -195,7 +215,7 @@ public:
 		return returnValue;
 	}
 	
-	static VOsAndIndices* get2DQuad()
+	VOsAndIndices* get2DQuad()
 	{
 		VOsAndIndices *returnValue = getByName("2DQuad");
 		if (returnValue == nullptr)
@@ -205,7 +225,7 @@ public:
 		return returnValue;
 	}
 	
-	static VOsAndIndices* get3DQuad()
+	VOsAndIndices* get3DQuad()
 	{
 		VOsAndIndices *returnValue = getByName("3DQuad");
 		if (returnValue == nullptr)
@@ -215,7 +235,7 @@ public:
 		return returnValue;
 	}
 
-	static VOsAndIndices* getSkybox()
+	VOsAndIndices* getSkybox()
 	{
 		VOsAndIndices *returnValue = getByName("Skybox");
 		if (returnValue == nullptr)
@@ -225,5 +245,3 @@ public:
 		return returnValue;
 	}
 };
-
-std::map<std::string, VOsAndIndices*>* VAOBuilder::loadedVOs = new std::map<std::string, VOsAndIndices*>();

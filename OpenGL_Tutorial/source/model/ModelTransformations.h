@@ -9,6 +9,12 @@ struct ModelTransformations
 	float rotationAngleDegrees;
 	glm::vec3 scale;
 
+	ModelTransformations()
+		:ModelTransformations(glm::vec3(0.0f))
+	{
+		
+	}
+
 	ModelTransformations(const glm::vec3& position)
 		:ModelTransformations(position, glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, glm::vec3(1.0f))
 	{
