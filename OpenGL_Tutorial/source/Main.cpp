@@ -22,6 +22,7 @@
 #include "textures/CubeMap.h"
 #include "world/Ground.h"
 #include "world/Skybox.h"
+#include "world/Tank.h"
 
 float deltaTime = 0.0f;									 // Разница во времени между последним и предпоследним кадрами
 float lastFrameTime = 0.0f;								 // Время последнего кадра
@@ -322,6 +323,12 @@ int main()
 	renderer->addLight(flashlight);
 	positionedLights.push_back(flashlight);
 
+	Tank mainTank(&tankBase, &tankTurret);
+	Tank backgroundTank(&tankBase, &tankTurret);
+	backgroundTank.setPosition(glm::vec3(-5.0f, 0.0f, -15.0f));
+	Tank backgroundTank2(&tankBase, &tankTurret);
+	backgroundTank2.setPosition(glm::vec3(-15.0f, 0.0f, -30.0f));
+	
 	Ground ground("grass.png", "grass_specular.png", 100.f);
 	Skybox skybox("skyboxNew", "sky.jpg");
 
@@ -397,45 +404,7 @@ int main()
 	VOsAndIndices *worldQuadVOsAndIndices = VAOBuilder::getInstance()->getGroundQuad();
 	VOsAndIndices *skyboxVOsAndIndices = VAOBuilder::getInstance()->getSkybox();
 	
-#pragma endregion 
-	
-
-	ModelTransformations tankBaseTransformations = {
-		glm::vec3(0.0f),
-		glm::vec3(0.0f, 1.0f, 0.0f),
-		0.0f,
-		glm::vec3(1.0f)
-	};
-	ModelTransformations tankTurretTransformations = {
-		glm::vec3(0.0f),
-		glm::vec3(0.0f, 1.0f, 0.0f),
-		0.0f,
-		glm::vec3(1.0f)
-	};
-	ModelTransformations tankBaseTransformations2 = {
-		glm::vec3(-5.0f, 0.0f, -15.0f),
-		glm::vec3(0.0f, 1.0f, 0.0f),
-		0.0f,
-		glm::vec3(1.0f)
-	};
-	ModelTransformations tankTurretTransformations2 = {
-		glm::vec3(0.0f),
-		glm::vec3(0.0f, 1.0f, 0.0f),
-		0.0f,
-		glm::vec3(1.0f)
-	};
-	ModelTransformations tankBaseTransformations3 = {
-		glm::vec3(-15.0f, 0.0f, -30.0f),
-		glm::vec3(0.0f, 1.0f, 0.0f),
-		0.0f,
-		glm::vec3(1.0f)
-	};
-	ModelTransformations tankTurretTransformations3 = {
-		glm::vec3(0.0f),
-		glm::vec3(0.0f, 1.0f, 0.0f),
-		0.0f,
-		glm::vec3(1.0f)
-	};
+#pragma endregion
 
 	while (!glfwWindowShouldClose(win))
 	{
@@ -467,58 +436,13 @@ int main()
 		glClearColor(background.r, background.g, background.b, background.a);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// Отрисовка модели:
-		tankBaseTransformations.position = glm::vec3(glm::cos(currentTime) * 2.5f, 0.0f, glm::cos(currentTime) * 2.5f);
-		tankBaseTransformations.rotationAngleDegrees = glm::cos(currentTime) * 30.0f;
-		glm::mat4 tankBaseModel = tankBaseTransformations.createModelMatrixWithTransformations();
+		mainTank.setPosition(glm::vec3(glm::cos(currentTime) * 2.5f, 0.0f, glm::cos(currentTime) * 2.5f));
+		mainTank.setRotationAngleDegrees(glm::cos(currentTime) * 30.0f);
+		mainTank.setTurretRotationAngleDegrees(glm::cos(currentTime) * 90.0f);
 		
-		assimpModelWithLightsAndExplosionShader->use();
-		assimpModelWithLightsAndExplosionShader->setFloat("uExplosionMagnitude", globalExplosionForce);
-		assimpModelWithLightsAndExplosionShader->setFloat("uTimeSinceExplosion", globalTimeSinceExplosion);
-		assimpModelWithLightsAndExplosionShader->setFloatMat4("projectionAndView", renderer->getPV());
-		assimpModelWithLightsAndExplosionShader->setFloatMat4("model", tankBaseModel);
-		assimpModelWithLightsAndExplosionShader->setFloat("shininess", 64.0f);
-		assimpModelWithLightsAndExplosionShader->setFloatVec3("viewPos", mainCamera.position);
-		
-		int activeLights = 0;
-		for(auto *light : renderer->getLights())
-		{
-			activeLights += light->useAndReturnSuccess(assimpModelWithLightsAndExplosionShader, activeLights);
-		}
-		
-		assimpModelWithLightsAndExplosionShader->setInt("lightsCount", activeLights);
-		
-		tankBase.draw(*assimpModelWithLightsAndExplosionShader);
-		
-		tankTurretTransformations.rotationAngleDegrees = glm::cos(currentTime) * 90.0f;
-		glm::mat4 tankTurretModel = glm::mat4(1.0f);
-		tankTurretModel *= tankBaseModel;
-		tankTurretModel = tankTurretTransformations.getModelWithAppliedTransformations(tankTurretModel);
-		assimpModelWithLightsAndExplosionShader->setFloatMat4("model", tankTurretModel);
-		tankTurret.draw(*assimpModelWithLightsAndExplosionShader);
-
-		// Копии:
-		tankBaseModel = tankBaseTransformations2.createModelMatrixWithTransformations();
-		assimpModelWithLightsAndExplosionShader->setFloat("uExplosionMagnitude", 0.0f);
-		assimpModelWithLightsAndExplosionShader->setFloat("uTimeSinceExplosion", 0.0f);
-		assimpModelWithLightsAndExplosionShader->setFloatMat4("model", tankBaseModel);
-		tankBase.draw(*assimpModelWithLightsAndExplosionShader);
-
-		tankTurretModel = glm::mat4(1.0f);
-		tankTurretModel *= tankBaseModel;
-		tankTurretModel = tankTurretTransformations2.getModelWithAppliedTransformations(tankTurretModel);
-		assimpModelWithLightsAndExplosionShader->setFloatMat4("model", tankTurretModel);
-		tankTurret.draw(*assimpModelWithLightsAndExplosionShader);
-
-		tankBaseModel = tankBaseTransformations3.createModelMatrixWithTransformations();
-		assimpModelWithLightsAndExplosionShader->setFloatMat4("model", tankBaseModel);
-		tankBase.draw(*assimpModelWithLightsAndExplosionShader);
-
-		tankTurretModel = glm::mat4(1.0f);
-		tankTurretModel *= tankBaseModel;
-		tankTurretModel = tankTurretTransformations3.getModelWithAppliedTransformations(tankTurretModel);
-		assimpModelWithLightsAndExplosionShader->setFloatMat4("model", tankTurretModel);
-		tankTurret.draw(*assimpModelWithLightsAndExplosionShader);
+		mainTank.draw(renderer);
+		backgroundTank.draw(renderer);
+		backgroundTank2.draw(renderer);
 
 		// Отрисовка "светящегося куба".
 		for(auto *lightCube : lightCubes)

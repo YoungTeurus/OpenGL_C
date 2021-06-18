@@ -18,6 +18,51 @@ public:
 		 shader( ShaderLoader::getInstance()->getOrLoadByName(shaderName, FilePaths::getPathToShaderFolderWithTrailingSplitter()) )
 	{
 	}
+
+	void setPosition(const glm::vec3& pos)
+	{
+		transformations.position = pos;
+	}
+
+	glm::vec3 getPosition() const
+	{
+		return transformations.position;
+	}
+
+	void setRotationVector(const glm::vec3& rotationVector)
+	{
+		transformations.rotationVector = rotationVector;
+	}
+
+	glm::vec3 getRotationVector() const
+	{
+		return transformations.rotationVector;
+	}
+
+	void setRotationAngleDegrees(const float& angleDegrees)
+	{
+		transformations.rotationAngleDegrees = angleDegrees;
+	}
+
+	float getRotationAngleDegrees() const
+	{
+		return transformations.rotationAngleDegrees;
+	}
+
+	void setScale(const float& scale)
+	{
+		transformations.scale = glm::vec3(scale);
+	}
+
+	void setScale(const glm::vec3& scale)
+	{
+		transformations.scale = scale;
+	}
+
+	glm::vec3 getScale() const
+	{
+		return transformations.scale;
+	}
 	
 	virtual ~DrawableObject() = default;
 
