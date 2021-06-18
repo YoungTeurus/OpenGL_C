@@ -195,7 +195,7 @@ public:
 		return instance;
 	}
 	
-	VOsAndIndices* getByName(const std::string& name)
+	VOsAndIndices* getByName(const std::string& name) const
 	{
 		const auto it = loadedVOs->find(name);
 		if(it != loadedVOs->end())

@@ -156,6 +156,7 @@
     <ClCompile Include="source\Main.cpp" />
     <ClCompile Include="source\model\VAOBuilder.cpp" />
     <ClCompile Include="source\shader\Shader.cpp" />
+    <ClCompile Include="source\shader\ShaderLoader.cpp" />
     <ClCompile Include="source\world\LightCube.h" />
   </ItemGroup>
   <ItemGroup>
@@ -176,6 +177,7 @@
     <ClInclude Include="source\model\VAOBuilder.h" />
     <ClInclude Include="source\model\VOsAndIndices.h" />
     <ClInclude Include="source\shader\Shader.h" />
+    <ClInclude Include="source\shader\ShaderLoader.h" />
     <ClInclude Include="source\utility\FilePaths.h" />
     <ClInclude Include="source\world\Cube.h" />
     <ClInclude Include="source\world\DrawableObject.h" />

@@ -60,6 +60,9 @@
     <ClCompile Include="source\model\VAOBuilder.cpp">
       <Filter>Исходные файлы\model</Filter>
     </ClCompile>
+    <ClCompile Include="source\shader\ShaderLoader.cpp">
+      <Filter>Исходные файлы\shader</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\stb_image.h">
@@ -124,6 +127,9 @@
     </ClInclude>
     <ClInclude Include="source\world\DrawableObject.h">
       <Filter>Исходные файлы\world</Filter>
+    </ClInclude>
+    <ClInclude Include="source\shader\ShaderLoader.h">
+      <Filter>Исходные файлы\shader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

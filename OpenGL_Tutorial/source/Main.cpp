@@ -17,6 +17,7 @@
 #include "model/ModelTransformations.h"
 #include "model/VAOBuilder.h"
 #include "model/VOsAndIndices.h"
+#include "shader/ShaderLoader.h"
 #include "utility/FilePaths.h"
 
 float deltaTime = 0.0f;									 // Разница во времени между последним и предпоследним кадрами
@@ -316,17 +317,12 @@ int main()
 
 	// Загрузка внешних данных:
 	std::string pathToShaderFolder = FilePaths::getPathToShaderFolderWithTrailingSplitter();
-	Shader* assimpModelWithLightsAndExplosionShader = new Shader("backpack_mixLightWithExplosion", pathToShaderFolder, true);
-	// Shader* lightCubeShader = new Shader("lightCube", pathToShaderFolder, true);
-	Shader* lightCubeShader = new Shader("lightCube", pathToShaderFolder);
-	// Shader* lightCubeWithExplosionShader = new Shader("lightCubeWithExplosion", pathToShaderFolder, true);
-	// Shader* singleColorShader = new Shader("shaderSingleColor", pathToShaderFolder);
-	// Shader* screenRenderQuadShader = new Shader("screenRenderQuadShader", pathToShaderFolder);
-	Shader* screenRenderQuadShaderWithBlur = new Shader("screenRenderQuadShaderWithBlur", pathToShaderFolder);
-	Shader* screenRenderQuadWithHDRShader = new Shader("screenRenderQuadShaderWithHDR", pathToShaderFolder);
-	Shader* skyboxShader = new Shader("skybox", pathToShaderFolder);
-	Shader* groundQuad_mixLight = new Shader("groundQuad_mixLight", pathToShaderFolder);
-	// Shader* cubeWithLightsShader = new Shader("cube_mixLight", pathToShaderFolder);
+	Shader* assimpModelWithLightsAndExplosionShader = ShaderLoader::getInstance()->load("backpack_mixLightWithExplosion", pathToShaderFolder, true);
+	Shader* lightCubeShader = ShaderLoader::getInstance()->load("lightCube", pathToShaderFolder);
+	Shader* screenRenderQuadShaderWithBlur = ShaderLoader::getInstance()->load("screenRenderQuadShaderWithBlur", pathToShaderFolder);
+	Shader* screenRenderQuadWithHDRShader = ShaderLoader::getInstance()->load("screenRenderQuadShaderWithHDR", pathToShaderFolder);
+	Shader* skyboxShader = ShaderLoader::getInstance()->load("skybox", pathToShaderFolder);
+	Shader* groundQuad_mixLight = ShaderLoader::getInstance()->load("groundQuad_mixLight", pathToShaderFolder);
 	
 	Model tankBase(FilePaths::getPathToModel("tank/base.obj"), true);
 	Model tankTurret(FilePaths::getPathToModel("tank/turret.obj"), true);
@@ -344,8 +340,6 @@ int main()
 	string pathToTexturesFolder = FilePaths::getPathToTexturesFolderWithTrailingSplitter();
 	unsigned cubeMapTextureId = loadCubeMapFromPathsAndGetTextureId(cubeMapFacesTexturePaths, pathToTexturesFolder);
 
-	// unsigned containerTextureID = loadTextureFromPathAndGetTextureId(FilePaths::getPathToTexture("container2.png"));
-	// unsigned containerSpecularTextureID = loadTextureFromPathAndGetTextureId(FilePaths::getPathToTexture("container2_specular.png"));
 	unsigned groundTextureID = loadTextureFromPathAndGetTextureId(FilePaths::getPathToTexture("grass.png"));
 	unsigned groundSpecularTextureID = loadTextureFromPathAndGetTextureId(FilePaths::getPathToTexture("grass_specular.png"));
 	

@@ -20,6 +20,10 @@ public:
 	}
 
 	// TODO: Реализовать virtual-функцию!
+	void draw() override
+	{
+	}
+
 	void draw(Shader *lightCubeShader, const glm::mat4& pv)
 	{
 		transformations.position = light->getPosition();
