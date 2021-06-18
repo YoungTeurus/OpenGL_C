@@ -17,6 +17,7 @@
 #include "model/ModelTransformations.h"
 #include "model/VAOBuilder.h"
 #include "model/VOsAndIndices.h"
+#include "renderer/Renderer.h"
 #include "shader/ShaderLoader.h"
 
 float deltaTime = 0.0f;									 // Разница во времени между последним и предпоследним кадрами
@@ -547,6 +548,8 @@ int main()
 		glm::vec3(100.0f)
 	};
 
+	Renderer* renderer = Renderer::getInstance();
+
 	while (!glfwWindowShouldClose(win))
 	{
 		float currentTime = (float)glfwGetTime();
@@ -567,7 +570,7 @@ int main()
 		// Поправка на FOV камеры:
 		glm::mat4 projection = mainCamera.getProjectionMatrix();
 
-		glm::mat4 pv = projection * view;
+		renderer->setViewAndProjection(view, projection);
 
 		// Отрисовка в framebuffer:
 		glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
@@ -585,7 +588,7 @@ int main()
 		assimpModelWithLightsAndExplosionShader->use();
 		assimpModelWithLightsAndExplosionShader->setFloat("uExplosionMagnitude", globalExplosionForce);
 		assimpModelWithLightsAndExplosionShader->setFloat("uTimeSinceExplosion", globalTimeSinceExplosion);
-		assimpModelWithLightsAndExplosionShader->setFloatMat4("projectionAndView", pv);
+		assimpModelWithLightsAndExplosionShader->setFloatMat4("projectionAndView", renderer->getPV());
 		assimpModelWithLightsAndExplosionShader->setFloatMat4("model", tankBaseModel);
 		assimpModelWithLightsAndExplosionShader->setFloat("shininess", 64.0f);
 		assimpModelWithLightsAndExplosionShader->setFloatVec3("viewPos", mainCamera.position);
@@ -632,14 +635,14 @@ int main()
 		// Отрисовка "светящегося куба".
 		for(auto *lightCube : lightCubes)
 		{
-			lightCube->draw(pv);
+			lightCube->draw(renderer->getPV());
 		}
 		
 		// Отрисовка "земли".
 		glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
 		glm::mat4 groundModel = groundTransformation.createModelMatrixWithTransformations();
 		groundQuad_mixLight->use();
-		groundQuad_mixLight->setFloatMat4("projectionAndView", pv);
+		groundQuad_mixLight->setFloatMat4("projectionAndView", renderer->getPV());
 		groundQuad_mixLight->setFloatMat4("model", groundModel);
 		groundQuad_mixLight->setFloat("shininess", 64.0f);
 		groundQuad_mixLight->setFloatVec3("viewPos", mainCamera.position);

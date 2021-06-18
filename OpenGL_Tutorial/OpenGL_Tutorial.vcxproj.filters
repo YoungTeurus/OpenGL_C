@@ -40,6 +40,9 @@
     <Filter Include="Файлы ресурсов\shaders">
       <UniqueIdentifier>{570c4a12-a73f-475e-91d5-c09b14f50206}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Исходные файлы\renderer">
+      <UniqueIdentifier>{e9829f59-ca48-4162-8fdb-ce6da255b840}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="include\glad.c">
@@ -65,6 +68,9 @@
     </ClCompile>
     <ClCompile Include="source\utility\FilePaths.cpp">
       <Filter>Исходные файлы\utility</Filter>
+    </ClCompile>
+    <ClCompile Include="source\renderer\Renderer.cpp">
+      <Filter>Исходные файлы\renderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -133,6 +139,9 @@
     </ClInclude>
     <ClInclude Include="source\utility\FilePaths.h">
       <Filter>Исходные файлы\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="source\renderer\Renderer.h">
+      <Filter>Исходные файлы\renderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

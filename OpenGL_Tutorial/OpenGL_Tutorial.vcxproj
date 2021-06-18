@@ -155,6 +155,7 @@
     <ClCompile Include="source\camera\Camera.cpp" />
     <ClCompile Include="source\Main.cpp" />
     <ClCompile Include="source\model\VAOBuilder.cpp" />
+    <ClCompile Include="source\renderer\Renderer.cpp" />
     <ClCompile Include="source\shader\Shader.cpp" />
     <ClCompile Include="source\shader\ShaderLoader.cpp" />
     <ClCompile Include="source\utility\FilePaths.cpp" />
@@ -177,6 +178,7 @@
     <ClInclude Include="source\model\StaticFigures.h" />
     <ClInclude Include="source\model\VAOBuilder.h" />
     <ClInclude Include="source\model\VOsAndIndices.h" />
+    <ClInclude Include="source\renderer\Renderer.h" />
     <ClInclude Include="source\shader\Shader.h" />
     <ClInclude Include="source\shader\ShaderLoader.h" />
     <ClInclude Include="source\utility\FilePaths.h" />
