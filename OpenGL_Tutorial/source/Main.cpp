@@ -259,13 +259,10 @@ int main()
 	Model tankBase(FilePaths::getPathToModel("tank/base.obj"), true);
 	Model tankTurret(FilePaths::getPathToModel("tank/turret.obj"), true);
 
-	CubeMap cubeMapTexture;
-	cubeMapTexture.loadFromFile("sky.jpg", FilePaths::getPathToTexturesFolderWithTrailingSplitter() + "skyboxNew");
+	CubeMap *cubeMapTexture = renderer->getTexturesLoader()->getOrLoadByFileNameAndDirectoryCubeMap("sky.jpg", FilePaths::getPathToTexturesFolderWithTrailingSplitter() + "skyboxNew");
 
-	Texture groundTexture;
-	groundTexture.loadFromFile("grass.png", FilePaths::getPathToTexturesFolder());
-	Texture groundSpecularTexture;
-	groundSpecularTexture.loadFromFile("grass_specular.png", FilePaths::getPathToTexturesFolder());
+	Texture *groundTexture = renderer->getTexturesLoader()->getOrLoadByFileNameAndDirectory2DTexture("grass.png", FilePaths::getPathToTexturesFolder());
+	Texture *groundSpecularTexture = renderer->getTexturesLoader()->getOrLoadByFileNameAndDirectory2DTexture("grass_specular.png", FilePaths::getPathToTexturesFolder());
 	
 	
 	// Подготовка источников освещения:
@@ -556,10 +553,10 @@ int main()
 		groundQuad_mixLight->setInt("lightsCount", activeLights0);
 
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, groundTexture.getId());
+		glBindTexture(GL_TEXTURE_2D, groundTexture->getId());
 		groundQuad_mixLight->setInt("texture_diffuse", 0);
 		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, groundSpecularTexture.getId());
+		glBindTexture(GL_TEXTURE_2D, groundSpecularTexture->getId());
 		groundQuad_mixLight->setInt("texture_specular", 1);
 
 		glBindVertexArray(worldQuadVOsAndIndices->vao);
@@ -576,7 +573,7 @@ int main()
 		skyboxShader->setFloatMat4("view", skyboxView);
 		
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTexture.getId());
+		glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTexture->getId());
 		glBindVertexArray(skyboxVOsAndIndices->vao);
 		glDrawElements(GL_TRIANGLES, skyboxVOsAndIndices->indices.size(), GL_UNSIGNED_INT, NULL);
 		glDepthMask(GL_TRUE);  // Последующие элементы влияют на Depth
