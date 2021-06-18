@@ -8,6 +8,8 @@ class Ground : public DrawableObject
 {
 private:
 	VOsAndIndices* groundVOsAndIndices = VAOBuilder::getInstance()->getGroundQuad();
+	Texture* groundTexture = nullptr;
+	Texture* groundSpecularTexture = nullptr;
 public:
 	Ground(float width)
 		:DrawableObject(
@@ -25,6 +27,17 @@ public:
 	void draw(Renderer* renderer) override
 	{
 		// Отрисовка "земли".
+
+		// Проверка загруженности текстур:
+		if(groundTexture == nullptr)
+		{
+			groundTexture = renderer->getTexturesLoader()->getOrLoadByFileNameAndDirectory2DTexture("grass.png", FilePaths::getPathToTexturesFolder());
+		}
+		if (groundSpecularTexture == nullptr)
+		{
+			groundSpecularTexture = renderer->getTexturesLoader()->getOrLoadByFileNameAndDirectory2DTexture("grass_specular.png", FilePaths::getPathToTexturesFolder());
+		}
+		
 		glm::mat4 groundModel = transformations.createModelMatrixWithTransformations();
 		shader->use();
 		shader->setFloatMat4("projectionAndView", renderer->getPV());
@@ -40,10 +53,10 @@ public:
 		shader->setInt("lightsCount", activeLights);
 		
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, groundTextureID);
+		glBindTexture(GL_TEXTURE_2D, groundTexture->getId());
 		shader->setInt("texture_diffuse", 0);
 		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, groundSpecularTextureID);
+		glBindTexture(GL_TEXTURE_2D, groundSpecularTexture->getId());
 		shader->setInt("texture_specular", 1);
 		
 		glBindVertexArray(groundVOsAndIndices->vao);

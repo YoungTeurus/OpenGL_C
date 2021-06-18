@@ -20,6 +20,7 @@
 #include "shader/ShaderLoader.h"
 #include "textures/Texture.h"
 #include "textures/CubeMap.h"
+#include "world/Ground.h"
 
 float deltaTime = 0.0f;									 // Разница во времени между последним и предпоследним кадрами
 float lastFrameTime = 0.0f;								 // Время последнего кадра
@@ -260,10 +261,6 @@ int main()
 	Model tankTurret(FilePaths::getPathToModel("tank/turret.obj"), true);
 
 	CubeMap *cubeMapTexture = renderer->getTexturesLoader()->getOrLoadByFileNameAndDirectoryCubeMap("sky.jpg", FilePaths::getPathToTexturesFolderWithTrailingSplitter() + "skyboxNew");
-
-	Texture *groundTexture = renderer->getTexturesLoader()->getOrLoadByFileNameAndDirectory2DTexture("grass.png", FilePaths::getPathToTexturesFolder());
-	Texture *groundSpecularTexture = renderer->getTexturesLoader()->getOrLoadByFileNameAndDirectory2DTexture("grass_specular.png", FilePaths::getPathToTexturesFolder());
-	
 	
 	// Подготовка источников освещения:
 	vector<PositionedLight*> positionedLights;
@@ -327,6 +324,8 @@ int main()
 	);
 	renderer->addLight(flashlight);
 	positionedLights.push_back(flashlight);
+
+	Ground ground(100.f);
 
 #pragma region Инициализация Framebuffer-а и разных VAO
 
@@ -440,13 +439,6 @@ int main()
 		glm::vec3(1.0f)
 	};
 
-	ModelTransformations groundTransformation = {
-		glm::vec3(0.0f),
-		glm::vec3(1.0f, 0.0f, 0.0f),
-		90.0f,
-		glm::vec3(100.0f)
-	};
-
 	while (!glfwWindowShouldClose(win))
 	{
 		float currentTime = (float)glfwGetTime();
@@ -536,31 +528,7 @@ int main()
 			lightCube->draw(renderer);
 		}
 		
-		// Отрисовка "земли".
-		glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
-		glm::mat4 groundModel = groundTransformation.createModelMatrixWithTransformations();
-		groundQuad_mixLight->use();
-		groundQuad_mixLight->setFloatMat4("projectionAndView", renderer->getPV());
-		groundQuad_mixLight->setFloatMat4("model", groundModel);
-		groundQuad_mixLight->setFloat("shininess", 64.0f);
-		groundQuad_mixLight->setFloatVec3("viewPos", mainCamera.position);
-
-		int activeLights0 = 0;
-		for(auto *light : renderer->getLights())
-		{
-			activeLights0 += light->useAndReturnSuccess(groundQuad_mixLight, activeLights0);
-		}
-		groundQuad_mixLight->setInt("lightsCount", activeLights0);
-
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, groundTexture->getId());
-		groundQuad_mixLight->setInt("texture_diffuse", 0);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, groundSpecularTexture->getId());
-		groundQuad_mixLight->setInt("texture_specular", 1);
-
-		glBindVertexArray(worldQuadVOsAndIndices->vao);
-		glDrawElements(GL_TRIANGLES, worldQuadVOsAndIndices->indices.size(), GL_UNSIGNED_INT, NULL);
+		ground.draw(renderer);
 
 		// Отрисовка skybox:
 		glDepthFunc(GL_LEQUAL);
