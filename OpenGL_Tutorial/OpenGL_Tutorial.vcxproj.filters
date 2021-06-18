@@ -43,6 +43,9 @@
     <Filter Include="Исходные файлы\renderer">
       <UniqueIdentifier>{e9829f59-ca48-4162-8fdb-ce6da255b840}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Исходные файлы\textures">
+      <UniqueIdentifier>{396f55e6-75d5-495e-94da-b1e669dd791c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="include\glad.c">
@@ -145,6 +148,12 @@
     </ClInclude>
     <ClInclude Include="source\world\Ground.h">
       <Filter>Исходные файлы\world</Filter>
+    </ClInclude>
+    <ClInclude Include="source\textures\Texture.h">
+      <Filter>Исходные файлы\textures</Filter>
+    </ClInclude>
+    <ClInclude Include="source\textures\TexturesLoader.h">
+      <Filter>Исходные файлы\textures</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
