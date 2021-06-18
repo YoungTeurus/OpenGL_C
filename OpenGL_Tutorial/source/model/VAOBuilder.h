@@ -105,7 +105,7 @@ private:
 		return generatedVOs;
 	}
 
-	VOsAndIndices* generateFor3DQuad()
+	VOsAndIndices* generateForGroundQuad()
 	{
 		// Создаём VAO для 3D quad-а:
 		unsigned worldQuadVAO, worldQuadVBO, worldQuadEBO;
@@ -225,12 +225,12 @@ public:
 		return returnValue;
 	}
 	
-	VOsAndIndices* get3DQuad()
+	VOsAndIndices* getGroundQuad()
 	{
 		VOsAndIndices *returnValue = getByName("3DQuad");
 		if (returnValue == nullptr)
 		{
-			returnValue = generateFor3DQuad();
+			returnValue = generateForGroundQuad();
 		}
 		return returnValue;
 	}

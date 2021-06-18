@@ -30,7 +30,8 @@ float lastCursorX = (float)windowInitialWidth / 2,
 
 bool firstMouse = true;
 
-Camera mainCamera = Camera((float)windowInitialWidth / windowInitialHeight, glm::vec3(0.0f, 5.0f, 0.0f));
+Renderer* renderer = Renderer::getInstance();
+Camera mainCamera = renderer->getMainCamera();
 
 bool wireframeMode = false;
 
@@ -315,6 +316,9 @@ int main()
 	// Конец настройки glfw
 #pragma endregion
 
+	mainCamera.setAspectRatio((float)windowInitialWidth / windowInitialHeight);
+	mainCamera.setPosition(glm::vec3(0.0f, 5.0f, 0.0f));
+
 	// Загрузка внешних данных:
 	std::string pathToShaderFolder = FilePaths::getPathToShaderFolderWithTrailingSplitter();
 	Shader* assimpModelWithLightsAndExplosionShader = ShaderLoader::getInstance()->load("backpack_mixLightWithExplosion", pathToShaderFolder, true);
@@ -341,9 +345,9 @@ int main()
 
 	unsigned groundTextureID = loadTextureFromPathAndGetTextureId(FilePaths::getPathToTexture("grass.png"));
 	unsigned groundSpecularTextureID = loadTextureFromPathAndGetTextureId(FilePaths::getPathToTexture("grass_specular.png"));
+
 	
 	// Подготовка источников освещения:
-	vector<BaseLight*> lights;
 	vector<PositionedLight*> positionedLights;
 	vector<LightCube*> lightCubes;
 
@@ -355,8 +359,8 @@ int main()
 			glm::vec3(0.0f, 10.0f, -10.0f),
 			"VERY bright white lamp"
 		);
-	
-	lights.push_back(pointLight);
+
+	renderer->addLight(pointLight);
 	positionedLights.push_back(pointLight);
 	lightCubes.push_back( new LightCube(pointLight) );
 	
@@ -370,7 +374,7 @@ int main()
 	// 		"Dim red lamp"
 	// 	)
 	// );
-	// 
+	
 	// lights.push_back(
 	// 	new PointLight(
 	// 		glm::vec3(0.0f),
@@ -381,7 +385,7 @@ int main()
 	// 		"Dim green lamp"
 	// 	)
 	// );
-	// 
+	
 	// lights.push_back(
 	// 	new PointLight(
 	// 		glm::vec3(0.0f),
@@ -393,16 +397,6 @@ int main()
 	// 	)
 	// );
 	
-	// SpotLight* flashLight = new SpotLight(
-	// 	glm::radians(15.f), glm::radians(30.f),
-	// 	glm::vec3(0.0f, 0.0f, 0.0f),
-	// 	glm::vec3(0.05f, 0.05f, 0.05f),
-	// 	glm::vec3(0.7f, 0.7f, 0.6f),
-	// 	glm::vec3(0.8f, 0.8f, 0.7f),
-	// 	1.0f, 0.05f, 0.009f,
-	// 	glm::vec3(0.0f, 0.0f, 0.0f),
-	// 	"FlashLight"
-	// );
 	flashlight = new SpotLight(
 		glm::radians(10.f), glm::radians(20.f),
 		glm::vec3(0.0f, 0.0f, 0.0f),
@@ -413,21 +407,8 @@ int main()
 		glm::vec3(0.0f, 0.0f, 0.0f),
 		"FlashLight"
 	);
-	lights.push_back(flashlight);
+	renderer->addLight(flashlight);
 	positionedLights.push_back(flashlight);
-
-	// vector<Cube> lightCubes;
-	// 
-	// for (auto && light : lights)
-	// {
-	// 	PositionedLight* positionedLight;
-	// 	if((positionedLight = dynamic_cast<PositionedLight*>(light)) != nullptr)
-	// 	{
-	// 		lightCubes.emplace_back(
-	// 		Cube(positionedLight->getPosition(), glm::vec3(0.25f), glm::vec3(0.0f), positionedLight->getDiffuse())
-	// 		);
-	// 	}
-	// }
 
 #pragma region Инициализация Framebuffer-а и разных VAO
 
@@ -498,7 +479,7 @@ int main()
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	
 	VOsAndIndices *screenQuadVOsAndIndices = VAOBuilder::getInstance()->get2DQuad();
-	VOsAndIndices *worldQuadVOsAndIndices = VAOBuilder::getInstance()->get3DQuad();
+	VOsAndIndices *worldQuadVOsAndIndices = VAOBuilder::getInstance()->getGroundQuad();
 	VOsAndIndices *skyboxVOsAndIndices = VAOBuilder::getInstance()->getSkybox();
 	
 #pragma endregion 
@@ -548,8 +529,6 @@ int main()
 		glm::vec3(100.0f)
 	};
 
-	Renderer* renderer = Renderer::getInstance();
-
 	while (!glfwWindowShouldClose(win))
 	{
 		float currentTime = (float)glfwGetTime();
@@ -594,10 +573,11 @@ int main()
 		assimpModelWithLightsAndExplosionShader->setFloatVec3("viewPos", mainCamera.position);
 		
 		int activeLights = 0;
-		for (int i = 0; i < lights.size(); i++)
+		for(auto *light : renderer->getLights())
 		{
-			activeLights += lights[i]->useAndReturnSuccess(assimpModelWithLightsAndExplosionShader, activeLights);
+			activeLights += light->useAndReturnSuccess(assimpModelWithLightsAndExplosionShader, activeLights);
 		}
+		
 		assimpModelWithLightsAndExplosionShader->setInt("lightsCount", activeLights);
 		
 		tankBase.draw(*assimpModelWithLightsAndExplosionShader);
@@ -635,7 +615,7 @@ int main()
 		// Отрисовка "светящегося куба".
 		for(auto *lightCube : lightCubes)
 		{
-			lightCube->draw(renderer->getPV());
+			lightCube->draw(renderer);
 		}
 		
 		// Отрисовка "земли".
@@ -648,9 +628,9 @@ int main()
 		groundQuad_mixLight->setFloatVec3("viewPos", mainCamera.position);
 
 		int activeLights0 = 0;
-		for (int i = 0; i < lights.size(); i++)
+		for(auto *light : renderer->getLights())
 		{
-			activeLights0 += lights[i]->useAndReturnSuccess(groundQuad_mixLight, activeLights0);
+			activeLights0 += light->useAndReturnSuccess(groundQuad_mixLight, activeLights0);
 		}
 		groundQuad_mixLight->setInt("lightsCount", activeLights0);
 
@@ -662,7 +642,7 @@ int main()
 		groundQuad_mixLight->setInt("texture_specular", 1);
 
 		glBindVertexArray(worldQuadVOsAndIndices->vao);
-		glDrawElements(GL_TRIANGLES, worldQuadVOsAndIndices->indices.size(), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, worldQuadVOsAndIndices->indices.size(), GL_UNSIGNED_INT, NULL);
 
 		// Отрисовка skybox:
 		glDepthFunc(GL_LEQUAL);
@@ -677,7 +657,7 @@ int main()
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTextureId);
 		glBindVertexArray(skyboxVOsAndIndices->vao);
-		glDrawElements(GL_TRIANGLES, skyboxVOsAndIndices->indices.size(), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, skyboxVOsAndIndices->indices.size(), GL_UNSIGNED_INT, NULL);
 		glDepthMask(GL_TRUE);  // Последующие элементы влияют на Depth
 		
 		glDepthFunc(GL_LESS);
@@ -686,7 +666,7 @@ int main()
 
 		// Отрисовка в frambuffer для размытия:
 		bool horizontal = true, firstIteration = true;
-		int amount = 5;
+		unsigned amount = 5;
 		screenRenderQuadShaderWithBlur->use();
 		for(unsigned i = 0; i < amount * 2; i++)
 		{
@@ -695,7 +675,7 @@ int main()
 			glBindTexture(GL_TEXTURE_2D, firstIteration ? frameBufferColorTexturesID[1] : pingpongTextureIds[!horizontal]);
 
 			glBindVertexArray(screenQuadVOsAndIndices->vao);
-			glDrawElements(GL_TRIANGLES, screenQuadVOsAndIndices->indices.size(), GL_UNSIGNED_INT, 0);
+			glDrawElements(GL_TRIANGLES, screenQuadVOsAndIndices->indices.size(), GL_UNSIGNED_INT, NULL);
 			
 			horizontal = !horizontal;
 			if (firstIteration)
@@ -723,7 +703,7 @@ int main()
 		glBindTexture(GL_TEXTURE_2D, pingpongTextureIds[0]);
 		screenRenderQuadWithHDRShader->setInt("blurBuffer", 1);
 		glBindVertexArray(screenQuadVOsAndIndices->vao);
-		glDrawElements(GL_TRIANGLES, screenQuadVOsAndIndices->indices.size(), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, screenQuadVOsAndIndices->indices.size(), GL_UNSIGNED_INT, NULL);
 		// Конец отрисовки в стандартный framebuffer.
 
 		glfwSwapBuffers(win);

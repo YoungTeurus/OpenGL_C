@@ -143,6 +143,9 @@
     <ClInclude Include="source\renderer\Renderer.h">
       <Filter>Исходные файлы\renderer</Filter>
     </ClInclude>
+    <ClInclude Include="source\world\Ground.h">
+      <Filter>Исходные файлы\world</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\shaders\lightCube.vert">
