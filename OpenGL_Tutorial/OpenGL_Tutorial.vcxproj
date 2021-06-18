@@ -191,6 +191,7 @@
     <ClInclude Include="source\world\Cube.h" />
     <ClInclude Include="source\world\DrawableObject.h" />
     <ClInclude Include="source\world\Ground.h" />
+    <ClInclude Include="source\world\Skybox.h" />
     <ClInclude Include="source\world\WorldObject.h" />
   </ItemGroup>
   <ItemGroup>

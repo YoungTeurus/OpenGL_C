@@ -21,6 +21,7 @@
 #include "textures/Texture.h"
 #include "textures/CubeMap.h"
 #include "world/Ground.h"
+#include "world/Skybox.h"
 
 float deltaTime = 0.0f;									 // Разница во времени между последним и предпоследним кадрами
 float lastFrameTime = 0.0f;								 // Время последнего кадра
@@ -254,14 +255,10 @@ int main()
 	Shader* assimpModelWithLightsAndExplosionShader = ShaderLoader::getInstance()->load("backpack_mixLightWithExplosion", pathToShaderFolder, true);
 	Shader* screenRenderQuadShaderWithBlur = ShaderLoader::getInstance()->load("screenRenderQuadShaderWithBlur", pathToShaderFolder);
 	Shader* screenRenderQuadWithHDRShader = ShaderLoader::getInstance()->load("screenRenderQuadShaderWithHDR", pathToShaderFolder);
-	Shader* skyboxShader = ShaderLoader::getInstance()->load("skybox", pathToShaderFolder);
-	Shader* groundQuad_mixLight = ShaderLoader::getInstance()->load("groundQuad_mixLight", pathToShaderFolder);
 	
 	Model tankBase(FilePaths::getPathToModel("tank/base.obj"), true);
 	Model tankTurret(FilePaths::getPathToModel("tank/turret.obj"), true);
 
-	CubeMap *cubeMapTexture = renderer->getTexturesLoader()->getOrLoadByFileNameAndDirectoryCubeMap("sky.jpg", FilePaths::getPathToTexturesFolderWithTrailingSplitter() + "skyboxNew");
-	
 	// Подготовка источников освещения:
 	vector<PositionedLight*> positionedLights;
 	vector<LightCube*> lightCubes;
@@ -326,6 +323,7 @@ int main()
 	positionedLights.push_back(flashlight);
 
 	Ground ground(100.f);
+	Skybox skybox("skyboxNew", "sky.jpg");
 
 #pragma region Инициализация Framebuffer-а и разных VAO
 
@@ -530,24 +528,7 @@ int main()
 		
 		ground.draw(renderer);
 
-		// Отрисовка skybox:
-		glDepthFunc(GL_LEQUAL);
-		skyboxShader->use();
-		
-		// Избавляемся от перемещения камеры, сохраняя поворот
-		glm::mat4 skyboxView = glm::mat4(glm::mat3(view));
-		
-		skyboxShader->setFloatMat4("projection", projection);
-		skyboxShader->setFloatMat4("view", skyboxView);
-		
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTexture->getId());
-		glBindVertexArray(skyboxVOsAndIndices->vao);
-		glDrawElements(GL_TRIANGLES, skyboxVOsAndIndices->indices.size(), GL_UNSIGNED_INT, NULL);
-		glDepthMask(GL_TRUE);  // Последующие элементы влияют на Depth
-		
-		glDepthFunc(GL_LESS);
-		// Конец отрисовки skybox-а
+		skybox.draw(renderer);
 		// Конец отрисовки в framebuffer.
 
 		// Отрисовка в frambuffer для размытия:

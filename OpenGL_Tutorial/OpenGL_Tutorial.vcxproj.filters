@@ -167,6 +167,9 @@
     <ClInclude Include="source\textures\CubeMap.h">
       <Filter>Исходные файлы\textures</Filter>
     </ClInclude>
+    <ClInclude Include="source\world\Skybox.h">
+      <Filter>Исходные файлы\world</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\shaders\lightCube.vert">

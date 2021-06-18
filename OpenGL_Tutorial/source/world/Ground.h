@@ -2,7 +2,6 @@
 #include "DrawableObject.h"
 #include "../model/VAOBuilder.h"
 #include "../model/VOsAndIndices.h"
-#include "../shader/ShaderLoader.h"
 
 class Ground : public DrawableObject
 {
