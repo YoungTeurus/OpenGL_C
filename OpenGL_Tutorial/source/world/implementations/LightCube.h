@@ -1,9 +1,5 @@
 #pragma once
 #include "Cube.h"
-#include "../light/PositionedLight.h"
-#include "../model/ModelTransformations.h"
-
-#include "../model/VAOBuilder.h"
 
 class LightCube : public Cube
 {

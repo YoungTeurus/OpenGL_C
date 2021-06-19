@@ -1,7 +1,4 @@
 #pragma once
-#include "DrawableObject.h"
-#include "../model/VAOBuilder.h"
-#include "../text/Font.h"
 
 class TextString : DrawableObject
 {

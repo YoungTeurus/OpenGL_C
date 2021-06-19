@@ -3,11 +3,13 @@
 
 
 
-#include "../world/CollidableDrawableObject.h"
-#include "../world/CollidableObject.h"
-#include "../world/DrawableObject.h"
-#include "../world/Skybox.h"
-#include "../world/WorldObject.h"
+#include "../world/implementations/Skybox.h"
+#include "../world/interfaces/CollidableDrawableObject.h"
+#include "../world/interfaces/CollidableObject.h"
+#include "../world/interfaces/DrawableObject.h"
+#include "../world/interfaces/UpdatableObject.h"
+#include "../world/interfaces/WorldObject.h"
+
 
 class Scene
 {

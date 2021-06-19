@@ -3,7 +3,6 @@
 #include <glm/common.hpp>
 
 #include "Animation.h"
-#include "../PositionedWorldObject.h"
 
 class LinearAnimation : public Animation
 {

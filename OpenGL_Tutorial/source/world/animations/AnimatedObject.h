@@ -1,7 +1,6 @@
 #pragma once
 #include "Animation.h"
-#include "../PositionedWorldObject.h"
-#include "../UpdatableObject.h"
+#include "../interfaces/UpdatableObject.h"
 
 class AnimatedObject : public PositionedWorldObject, public UpdatableObject
 {

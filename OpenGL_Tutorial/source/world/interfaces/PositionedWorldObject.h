@@ -1,6 +1,6 @@
 #pragma once
 #include "WorldObject.h"
-#include "../model/ModelTransformations.h"
+#include "../../model/ModelTransformations.h"
 
 class PositionedWorldObject : public WorldObject
 {

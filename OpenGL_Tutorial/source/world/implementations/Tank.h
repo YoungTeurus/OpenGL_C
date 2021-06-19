@@ -1,7 +1,6 @@
 #pragma once
-#include "CollidableDrawableObject.h"
-#include "../model/Model.h"
-#include "animations/AnimatedObject.h"
+#include "../../model/ModelTransformations.h"
+#include "../interfaces/CollidableDrawableObject.h"
 
 class Tank : public CollidableDrawableObject
 {

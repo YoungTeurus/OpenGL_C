@@ -1,9 +1,8 @@
 #pragma once
+#include "../../model/ModelTransformations.h"
+#include "../interfaces/DrawableObject.h"
+#include "../interfaces/PositionedWorldObject.h"
 
-#include "DrawableObject.h"
-#include "PositionedWorldObject.h"
-#include "../model/ModelTransformations.h"
-#include "../model/VAOBuilder.h"
 
 class Cube : public PositionedWorldObject, public DrawableObject
 {

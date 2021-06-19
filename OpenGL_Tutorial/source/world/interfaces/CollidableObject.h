@@ -3,7 +3,8 @@
 #include <glm/glm.hpp>
 
 #include "PositionedWorldObject.h"
-#include "animations/AnimatedObject.h"
+#include "../../model/ModelTransformations.h"
+#include "../animations/AnimatedObject.h"
 
 struct CollizionResolver
 {

@@ -1,7 +1,7 @@
 #pragma once
 #include "CollidableObject.h"
 #include "DrawableObject.h"
-#include "../model/VAOBuilder.h"
+#include "../../model/ModelTransformations.h"
 
 class CollidableDrawableObject : public CollidableObject, public DrawableObject
 {

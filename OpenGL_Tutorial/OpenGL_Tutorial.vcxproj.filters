@@ -52,6 +52,12 @@
     <Filter Include="Исходные файлы\world\animations">
       <UniqueIdentifier>{f92b7a7f-c90e-47a1-b025-f3e64a4c75e6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Исходные файлы\world\implementations">
+      <UniqueIdentifier>{dbe622b7-7029-4104-add5-79f74fd5c217}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\world\interfaces">
+      <UniqueIdentifier>{dc356f23-9b82-41d1-8e64-1588e8456b94}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="include\glad.c">
@@ -65,9 +71,6 @@
     </ClCompile>
     <ClCompile Include="source\shader\Shader.cpp">
       <Filter>Исходные файлы\shader</Filter>
-    </ClCompile>
-    <ClCompile Include="source\world\LightCube.h">
-      <Filter>Исходные файлы\world</Filter>
     </ClCompile>
     <ClCompile Include="source\model\VAOBuilder.cpp">
       <Filter>Исходные файлы\model</Filter>
@@ -143,20 +146,11 @@
     <ClInclude Include="source\model\ModelTransformations.h">
       <Filter>Исходные файлы\model</Filter>
     </ClInclude>
-    <ClInclude Include="source\world\Cube.h">
-      <Filter>Исходные файлы\world</Filter>
-    </ClInclude>
     <ClInclude Include="source\model\VOsAndIndices.h">
       <Filter>Исходные файлы\model</Filter>
     </ClInclude>
     <ClInclude Include="source\model\VAOBuilder.h">
       <Filter>Исходные файлы\model</Filter>
-    </ClInclude>
-    <ClInclude Include="source\world\WorldObject.h">
-      <Filter>Исходные файлы\world</Filter>
-    </ClInclude>
-    <ClInclude Include="source\world\DrawableObject.h">
-      <Filter>Исходные файлы\world</Filter>
     </ClInclude>
     <ClInclude Include="source\shader\ShaderLoader.h">
       <Filter>Исходные файлы\shader</Filter>
@@ -167,9 +161,6 @@
     <ClInclude Include="source\renderer\Renderer.h">
       <Filter>Исходные файлы\renderer</Filter>
     </ClInclude>
-    <ClInclude Include="source\world\Ground.h">
-      <Filter>Исходные файлы\world</Filter>
-    </ClInclude>
     <ClInclude Include="source\textures\Texture.h">
       <Filter>Исходные файлы\textures</Filter>
     </ClInclude>
@@ -179,23 +170,8 @@
     <ClInclude Include="source\textures\CubeMap.h">
       <Filter>Исходные файлы\textures</Filter>
     </ClInclude>
-    <ClInclude Include="source\world\Skybox.h">
-      <Filter>Исходные файлы\world</Filter>
-    </ClInclude>
-    <ClInclude Include="source\world\Tank.h">
-      <Filter>Исходные файлы\world</Filter>
-    </ClInclude>
     <ClInclude Include="source\renderer\Scene.h">
       <Filter>Исходные файлы\renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="source\world\CollidableObject.h">
-      <Filter>Исходные файлы\world</Filter>
-    </ClInclude>
-    <ClInclude Include="source\world\CollidableDrawableObject.h">
-      <Filter>Исходные файлы\world</Filter>
-    </ClInclude>
-    <ClInclude Include="source\world\PositionedWorldObject.h">
-      <Filter>Исходные файлы\world</Filter>
     </ClInclude>
     <ClInclude Include="source\text\Font.h">
       <Filter>Исходные файлы\text</Filter>
@@ -205,9 +181,6 @@
     </ClInclude>
     <ClInclude Include="source\text\FontLoader.h">
       <Filter>Исходные файлы\text</Filter>
-    </ClInclude>
-    <ClInclude Include="source\world\TextString.h">
-      <Filter>Исходные файлы\world</Filter>
     </ClInclude>
     <ClInclude Include="source\world\animations\AnimatedObject.h">
       <Filter>Исходные файлы\world\animations</Filter>
@@ -224,8 +197,41 @@
     <ClInclude Include="source\world\animations\Animation.h">
       <Filter>Исходные файлы\world\animations</Filter>
     </ClInclude>
-    <ClInclude Include="source\world\UpdatableObject.h">
-      <Filter>Исходные файлы\world</Filter>
+    <ClInclude Include="source\world\implementations\Skybox.h">
+      <Filter>Исходные файлы\world\implementations</Filter>
+    </ClInclude>
+    <ClInclude Include="source\world\implementations\Tank.h">
+      <Filter>Исходные файлы\world\implementations</Filter>
+    </ClInclude>
+    <ClInclude Include="source\world\implementations\TextString.h">
+      <Filter>Исходные файлы\world\implementations</Filter>
+    </ClInclude>
+    <ClInclude Include="source\world\implementations\Cube.h">
+      <Filter>Исходные файлы\world\implementations</Filter>
+    </ClInclude>
+    <ClInclude Include="source\world\implementations\Ground.h">
+      <Filter>Исходные файлы\world\implementations</Filter>
+    </ClInclude>
+    <ClInclude Include="source\world\implementations\LightCube.h">
+      <Filter>Исходные файлы\world\implementations</Filter>
+    </ClInclude>
+    <ClInclude Include="source\world\interfaces\DrawableObject.h">
+      <Filter>Исходные файлы\world\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="source\world\interfaces\PositionedWorldObject.h">
+      <Filter>Исходные файлы\world\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="source\world\interfaces\UpdatableObject.h">
+      <Filter>Исходные файлы\world\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="source\world\interfaces\WorldObject.h">
+      <Filter>Исходные файлы\world\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="source\world\interfaces\CollidableDrawableObject.h">
+      <Filter>Исходные файлы\world\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="source\world\interfaces\CollidableObject.h">
+      <Filter>Исходные файлы\world\interfaces</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

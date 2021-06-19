@@ -10,7 +10,6 @@
 #include "light/PointLight.h"
 #include "light/SpotLight.h"
 #include "light/DirectionalLight.h"
-#include "world/LightCube.h"
 #include "shader/Shader.h"
 #include "camera/Camera.h"
 #include "model/Model.h"
@@ -21,11 +20,12 @@
 #include "shader/ShaderLoader.h"
 #include "text/Font.h"
 #include "text/FontLoader.h"
-#include "world/Ground.h"
-#include "world/Skybox.h"
-#include "world/Tank.h"
-#include "world/TextString.h"
 #include "world/animations/Animations.h"
+#include "world/implementations/Ground.h"
+#include "world/implementations/LightCube.h"
+#include "world/implementations/Skybox.h"
+#include "world/implementations/Tank.h"
+#include "world/implementations/TextString.h"
 
 float deltaTime = 0.0f;									 // Разница во времени между последним и предпоследним кадрами
 float lastFrameTime = 0.0f;								 // Время последнего кадра
@@ -536,15 +536,7 @@ int main()
 		// Отрисовка текста:
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-		// debugTextString->setText( string("Camera position: ") + 
-		// 	"{" +
-		// 	to_string(mainCamera.position.x) + "," +
-		// 	to_string(mainCamera.position.y) + "," +
-		// 	to_string(mainCamera.position.z) + "}" +
-		// 	" yaw = " + to_string(mainCamera.yaw) +
-		// 	" pitch = " + to_string(mainCamera.pitch)
-		// );
+		
 		debugTextString->setText(
 			string("Tank rotation: ") + to_string(playerTank->getRotationAngleDegrees())
 		);

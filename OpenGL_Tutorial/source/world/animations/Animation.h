@@ -1,5 +1,5 @@
 #pragma once
-#include "../PositionedWorldObject.h"
+
 
 class Animation
 {

@@ -1,7 +1,6 @@
 #pragma once
-#include "DrawableObject.h"
-#include "../model/VAOBuilder.h"
-#include "../model/VOsAndIndices.h"
+#include "../interfaces/DrawableObject.h"
+#include "../interfaces/PositionedWorldObject.h"
 
 class Skybox : public PositionedWorldObject, public DrawableObject
 {
