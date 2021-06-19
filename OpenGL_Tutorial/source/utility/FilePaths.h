@@ -1,3 +1,5 @@
+#pragma once
+
 #include <string>
 
 using namespace std;
@@ -5,13 +7,18 @@ using namespace std;
 class FilePaths
 {
 private:
-	static const string resourcesFolderName;
-	static const string modelsFolderName;
-	static const string shadersFolderName;
-	static const string texturesFolderName;
+	static string resourcesFolderName;
+	static string modelsFolderName;
+	static string shadersFolderName;
+	static string texturesFolderName;
 
-	static const string splitter;
+	static string splitter;
 public:
+	static string getSplitter()
+	{
+		return splitter;
+	}
+	
 	static string getPathToModel(const string& modelName)
 	{
 		return resourcesFolderName + splitter + modelsFolderName + splitter + modelName;
@@ -24,7 +31,12 @@ public:
 
 	static string getPathToShaderFolderWithTrailingSplitter()
 	{
-		return resourcesFolderName + splitter + shadersFolderName + splitter;
+		return getPathToShaderFolder() + splitter;
+	}
+
+	static string getPathToShaderFolder()
+	{
+		return resourcesFolderName + splitter + shadersFolderName;
 	}
 
 	static string getPathToTexture(const string& textureName)
@@ -34,12 +46,11 @@ public:
 
 	static string getPathToTexturesFolderWithTrailingSplitter()
 	{
-		return resourcesFolderName + splitter + texturesFolderName + splitter;
+		return getPathToTexturesFolder() + splitter;
+	}
+
+	static string getPathToTexturesFolder()
+	{
+		return resourcesFolderName + splitter + texturesFolderName;
 	}
 };
-
-const string FilePaths::resourcesFolderName = "resources";
-const string FilePaths::modelsFolderName = "models";
-const string FilePaths::shadersFolderName = "shaders";
-const string FilePaths::texturesFolderName = "textures";
-const string FilePaths::splitter = R"(/)";

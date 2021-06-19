@@ -42,6 +42,12 @@ public:
 	float zFar;
 	float aspectRatio;
 
+	// Конструктор по-умолчанию. Не предназначено для прямого использования.
+	Camera()
+		:Camera(0.0f)
+	{
+	}
+
 	// Конструктор камеры с векторными параметрами
 	Camera(float aspectRatio, glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = DEFAULT_YAW, float pitch = DEFAULT_PITCH, float zNear = 1.0f, float zFar = 100.0f);
 
@@ -51,9 +57,18 @@ public:
 	// Деструктор камеры
 	~Camera();
 
+	void setAspectRatio(const float& aspectRatio)
+	{
+		this->aspectRatio = aspectRatio;
+	}
+
+	void setPosition(const glm::vec3& position)
+	{
+		this->position = position;
+	}
+
 	// Получение видовой матрицы Look At
 	glm::mat4 getViewMatrix();
-
 	
 	glm::mat4 getProjectionMatrix();
 

@@ -115,45 +115,45 @@ void Shader::use() const {
 	glUseProgram(programID);
 }
 
-void Shader::setBool(const std::string& name, bool value) const
+void Shader::setBool(const std::string& name, const bool value) const
 {
 	glUniform1i(glGetUniformLocation(programID, name.c_str()), (int)value);
 }
-void Shader::setInt(const std::string& name, int value) const
+void Shader::setInt(const std::string& name, const int value) const
 {
 	glUniform1i(glGetUniformLocation(programID, name.c_str()), value);
 }
-void Shader::setFloat(const std::string& name, float value) const
+void Shader::setFloat(const std::string& name, const float value) const
 {
 	glUniform1f(glGetUniformLocation(programID, name.c_str()), value);
 }
 
-void Shader::setFloatVec2(const std::string& name, float value, float value2) const
+void Shader::setFloatVec2(const std::string& name, const float value, const float value2) const
 {
 	glUniform2f(glGetUniformLocation(programID, name.c_str()), value, value2);
 }
 
-void Shader::setFloatVec3(const std::string& name, float value, float value2, float value3) const
+void Shader::setFloatVec3(const std::string& name, const float value, const float value2, const float value3) const
 {
 	glUniform3f(glGetUniformLocation(programID, name.c_str()), value, value2, value3);
 }
 
-void Shader::setFloatVec3(const std::string& name, glm::vec3 vec) const
+void Shader::setFloatVec3(const std::string& name, const glm::vec3& vec) const
 {
 	glUniform3f(glGetUniformLocation(programID, name.c_str()), vec.x, vec.y, vec.z);
 }
 
-void Shader::setFloatVec4(const std::string& name, float value, float value2, float value3, float value4) const
+void Shader::setFloatVec4(const std::string& name, const float value, const float value2, const float value3, const float value4) const
 {
 	glUniform4f(glGetUniformLocation(programID, name.c_str()), value, value2, value3, value4);
 }
 
-void Shader::setFloatMat3(const std::string& name, glm::mat3& matrix) const
+void Shader::setFloatMat3(const std::string& name, const glm::mat3& matrix) const
 {
 	glUniformMatrix3fv(glGetUniformLocation(programID, name.c_str()), 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
-void Shader::setFloatMat4(const std::string& name, glm::mat4& matrix) const
+void Shader::setFloatMat4(const std::string& name, const glm::mat4& matrix) const
 {
 	glUniformMatrix4fv(glGetUniformLocation(programID, name.c_str()), 1, GL_FALSE, glm::value_ptr(matrix));
 }

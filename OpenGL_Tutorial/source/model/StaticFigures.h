@@ -105,6 +105,17 @@ public:
         };
 	}
 
+	static std::vector<float> getWorldQuadVertexesWithNormalsAndUV()
+	{
+		return std::vector<float>{
+		//	  X		 Y		Z	    Nx    Ny     Nz      U	   V
+			-1.0f,  1.0f,  0.0f,   0.0f, 0.0f,  1.0f,   0.0f, 10.0f,	// верхний левый
+			-1.0f, -1.0f,  0.0f,   0.0f, 0.0f,  1.0f,   0.0f, 0.0f,		// нижний левый
+			 1.0f, -1.0f,  0.0f,   0.0f, 0.0f,  1.0f,   10.0f, 0.0f,	// нижний правый
+			 1.0f,  1.0f,  0.0f,   0.0f, 0.0f,  1.0f,   10.0f, 10.0f	// верхний правый
+		};
+	}
+
 	inline static std::vector<unsigned> getQuadIndices()
 	{
 		return std::vector<unsigned>{

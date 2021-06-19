@@ -4,6 +4,8 @@
 #include <map>
 #include <glm/glm.hpp>
 
+
+#include "../textures/Texture.h"
 #include "shader/Shader.h"
 
 using namespace std;
@@ -16,43 +18,15 @@ struct Vertex {
     glm::vec3 bitangent;
 };
 
-enum class TextureType : unsigned {
-	DIFFUSE = 0,
-	SPECULAR = 1,
-	NORMAL = 2,
-	HEIGHT = 3
-};
-
-static std::map<TextureType, std::string> textureTypeShaderNames = {
-	{TextureType::DIFFUSE, "texture_diffuse"},
-	{TextureType::SPECULAR, "texture_specular"},
-	{TextureType::NORMAL, "texture_normal"},
-	{TextureType::HEIGHT, "texture_height"}
-};
-
-static std::map<std::string, TextureType> shaderNamesTextureType = {
-	{"texture_diffuse", TextureType::DIFFUSE},
-	{"texture_specular", TextureType::SPECULAR},
-	{"texture_normal", TextureType::NORMAL},
-	{"texture_height", TextureType::HEIGHT}
-};
-
-struct Texture_ {
-    unsigned int id;
-    TextureType type;
-    string path;
-};
-
-
 class Mesh
 {
 public:
     vector<Vertex>          vertices;
     vector<unsigned int>    indices;
-    vector<Texture_>        textures;
+    vector<Texture*>        textures;
     unsigned int            VAO;
 
-    Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture_> textures);
+    Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture*> textures);
     void draw(Shader& shader);
 private:
 
@@ -61,7 +35,7 @@ private:
     void setupMesh();
 };
 
-inline Mesh::Mesh(vector<Vertex> vertices, vector<unsigned> indices, vector<Texture_> textures)
+inline Mesh::Mesh(vector<Vertex> vertices, vector<unsigned> indices, vector<Texture*> textures)
 {
     this->vertices = vertices;
     this->indices = indices;
@@ -81,8 +55,8 @@ inline void Mesh::draw(Shader& shader)
         glActiveTexture(GL_TEXTURE0 + i);
         string textureNumber;
 
-    	const Texture_ currentTexture = textures[i];
-    	const TextureType currentTextureType = currentTexture.type;
+    	const Texture *currentTexture = textures[i];
+    	const TextureType currentTextureType = currentTexture->getType();
 
         switch (currentTextureType)
         {
@@ -96,7 +70,7 @@ inline void Mesh::draw(Shader& shader)
     	string currentTextureShaderName = textureTypeShaderNames.at(currentTextureType) + textureNumber;
     	shader.setInt(currentTextureShaderName, i);
 
-        glBindTexture(GL_TEXTURE_2D, currentTexture.id);
+        glBindTexture(GL_TEXTURE_2D, currentTexture->getId());
     }
     glActiveTexture(GL_TEXTURE0);
 
