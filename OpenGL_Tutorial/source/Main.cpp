@@ -537,13 +537,16 @@ int main()
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		debugTextString->setText( string("Camera position: ") + 
-			"{" +
-			to_string(mainCamera.position.x) + "," +
-			to_string(mainCamera.position.y) + "," +
-			to_string(mainCamera.position.z) + "}" +
-			" yaw = " + to_string(mainCamera.yaw) +
-			" pitch = " + to_string(mainCamera.pitch)
+		// debugTextString->setText( string("Camera position: ") + 
+		// 	"{" +
+		// 	to_string(mainCamera.position.x) + "," +
+		// 	to_string(mainCamera.position.y) + "," +
+		// 	to_string(mainCamera.position.z) + "}" +
+		// 	" yaw = " + to_string(mainCamera.yaw) +
+		// 	" pitch = " + to_string(mainCamera.pitch)
+		// );
+		debugTextString->setText(
+			string("Tank rotation: ") + to_string(playerTank->getRotationAngleDegrees())
 		);
 		debugTextString->draw(renderer);
 		
