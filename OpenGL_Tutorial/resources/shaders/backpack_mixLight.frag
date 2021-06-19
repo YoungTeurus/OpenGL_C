@@ -33,10 +33,10 @@ int LightAmbientType = 4;
 in vec3 fNormal;
 in vec3 fFragPosition;
 in vec2 fTextureCoord;
-
 in mat3 fTBN;
 
-out vec4 fragColor;
+layout (location = 0) out vec4 fragColor;
+layout (location = 1) out vec4 brightColor;
 
 uniform int lightsCount;
 uniform Light lights[MAX_LIGHTS];
@@ -79,6 +79,13 @@ void main(){
 	}
 
 	fragColor = vec4(result, 1.0);
+	
+	float brightness = dot(fragColor.rgb, vec3(0.2126, 0.7152, 0.0722));
+	if (brightness > 1.0){
+		brightColor = vec4(fragColor.rgb, 1.0);
+	} else {
+		brightColor = vec4(0.0, 0.0, 0.0, 1.0);
+	}
 }
 
 vec3 getColorFromLight(Light light, vec3 normal, vec3 fFragPosition, vec3 viewDir, vec3 diffuseTextureColor, vec3 specularTextureColor){

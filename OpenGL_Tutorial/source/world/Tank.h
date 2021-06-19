@@ -15,7 +15,9 @@ private:
 	
 public:
 	Tank(Model* tankBase, Model* tankTurret)
-		:CollidableDrawableObject({}, ColliderCube(0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f), "backpack_mixLightWithExplosion", true),
+	// TODO: ѕон€ть, что ломаетс€ в геометрическом шейдере.
+		// :CollidableDrawableObject({}, ColliderCube(0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f), "backpack_mixLightWithExplosion", true),
+		:CollidableDrawableObject({}, ColliderCube(0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f), "backpack_mixLight"),
 		 tankBase(tankBase), tankTurret(tankTurret)
 	{
 	}

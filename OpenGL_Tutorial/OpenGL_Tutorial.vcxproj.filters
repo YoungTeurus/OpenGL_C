@@ -49,6 +49,9 @@
     <Filter Include="Исходные файлы\text">
       <UniqueIdentifier>{f14a72f8-fa25-4eeb-9471-859a622d26bd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Исходные файлы\world\animations">
+      <UniqueIdentifier>{f92b7a7f-c90e-47a1-b025-f3e64a4c75e6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="include\glad.c">
@@ -204,6 +207,24 @@
       <Filter>Исходные файлы\text</Filter>
     </ClInclude>
     <ClInclude Include="source\world\TextString.h">
+      <Filter>Исходные файлы\world</Filter>
+    </ClInclude>
+    <ClInclude Include="source\world\animations\AnimatedObject.h">
+      <Filter>Исходные файлы\world\animations</Filter>
+    </ClInclude>
+    <ClInclude Include="source\world\animations\Animations.h">
+      <Filter>Исходные файлы\world\animations</Filter>
+    </ClInclude>
+    <ClInclude Include="source\world\animations\FloatAnimation.h">
+      <Filter>Исходные файлы\world\animations</Filter>
+    </ClInclude>
+    <ClInclude Include="source\world\animations\LinearAnimation.h">
+      <Filter>Исходные файлы\world\animations</Filter>
+    </ClInclude>
+    <ClInclude Include="source\world\animations\Animation.h">
+      <Filter>Исходные файлы\world\animations</Filter>
+    </ClInclude>
+    <ClInclude Include="source\world\UpdatableObject.h">
       <Filter>Исходные файлы\world</Filter>
     </ClInclude>
   </ItemGroup>
