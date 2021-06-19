@@ -2,6 +2,7 @@
 #include <map>
 
 #include "Shader.h"
+#include "../utility/FilePaths.h"
 
 class ShaderLoader
 {
@@ -22,6 +23,11 @@ public:
 			instance = new ShaderLoader();
 		}
 		return instance;
+	}
+
+	Shader* load(const std::string& name, const bool& withGeometry = false)
+	{
+		return load(name, FilePaths::getPathToShaderFolderWithTrailingSplitter(), withGeometry);
 	}
 
 	Shader* load(const std::string& name, const std::string& pathToShaderFiles, const bool& withGeometry = false)

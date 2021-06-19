@@ -44,4 +44,7 @@ Font::Font(const std::string& name, unsigned fontSize)
 	FT_Set_Pixel_Sizes(face, 0, fontSize);
 
 	loadCharacters();
+
+	FT_Done_Face(face);
+	FT_Done_FreeType(library);
 }

@@ -277,5 +277,11 @@
     <None Include="resources\shaders\groundQuad_mixLight.vert">
       <Filter>Файлы ресурсов\shaders</Filter>
     </None>
+    <None Include="resources\shaders\font.frag">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\font.vert">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

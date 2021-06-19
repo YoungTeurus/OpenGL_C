@@ -38,7 +38,7 @@ Shader::Shader(const std::string& shaderFileName, const std::string& pathToShade
 		}
 	}
 	catch (std::ifstream::failure e) {
-		std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
+		std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ: " << pathToShaderFiles << shaderFileName << std::endl;
 	}
 	const GLchar *vShaderCode = vTempString.c_str();
 	const GLchar *fShaderCode = fTempString.c_str();

@@ -31,4 +31,9 @@ private:
 	void loadCharacters();
 public:
 	Font(const std::string& name, unsigned fontSize = 48);
+
+	Character getCharacter(const char& c) const
+	{
+		return characters.at(c);
+	}
 };
