@@ -21,6 +21,8 @@ private:
 	Camera mainCamera;
 	TexturesLoader *texturesLoader = TexturesLoader::getInstance();
 
+	int renderScreenWidth, renderScreenHeight;
+
 	Renderer()
 	{
 	}
@@ -82,5 +84,17 @@ public:
 	glm::mat4 getProjection() const
 	{
 		return projection;
+	}
+
+	void setScreenWidthAndHeight(const int& width, const int& height)
+	{
+		this->renderScreenWidth = width;
+		this->renderScreenHeight = height;
+		mainCamera.setAspectRatio((float)width/height);
+	}
+
+	glm::mat4 getOrthoProjection() const
+	{
+		return glm::ortho(0.0f, (float)renderScreenWidth, 0.0f, (float)renderScreenHeight);
 	}
 };

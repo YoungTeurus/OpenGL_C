@@ -24,7 +24,8 @@
 #include "world/Ground.h"
 #include "world/Skybox.h"
 #include "world/Tank.h"
- 
+#include "world/TextString.h"
+
 float deltaTime = 0.0f;									 // Разница во времени между последним и предпоследним кадрами
 float lastFrameTime = 0.0f;								 // Время последнего кадра
  
@@ -83,6 +84,7 @@ void OnResize(GLFWwindow* window, int width, int height)
 {
 	mainCamera.aspectRatio = (float)width / height;
 	glViewport(0, 0, width, height);
+	renderer->setScreenWidthAndHeight(width, height);
 }
  
 // Работа с устройствами ввода
@@ -202,51 +204,6 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
 	mainCamera.handleMouseMovement(dx, dy);
 }
 
-void RenderText(Font* font, Shader* fontShader, const glm::mat4& projection, const VAO& fontVAO, const VBO& fontVBO, std::string text, float x, float y, float scale, glm::vec3 color)
-{
-	// activate corresponding render state	
-    fontShader->use();
-	fontShader->setFloatMat4("projection", projection);
-	fontShader->setFloatVec3("uTextColor", color);
-    glActiveTexture(GL_TEXTURE0);
-    glBindVertexArray(fontVAO);
-
-    // iterate through all characters
-    std::string::const_iterator c;
-    for (c = text.begin(); c != text.end(); c++)
-    {
-        Character ch = font->getCharacter(*c);
-
-        float xpos = x + ch.bearing.x * scale;
-        float ypos = y - (ch.size.y - ch.bearing.y) * scale;
-
-        float w = ch.size.x * scale;
-        float h = ch.size.y * scale;
-        // update VBO for each character
-        float vertices[6][4] = {
-            { xpos,     ypos + h,   0.0f, 0.0f },            
-            { xpos,     ypos,       0.0f, 1.0f },
-            { xpos + w, ypos,       1.0f, 1.0f },
-
-            { xpos,     ypos + h,   0.0f, 0.0f },
-            { xpos + w, ypos,       1.0f, 1.0f },
-            { xpos + w, ypos + h,   1.0f, 0.0f }           
-        };
-        // render glyph texture over quad
-        glBindTexture(GL_TEXTURE_2D, ch.texture.getId());
-        // update content of VBO memory
-        glBindBuffer(GL_ARRAY_BUFFER, fontVBO);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // Загружаем VBO новыми данными.
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        // render quad
-        glDrawArrays(GL_TRIANGLES, 0, 6);
-        // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-        x += (ch.advance >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64)
-    }
-    glBindVertexArray(0);
-    glBindTexture(GL_TEXTURE_2D, 0);
-}
-
 int main()
 {
 	using namespace std;
@@ -263,6 +220,7 @@ int main()
 	 
 	GLFWwindow* win = glfwCreateWindow(windowWidth, windowHeight, "OpenGL Window",
  		                                NULL, NULL);
+	renderer->setScreenWidthAndHeight(windowWidth, windowHeight);
 	 
 	if (win == NULL)
 	{
@@ -299,7 +257,9 @@ int main()
 	// Загрузка шрифта:
 	Font *arialFont = FontLoader::getInstance()->getOrLoad("arial", 48);
 	Shader* fontShader = ShaderLoader::getInstance()->getOrLoad("font");
+	TextString* textString = new TextString(arialFont, "CooL TeXt 2027", glm::vec2(20.0f, 20.0f), 1.0f, glm::vec3(0.5f, 0.8f, 0.2f));
 	 
+	renderer->setScreenWidthAndHeight(windowWidth, windowHeight);  // AspectRatio задаётся внутри.
 	mainCamera.setAspectRatio((float)windowInitialWidth / windowInitialHeight);
 	mainCamera.setPosition(glm::vec3(0.0f, 5.0f, 0.0f));
 	 
@@ -457,20 +417,6 @@ int main()
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	// VAO для отрисовки шрифта с динамическим VBO
-	unsigned fontVAO, fontVBO;
-	glGenVertexArrays(1, &fontVAO);
-	glGenBuffers(1, &fontVBO);
-	glBindVertexArray(fontVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, fontVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-
 #pragma endregion
  		
 	VOsAndIndices *screenQuadVOsAndIndices = VAOBuilder::getInstance()->get2DQuad();
@@ -554,14 +500,8 @@ int main()
 		// Отрисовка текста:
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		
-		glm::mat4 projectionForFont = glm::ortho(0.0f, (float)windowWidth, 0.0f, (float)windowHeight);
-		
-		RenderText(arialFont, fontShader, projectionForFont, fontVAO, fontVBO,
-			"COOL texT 2021",
-			25.0f, 25.0f, 1.0f,
-			glm::vec3(0.5f, 0.8f, 0.2f)
-			);
+
+		textString->draw(renderer);
 		
 		glDisable(GL_BLEND);
 		

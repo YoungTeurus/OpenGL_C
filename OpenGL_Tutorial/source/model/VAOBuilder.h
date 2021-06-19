@@ -184,6 +184,46 @@ private:
 		return generatedVOs;
 	}
 
+	VOsAndIndices* generateForFont()
+	{
+		std::vector<unsigned> fontIndicesData = StaticFigures::getQuadIndices();
+		
+		// VAO для отрисовки шрифта с динамическим VBO
+		unsigned fontVAO, fontVBO, fontEBO;
+		
+		glGenVertexArrays(1, &fontVAO);
+		glGenBuffers(1, &fontVBO);
+		glGenBuffers(1, &fontEBO);
+		
+		glBindVertexArray(fontVAO);
+		glBindBuffer(GL_ARRAY_BUFFER, fontVBO);
+		// Временно пустой VBO (4-ре вертекса по 4-ре float):
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 4 * 4, NULL, GL_DYNAMIC_DRAW);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, fontEBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned) * fontIndicesData.size(), fontIndicesData.data(), GL_STATIC_DRAW);
+		
+		// layout (location = 0) in vec2 inFragPosition;
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
+		// layout (location = 1) in vec2 inTextureCoord;
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindVertexArray(0);
+
+		VOsAndIndices *generatedVOs = new VOsAndIndices{
+			fontVAO,
+			fontVBO,
+			fontEBO,
+			fontIndicesData
+		};
+		
+		addInLoaded("Font", generatedVOs);
+		
+		return generatedVOs;
+	}
+
 public:
 
 	static VAOBuilder* getInstance()
@@ -241,6 +281,16 @@ public:
 		if (returnValue == nullptr)
 		{
 			returnValue = generateForSkybox();
+		}
+		return returnValue;
+	}
+
+	VOsAndIndices* getFont()
+	{
+		VOsAndIndices *returnValue = getByName("Font");
+		if (returnValue == nullptr)
+		{
+			returnValue = generateForFont();
 		}
 		return returnValue;
 	}
