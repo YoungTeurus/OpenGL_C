@@ -309,7 +309,7 @@ int main()
 	backgroundTank2.setPosition(glm::vec3(-15.0f, 0.0f, -30.0f));
 
 	Ground ground("grass.png", "grass_specular.png", 100.f);
-	Skybox skybox("skyboxNew", "sky.jpg");
+	Skybox skybox("skybox", "sky.jpg");
 
 	Scene scene;
 
