@@ -20,6 +20,7 @@
 #include "renderer/Scene.h"
 #include "shader/ShaderLoader.h"
 #include "text/Font.h"
+#include "text/FontLoader.h"
 #include "world/Ground.h"
 #include "world/Skybox.h"
 #include "world/Tank.h"
@@ -201,7 +202,7 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
 	mainCamera.handleMouseMovement(dx, dy);
 }
 
-void RenderText(const Font& font, Shader* fontShader, const glm::mat4& projection, const VAO& fontVAO, const VBO& fontVBO, std::string text, float x, float y, float scale, glm::vec3 color)
+void RenderText(Font* font, Shader* fontShader, const glm::mat4& projection, const VAO& fontVAO, const VBO& fontVBO, std::string text, float x, float y, float scale, glm::vec3 color)
 {
 	// activate corresponding render state	
     fontShader->use();
@@ -214,7 +215,7 @@ void RenderText(const Font& font, Shader* fontShader, const glm::mat4& projectio
     std::string::const_iterator c;
     for (c = text.begin(); c != text.end(); c++)
     {
-        Character ch = font.getCharacter(*c);
+        Character ch = font->getCharacter(*c);
 
         float xpos = x + ch.bearing.x * scale;
         float ypos = y - (ch.size.y - ch.bearing.y) * scale;
@@ -296,15 +297,15 @@ int main()
 	#pragma endregion
 
 	// Загрузка шрифта:
-	Font arialFont("arial");
-	Shader* fontShader = ShaderLoader::getInstance()->load("font");
+	Font *arialFont = FontLoader::getInstance()->getOrLoad("arial", 48);
+	Shader* fontShader = ShaderLoader::getInstance()->getOrLoad("font");
 	 
 	mainCamera.setAspectRatio((float)windowInitialWidth / windowInitialHeight);
 	mainCamera.setPosition(glm::vec3(0.0f, 5.0f, 0.0f));
 	 
 	// Загрузка внешних данных:
-	Shader* screenRenderQuadShaderWithBlur = ShaderLoader::getInstance()->load("screenRenderQuadShaderWithBlur");
-	Shader* screenRenderQuadWithHDRShader = ShaderLoader::getInstance()->load("screenRenderQuadShaderWithHDR");
+	Shader* screenRenderQuadShaderWithBlur = ShaderLoader::getInstance()->getOrLoad("screenRenderQuadShaderWithBlur");
+	Shader* screenRenderQuadWithHDRShader = ShaderLoader::getInstance()->getOrLoad("screenRenderQuadShaderWithHDR");
  		
 	Model tankBase(FilePaths::getPathToModel("tank/base.obj"), true);
 	Model tankTurret(FilePaths::getPathToModel("tank/turret.obj"), true);

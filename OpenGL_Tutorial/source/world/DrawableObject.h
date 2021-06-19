@@ -12,7 +12,7 @@ protected:
 	Shader* shader;
 public:
 	DrawableObject(const std::string& shaderName, const bool& shaderWithGeometry = false)
-		:shader( ShaderLoader::getInstance()->getOrLoadByName(shaderName, FilePaths::getPathToShaderFolderWithTrailingSplitter(), shaderWithGeometry) )
+		:shader( ShaderLoader::getInstance()->getOrLoad(shaderName, FilePaths::getPathToShaderFolderWithTrailingSplitter(), shaderWithGeometry) )
 	{
 	}
 

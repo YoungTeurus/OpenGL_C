@@ -162,6 +162,7 @@
     <ClCompile Include="source\textures\Texture.cpp" />
     <ClCompile Include="source\textures\TexturesLoader.cpp" />
     <ClCompile Include="source\text\Font.cpp" />
+    <ClCompile Include="source\text\FontLoader.cpp" />
     <ClCompile Include="source\utility\FilePaths.cpp" />
     <ClCompile Include="source\world\LightCube.h" />
   </ItemGroup>
@@ -191,6 +192,7 @@
     <ClInclude Include="source\textures\Texture.h" />
     <ClInclude Include="source\textures\TexturesLoader.h" />
     <ClInclude Include="source\text\Font.h" />
+    <ClInclude Include="source\text\FontLoader.h" />
     <ClInclude Include="source\utility\FilePaths.h" />
     <ClInclude Include="source\world\CollidableDrawableObject.h" />
     <ClInclude Include="source\world\CollidableObject.h" />
@@ -200,6 +202,7 @@
     <ClInclude Include="source\world\PositionedWorldObject.h" />
     <ClInclude Include="source\world\Skybox.h" />
     <ClInclude Include="source\world\Tank.h" />
+    <ClInclude Include="source\world\TextString.h" />
     <ClInclude Include="source\world\WorldObject.h" />
   </ItemGroup>
   <ItemGroup>

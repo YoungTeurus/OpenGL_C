@@ -60,7 +60,7 @@ public:
 
 		if (colliderShader == nullptr)
 		{
-			colliderShader = ShaderLoader::getInstance()->getOrLoadByName("lightCube", FilePaths::getPathToShaderFolderWithTrailingSplitter());
+			colliderShader = ShaderLoader::getInstance()->getOrLoad("lightCube", FilePaths::getPathToShaderFolderWithTrailingSplitter());
 		}
 
 		glm::mat4 cubeModel = colliderTransformations.createModelMatrixWithTransformations();

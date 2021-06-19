@@ -15,16 +15,7 @@ private:
 	{
 		loadedShaders = new std::map<std::string, Shader*>();
 	}
-public:
-	static ShaderLoader* getInstance()
-	{
-		if (instance == nullptr)
-		{
-			instance = new ShaderLoader();
-		}
-		return instance;
-	}
-
+	
 	Shader* load(const std::string& name, const bool& withGeometry = false)
 	{
 		return load(name, FilePaths::getPathToShaderFolderWithTrailingSplitter(), withGeometry);
@@ -38,8 +29,18 @@ public:
 		
 		return newShader;
 	}
+public:
+	static ShaderLoader* getInstance()
+	{
+		if (instance == nullptr)
+		{
+			instance = new ShaderLoader();
+		}
+		return instance;
+	}
 
-	Shader* getByName(const std::string& name) const
+
+	Shader* get(const std::string& name) const
 	{
 		const auto it = loadedShaders->find(name);
 		if(it != loadedShaders->end())
@@ -49,7 +50,12 @@ public:
 		return nullptr;
 	}
 
-	Shader* getOrLoadByName(const std::string& name, const std::string& pathToShaderFiles, const bool& withGeometry = false)
+	Shader* getOrLoad(const std::string& name, const bool& withGeometry = false)
+	{
+		return getOrLoad(name, FilePaths::getPathToShaderFolderWithTrailingSplitter(), withGeometry);
+	}
+
+	Shader* getOrLoad(const std::string& name, const std::string& pathToShaderFiles, const bool& withGeometry = false)
 	{
 		const auto it = loadedShaders->find(name);
 		if(it != loadedShaders->end())

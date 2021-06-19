@@ -90,6 +90,9 @@
     <ClCompile Include="source\text\Font.cpp">
       <Filter>Исходные файлы\text</Filter>
     </ClCompile>
+    <ClCompile Include="source\text\FontLoader.cpp">
+      <Filter>Исходные файлы\text</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\stb_image.h">
@@ -196,6 +199,12 @@
     </ClInclude>
     <ClInclude Include="source\textures\FontTexture.h">
       <Filter>Исходные файлы\textures</Filter>
+    </ClInclude>
+    <ClInclude Include="source\text\FontLoader.h">
+      <Filter>Исходные файлы\text</Filter>
+    </ClInclude>
+    <ClInclude Include="source\world\TextString.h">
+      <Filter>Исходные файлы\world</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
