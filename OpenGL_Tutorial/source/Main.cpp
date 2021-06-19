@@ -17,6 +17,7 @@
 #include "model/VAOBuilder.h"
 #include "model/VOsAndIndices.h"
 #include "renderer/Renderer.h"
+#include "renderer/Scene.h"
 #include "shader/ShaderLoader.h"
 #include "textures/Texture.h"
 #include "textures/CubeMap.h"
@@ -262,7 +263,6 @@ int main()
 
 	// Подготовка источников освещения:
 	vector<PositionedLight*> positionedLights;
-	vector<LightCube*> lightCubes;
 
 	PointLight *pointLight = new PointLight(
 			glm::vec3(0.1f),
@@ -275,40 +275,39 @@ int main()
 
 	renderer->addLight(pointLight);
 	positionedLights.push_back(pointLight);
-	lightCubes.push_back( new LightCube(pointLight) );
 	
-	// lights.push_back(
-	// 	new PointLight(
-	// 		glm::vec3(0.0f),
-	// 		glm::vec3(0.1f, 0.0f, 0.0f),
-	// 		glm::vec3(0.1f, 0.0f, 0.0f),
-	// 		1.0f, 0.001f, 0.0009f,
-	// 		glm::vec3(0.0f, 3.0f, -5.0f),
-	// 		"Dim red lamp"
-	// 	)
-	// );
+	pointLight = new PointLight(
+			glm::vec3(0.0f),
+			glm::vec3(0.1f, 0.0f, 0.0f),
+			glm::vec3(0.1f, 0.0f, 0.0f),
+			1.0f, 0.001f, 0.0009f,
+			glm::vec3(0.0f, 3.0f, -5.0f),
+			"Dim red lamp"
+		);
+	renderer->addLight(pointLight);
+	positionedLights.push_back(pointLight);
 	
-	// lights.push_back(
-	// 	new PointLight(
-	// 		glm::vec3(0.0f),
-	// 		glm::vec3(0.0f, 0.0f, 0.2f),
-	// 		glm::vec3(0.0f, 0.0f, 0.2f),
-	// 		1.0f, 0.001f, 0.0009f,
-	// 		glm::vec3(0.0f, 3.0f, -3.0f),
-	// 		"Dim green lamp"
-	// 	)
-	// );
+	pointLight = new PointLight(
+			glm::vec3(0.0f),
+			glm::vec3(0.0f, 0.0f, 0.2f),
+			glm::vec3(0.0f, 0.0f, 0.2f),
+			1.0f, 0.001f, 0.0009f,
+			glm::vec3(0.0f, 3.0f, -3.0f),
+			"Dim green lamp"
+		);
+	renderer->addLight(pointLight);
+	positionedLights.push_back(pointLight);
 	
-	// lights.push_back(
-	// 	new PointLight(
-	// 		glm::vec3(0.0f),
-	// 		glm::vec3(0.0f, 0.1f, 0.0f),
-	// 		glm::vec3(0.0f, 0.1f, 0.0f),
-	// 		1.0f, 0.001f, 0.0009f,
-	// 		glm::vec3(0.0f, 3.0f, -1.0f),
-	// 		"Dim blue lamp"
-	// 	)
-	// );
+	pointLight = new PointLight(
+			glm::vec3(0.0f),
+			glm::vec3(0.0f, 0.1f, 0.0f),
+			glm::vec3(0.0f, 0.1f, 0.0f),
+			1.0f, 0.001f, 0.0009f,
+			glm::vec3(0.0f, 3.0f, -1.0f),
+			"Dim blue lamp"
+		);
+	renderer->addLight(pointLight);
+	positionedLights.push_back(pointLight);
 	
 	flashlight = new SpotLight(
 		glm::radians(10.f), glm::radians(20.f),
@@ -321,16 +320,27 @@ int main()
 		"FlashLight"
 	);
 	renderer->addLight(flashlight);
-	positionedLights.push_back(flashlight);
 
 	Tank mainTank(&tankBase, &tankTurret);
 	Tank backgroundTank(&tankBase, &tankTurret);
 	backgroundTank.setPosition(glm::vec3(-5.0f, 0.0f, -15.0f));
 	Tank backgroundTank2(&tankBase, &tankTurret);
 	backgroundTank2.setPosition(glm::vec3(-15.0f, 0.0f, -30.0f));
-	
+
 	Ground ground("grass.png", "grass_specular.png", 100.f);
 	Skybox skybox("skyboxNew", "sky.jpg");
+
+	Scene scene;
+
+	scene.addDrawableObject(&mainTank);
+	scene.addDrawableObject(&backgroundTank);
+	scene.addDrawableObject(&backgroundTank2);
+	scene.addDrawableObject(&ground);
+	for (auto positionedLight : positionedLights)
+	{
+		scene.addDrawableObject(new LightCube(positionedLight));
+	}
+	scene.addSkybox(&skybox);
 
 #pragma region Инициализация Framebuffer-а и разных VAO
 
@@ -414,11 +424,15 @@ int main()
 
 		processInput(win);
 
-		// Изменение положения источников света:
+		// Update некоторых объектов сцены:
 		flashlight->setPosition(mainCamera.position
 			- mainCamera.up * 0.3f
 		);
 		flashlight->setDirection(mainCamera.front);
+
+		mainTank.setPosition(glm::vec3(glm::cos(currentTime) * 2.5f, 0.0f, glm::cos(currentTime) * 2.5f));
+		mainTank.setRotationAngleDegrees(glm::cos(currentTime) * 30.0f);
+		mainTank.setTurretRotationAngleDegrees(glm::cos(currentTime) * 90.0f);
 
 		// Вращение камеры:
 		glm::mat4 view = mainCamera.getViewMatrix();
@@ -430,29 +444,9 @@ int main()
 
 		// Отрисовка в framebuffer:
 		glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
-
 		glEnable(GL_DEPTH_TEST);
-		
-		glClearColor(background.r, background.g, background.b, background.a);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		mainTank.setPosition(glm::vec3(glm::cos(currentTime) * 2.5f, 0.0f, glm::cos(currentTime) * 2.5f));
-		mainTank.setRotationAngleDegrees(glm::cos(currentTime) * 30.0f);
-		mainTank.setTurretRotationAngleDegrees(glm::cos(currentTime) * 90.0f);
-		
-		mainTank.draw(renderer);
-		backgroundTank.draw(renderer);
-		backgroundTank2.draw(renderer);
-
-		// Отрисовка "светящегося куба".
-		for(auto *lightCube : lightCubes)
-		{
-			lightCube->draw(renderer);
-		}
-		
-		ground.draw(renderer);
-
-		skybox.draw(renderer);
+		scene.draw(renderer);
 		// Конец отрисовки в framebuffer.
 
 		// Отрисовка в frambuffer для размытия:
@@ -480,8 +474,6 @@ int main()
 
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		
-		glEnable(GL_DEPTH_TEST);
 		
 		screenRenderQuadWithHDRShader->use();
 		screenRenderQuadWithHDRShader->setFloat("exposure", globalExposure);

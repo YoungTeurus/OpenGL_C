@@ -182,6 +182,7 @@
     <ClInclude Include="source\model\VAOBuilder.h" />
     <ClInclude Include="source\model\VOsAndIndices.h" />
     <ClInclude Include="source\renderer\Renderer.h" />
+    <ClInclude Include="source\renderer\Scene.h" />
     <ClInclude Include="source\shader\Shader.h" />
     <ClInclude Include="source\shader\ShaderLoader.h" />
     <ClInclude Include="source\textures\CubeMap.h" />

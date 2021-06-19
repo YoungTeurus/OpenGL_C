@@ -19,6 +19,10 @@ public:
 
 	void draw(Renderer* renderer) override
 	{
+		if (! light->getIsActive())
+		{
+			return;
+		}
 		transformations.position = light->getPosition();
 		
 		glm::mat4 lightCubeModel = transformations.createModelMatrixWithTransformations();

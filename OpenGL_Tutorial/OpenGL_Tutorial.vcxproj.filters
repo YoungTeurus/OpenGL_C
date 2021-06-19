@@ -173,6 +173,9 @@
     <ClInclude Include="source\world\Tank.h">
       <Filter>Исходные файлы\world</Filter>
     </ClInclude>
+    <ClInclude Include="source\renderer\Scene.h">
+      <Filter>Исходные файлы\renderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\shaders\lightCube.vert">
