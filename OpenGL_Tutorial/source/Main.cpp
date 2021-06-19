@@ -67,13 +67,6 @@ void changeFlashlightState()
 	changeSpotlightState(flashlight);
 }
 
-struct Color
-{
-	float r, g, b, a;
-};
-
-Color background = {0.25f, 0.25f, 0.25f, 1.f};
-
 struct Material
 {
 	glm::vec3 ambient;
@@ -94,17 +87,6 @@ void processInput(GLFWwindow* window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS){
 		glfwSetWindowShouldClose(window, true);
-	}
-
-	// Изменение цвета фона (для отладки):
-	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS){
-		background = {1.f, 0.f, 0.f, 1.f};
-	}
-	if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS){
-		background = {0.f, 1.f, 0.f, 1.f};
-	}
-	if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS){
-		background = {0.f, 0.f, 1.f, 1.f};
 	}
 
 	// Перемещение камеры:
@@ -254,7 +236,6 @@ int main()
 
 	// Загрузка внешних данных:
 	std::string pathToShaderFolder = FilePaths::getPathToShaderFolderWithTrailingSplitter();
-	Shader* assimpModelWithLightsAndExplosionShader = ShaderLoader::getInstance()->load("backpack_mixLightWithExplosion", pathToShaderFolder, true);
 	Shader* screenRenderQuadShaderWithBlur = ShaderLoader::getInstance()->load("screenRenderQuadShaderWithBlur", pathToShaderFolder);
 	Shader* screenRenderQuadWithHDRShader = ShaderLoader::getInstance()->load("screenRenderQuadShaderWithHDR", pathToShaderFolder);
 	
