@@ -16,6 +16,7 @@ private:
 public:
 	std::vector<WorldObject*> allObjects;
 	std::vector<DrawableObject*> drawableObjects;
+	std::vector<UpdatableObject*> updatableObjects;
 	std::vector<CollidableObject*> collidableObjects;
 	std::vector<CollidableDrawableObject*> collidableDrawableObjects;
 	std::vector<CollidableObject*> dynamicCollidableObjects;
@@ -35,6 +36,15 @@ public:
 		if (skybox != nullptr)
 		{
 			skybox->draw(renderer);
+		}
+	}
+
+	void update(const float& currentTime)
+	{
+		checkCollisions();
+		for(auto *updatableObject : updatableObjects)
+		{
+			updatableObject->update(currentTime);
 		}
 	}
 

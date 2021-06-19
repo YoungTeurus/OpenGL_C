@@ -465,7 +465,7 @@ int main()
  		mainTank.setTurretRotationAngleDegrees(glm::cos(currentTime) * 90.0f);
 
 		// Проверка столкновений:
-		mainScene.checkCollisions();
+		mainScene.update(currentTime);
 
 		// Подготовка к отрисовке:
 		// TODO: перенести функции в updateViewAndProjection().
