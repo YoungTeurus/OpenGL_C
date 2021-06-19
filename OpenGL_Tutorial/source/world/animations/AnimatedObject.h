@@ -6,8 +6,13 @@
 class AnimatedObject : public PositionedWorldObject, public UpdatableObject
 {
 private:
-	Animation* currentAnimation;
+	Animation* currentAnimation = nullptr;
 public:
+	AnimatedObject(const ModelTransformations& transformations)
+		:PositionedWorldObject(transformations)
+	{
+	}
+	
 	void update(const float& currentTime) override
 	{
 		UpdatableObject::update(currentTime);

@@ -7,7 +7,7 @@ class PositionedWorldObject : public WorldObject
 protected:
 	ModelTransformations transformations;
 public:
-	PositionedWorldObject(ModelTransformations transformations)
+	PositionedWorldObject(const ModelTransformations& transformations)
 		:transformations(transformations)
 	{
 	}

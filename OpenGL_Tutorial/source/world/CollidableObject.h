@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 
 #include "PositionedWorldObject.h"
+#include "animations/AnimatedObject.h"
 
 struct CollizionResolver
 {
@@ -168,7 +169,7 @@ public:
 	}
 };
 
-class CollidableObject : public PositionedWorldObject
+class CollidableObject : public AnimatedObject
 {
 protected:
 	ColliderCube colliderCube;
@@ -178,8 +179,8 @@ protected:
 		return colliderCube.getCollizionResolver(other->colliderCube);
 	}
 public:
-	CollidableObject(ModelTransformations transformations, ColliderCube colliderCube)
-		: PositionedWorldObject(transformations), colliderCube(colliderCube)
+	CollidableObject(const ModelTransformations& transformations, ColliderCube colliderCube)
+		: AnimatedObject(transformations), colliderCube(colliderCube)
 	{
 	}
 
