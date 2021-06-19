@@ -5,26 +5,12 @@
 #include "Animation.h"
 #include "../PositionedWorldObject.h"
 
-class LinearAnimation : Animation
+class LinearAnimation : public Animation
 {
 protected:
-	bool hasStarted = false;
-	bool hasEnded = false;
-	
-	float length;  // Длительность анимации
-	float startTime;  // Время начала анимации
-
 	LinearAnimation(PositionedWorldObject *object, const float& length)
 		:Animation(object, length)
 	{
-	}
-
-	bool checkAndSetIfEnded(const float& currentTime)
-	{
-		if (currentTime - startTime > length)
-		{
-			hasEnded = true;
-		}
 	}
 
 	float getInterpolationValue(const float& currentTime) const override

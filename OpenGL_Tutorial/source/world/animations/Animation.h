@@ -16,7 +16,7 @@ protected:
 	{
 	}
 
-	bool checkAndSetIfEnded(const float& currentTime)
+	void checkAndSetIfEnded(const float& currentTime)
 	{
 		if (currentTime - startTime > length)
 		{

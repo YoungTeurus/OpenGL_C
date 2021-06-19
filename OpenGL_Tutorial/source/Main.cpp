@@ -25,6 +25,7 @@
 #include "world/Skybox.h"
 #include "world/Tank.h"
 #include "world/TextString.h"
+#include "world/animations/Animations.h"
 
 float deltaTime = 0.0f;									 // Разница во времени между последним и предпоследним кадрами
 float lastFrameTime = 0.0f;								 // Время последнего кадра
@@ -194,6 +195,18 @@ void onKeyAction(GLFWwindow* window, int key, int scancode, int action, int mods
  		case GLFW_KEY_F:
  			changeFlashlightState();
  			break;
+		case GLFW_KEY_UP:
+			playerTank->addAnimation(Animations::rotateToAngle(playerTank, 3.0f, 180.0f));
+			break;
+ 		case GLFW_KEY_DOWN:
+			playerTank->addAnimation(Animations::rotateToAngle(playerTank, 3.0f, 0.0f));
+			break;
+ 		case GLFW_KEY_LEFT:
+			playerTank->addAnimation(Animations::rotateToAngle(playerTank, 3.0f, 270.0f));
+			break;
+ 		case GLFW_KEY_RIGHT:
+			playerTank->addAnimation(Animations::rotateToAngle(playerTank, 3.0f, 90.0f));
+			break;
 		case GLFW_KEY_I:
 			mainScene.toggleCollidersDrawing();
 			break;

@@ -87,6 +87,7 @@ public:
 	{
 		allObjects.push_back((PositionedWorldObject*)collidableObject);
 		drawableObjects.push_back(collidableObject);
+		updatableObjects.push_back(collidableObject);
 		collidableObjects.push_back(collidableObject);
 		collidableDrawableObjects.push_back(collidableObject);
 	}
@@ -95,6 +96,7 @@ public:
 	{
 		allObjects.push_back((PositionedWorldObject*)collidableObject);
 		drawableObjects.push_back(collidableObject);
+		updatableObjects.push_back(collidableObject);
 		collidableObjects.push_back(collidableObject);
 		collidableDrawableObjects.push_back(collidableObject);
 		dynamicCollidableObjects.push_back(collidableObject);

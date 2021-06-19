@@ -14,11 +14,11 @@ public:
 	{
 	}
 
-	void act(const float& currentTime) override
+	virtual void act(const float& currentTime) override
 	{
 		if (!hasStarted)
 		{
-			startTime = currentTime;
+			this->startTime = currentTime;
 			hasStarted = true;
 		}
 		if (hasEnded)

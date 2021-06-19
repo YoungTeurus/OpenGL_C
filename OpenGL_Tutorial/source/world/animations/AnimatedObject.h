@@ -13,16 +13,19 @@ public:
 	{
 	}
 	
-	void update(const float& currentTime) override
+	virtual void update(const float& currentTime) override
 	{
 		UpdatableObject::update(currentTime);
-		
-		currentAnimation->act(currentTime);
-		
-		if (currentAnimation->isHasEnded())
+
+		if (currentAnimation)
 		{
-			delete currentAnimation;
-			currentAnimation = nullptr;
+			currentAnimation->act(currentTime);
+		
+			if (currentAnimation->isHasEnded())
+			{
+				delete currentAnimation;
+				currentAnimation = nullptr;
+			}
 		}
 	}
 	
