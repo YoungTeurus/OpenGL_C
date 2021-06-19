@@ -1,8 +1,8 @@
 #pragma once
-#include "DrawableObject.h"
+#include "CollidableDrawableObject.h"
 #include "../model/Model.h"
 
-class Tank : public DrawableObject
+class Tank : public CollidableDrawableObject
 {
 private:	
 	float explosionMagnitude = 0.0f;
@@ -15,13 +15,17 @@ private:
 	
 public:
 	Tank(Model* tankBase, Model* tankTurret)
-		:DrawableObject({}, "backpack_mixLightWithExplosion", true),
+		:CollidableDrawableObject(ColliderCube(0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f), {}, "backpack_mixLightWithExplosion", true),
 		 tankBase(tankBase), tankTurret(tankTurret)
 	{
+		transformations.scale = glm::vec3(0.59, 0.75, 0.26);  // Вмещаем танк в единичный куб.
 	}
 	
 	void draw(Renderer* renderer) override
 	{
+		// Отрисовка коллайдера, если нужна:
+		CollidableDrawableObject::draw(renderer);
+
 		// Отрисовка модели:
 		glm::mat4 tankBaseModel = transformations.createModelMatrixWithTransformations();
 		

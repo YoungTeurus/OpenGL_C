@@ -19,9 +19,14 @@ public:
 	{
 	}
 
-	void setPosition(const glm::vec3& pos)
+	virtual void setPosition(const glm::vec3& pos)
 	{
 		transformations.position = pos;
+	}
+
+	virtual void offsetPosition(const glm::vec3& offset)
+	{
+		transformations.position += offset;
 	}
 
 	glm::vec3 getPosition() const
@@ -51,10 +56,10 @@ public:
 
 	void setScale(const float& scale)
 	{
-		transformations.scale = glm::vec3(scale);
+		setScale(glm::vec3(scale));
 	}
 
-	void setScale(const glm::vec3& scale)
+	virtual void setScale(const glm::vec3& scale)
 	{
 		transformations.scale = scale;
 	}

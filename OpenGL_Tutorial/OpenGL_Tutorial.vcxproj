@@ -189,6 +189,8 @@
     <ClInclude Include="source\textures\Texture.h" />
     <ClInclude Include="source\textures\TexturesLoader.h" />
     <ClInclude Include="source\utility\FilePaths.h" />
+    <ClInclude Include="source\world\CollidableDrawableObject.h" />
+    <ClInclude Include="source\world\CollidableObject.h" />
     <ClInclude Include="source\world\Cube.h" />
     <ClInclude Include="source\world\DrawableObject.h" />
     <ClInclude Include="source\world\Ground.h" />
