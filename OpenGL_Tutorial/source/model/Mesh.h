@@ -23,10 +23,10 @@ class Mesh
 public:
     vector<Vertex>          vertices;
     vector<unsigned int>    indices;
-    vector<Texture>        textures;
+    vector<Texture*>        textures;
     unsigned int            VAO;
 
-    Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture> textures);
+    Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture*> textures);
     void draw(Shader& shader);
 private:
 
@@ -35,7 +35,7 @@ private:
     void setupMesh();
 };
 
-inline Mesh::Mesh(vector<Vertex> vertices, vector<unsigned> indices, vector<Texture> textures)
+inline Mesh::Mesh(vector<Vertex> vertices, vector<unsigned> indices, vector<Texture*> textures)
 {
     this->vertices = vertices;
     this->indices = indices;
@@ -55,8 +55,8 @@ inline void Mesh::draw(Shader& shader)
         glActiveTexture(GL_TEXTURE0 + i);
         string textureNumber;
 
-    	const Texture currentTexture = textures[i];
-    	const TextureType currentTextureType = currentTexture.getType();
+    	const Texture *currentTexture = textures[i];
+    	const TextureType currentTextureType = currentTexture->getType();
 
         switch (currentTextureType)
         {
@@ -70,7 +70,7 @@ inline void Mesh::draw(Shader& shader)
     	string currentTextureShaderName = textureTypeShaderNames.at(currentTextureType) + textureNumber;
     	shader.setInt(currentTextureShaderName, i);
 
-        glBindTexture(GL_TEXTURE_2D, currentTexture.getId());
+        glBindTexture(GL_TEXTURE_2D, currentTexture->getId());
     }
     glActiveTexture(GL_TEXTURE0);
 

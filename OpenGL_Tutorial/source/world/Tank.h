@@ -15,7 +15,7 @@ private:
 	
 public:
 	Tank(Model* tankBase, Model* tankTurret)
-		:DrawableObject({}, "backpack_mixLightWithExplosion"),
+		:DrawableObject({}, "backpack_mixLightWithExplosion", true),
 		 tankBase(tankBase), tankTurret(tankTurret)
 	{
 	}

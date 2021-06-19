@@ -13,9 +13,9 @@ protected:
 	Shader* shader;
 	ModelTransformations transformations;
 public:
-	DrawableObject(ModelTransformations transformations, const std::string& shaderName)
+	DrawableObject(ModelTransformations transformations, const std::string& shaderName, const bool& shaderWithGeometry = false)
 		:transformations(transformations),
-		 shader( ShaderLoader::getInstance()->getOrLoadByName(shaderName, FilePaths::getPathToShaderFolderWithTrailingSplitter()) )
+		 shader( ShaderLoader::getInstance()->getOrLoadByName(shaderName, FilePaths::getPathToShaderFolderWithTrailingSplitter(), shaderWithGeometry) )
 	{
 	}
 
