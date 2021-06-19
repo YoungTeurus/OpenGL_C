@@ -2,17 +2,16 @@
 #include <vector>
 #include <glm/glm.hpp>
 
-
-
 #include "../../model/VAOBuilder.h"
 #include "../../renderer/Renderer.h"
 #include "../interfaces/DrawableObject.h"
+#include "../interfaces/DrawableUpdatableObject.h"
 #include "../interfaces/PositionedObject.h"
 #include "../interfaces/UpdatableObject.h"
 
 struct Particle
 {
-	glm::vec2 position, velocity;
+	glm::vec3 position, velocity;
 	glm::vec4 color;
 	float life;
 
@@ -21,7 +20,7 @@ struct Particle
 	{
 	}
 
-	void spawn(const glm::vec2& position, const glm::vec2& velocity, const glm::vec4& color, const float& lifeDuration)
+	void spawn(const glm::vec3& position, const glm::vec3& velocity, const glm::vec4& color, const float& lifeDuration)
 	{
 		this->position = position;
 		this->velocity = velocity;
@@ -38,20 +37,25 @@ struct Particle
 		}
 	}
 
+	ModelTransformations getTransformations()
+	{
+		return ModelTransformations{position};
+	}
+
 	bool isAlive()
 	{
 		return life > 0.0f;
 	}
 };
 
-class ParticleGenerator : public UpdatableObject, public PositionedObject, public DrawableObject
+class ParticleGenerator : public PositionedObject, public DrawableUpdatableObject
 {
 private:
-	VOsAndIndices* particleVOsAndIndices = VAOBuilder::getInstance()->get2DQuad();
+	VOsAndIndices* particleVOsAndIndices = VAOBuilder::getInstance()->getCube();
 	Texture* particleTexture = TexturesLoader::getInstance()->getOrLoad2DTexture("particle.png");
 	
 	unsigned updateNumOfNewParticles = 2;
-	unsigned numOfParticles = 500;
+	unsigned numOfParticles = 50;
 	std::vector<Particle> particles;
 
 	float lastUpdateTime = 0.0f;
@@ -82,16 +86,16 @@ private:
 		return 0;
 	}
 
-	void respawnParticle(Particle particle)
+	void respawnParticle(Particle& particle)
 	{
 		float random = ((rand() % 100) - 50) / 10.0f;
 		float randColor = 0.5f + ((rand() % 100) / 100.0f);
-		particle.spawn(getPosition() + random, glm::vec3(0.0f, -1.0f, 0.0f), glm::vec4(randColor, randColor, randColor, 1.0f), 1.0f);
+		particle.spawn(getPosition() + random, glm::vec3(0.0f, -0.1f, 0.0f), glm::vec4(randColor, randColor, randColor, 1.0f), 3.0f);
 	}
 
 public:
 	ParticleGenerator(const ModelTransformations& transformations)
-		:PositionedObject(transformations), DrawableObject("particles")
+		:PositionedObject(transformations), DrawableUpdatableObject("particles")
 	{
 		for(unsigned i = 0; i < numOfParticles; i++)
 		{
@@ -105,7 +109,7 @@ public:
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
 		shader->use();
-		shader->setFloatMat4("projection", renderer->getOrthoProjection());
+		shader->setFloatMat4("pv", renderer->getPV());
 		glActiveTexture(GL_TEXTURE0);
 		shader->setInt("sprite", 0);
 		glBindTexture(GL_TEXTURE_2D, particleTexture->getId());
@@ -113,7 +117,7 @@ public:
 		{
 			if(particle.isAlive())
 			{
-				shader->setFloatVec2("uOffset", particle.position);
+				shader->setFloatMat4("model", particle.getTransformations().createModelMatrixWithTransformations());
 				shader->setFloatVec4("uColor", particle.color);
 
 				glBindVertexArray(particleVOsAndIndices->vao);

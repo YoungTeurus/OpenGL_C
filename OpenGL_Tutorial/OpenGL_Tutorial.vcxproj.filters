@@ -236,6 +236,9 @@
     <ClInclude Include="source\world\interfaces\PositionedObject.h">
       <Filter>Исходные файлы\world\interfaces</Filter>
     </ClInclude>
+    <ClInclude Include="source\world\interfaces\DrawableUpdatableObject.h">
+      <Filter>Исходные файлы\world\interfaces</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\shaders\lightCube.vert">

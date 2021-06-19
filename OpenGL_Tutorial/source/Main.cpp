@@ -23,6 +23,7 @@
 #include "world/animations/Animations.h"
 #include "world/implementations/Ground.h"
 #include "world/implementations/LightCube.h"
+#include "world/implementations/ParticleGenerator.h"
 #include "world/implementations/Skybox.h"
 #include "world/implementations/Tank.h"
 #include "world/implementations/TextString.h"
@@ -371,6 +372,9 @@ int main()
 	playerTank->setPosition(glm::vec3(-5.0f, 0.0f, -15.0f));
 	Tank backgroundTank2(&tankBase, &tankTurret);
 	backgroundTank2.setPosition(glm::vec3(-15.0f, 0.0f, -30.0f));
+
+	ParticleGenerator particleGenerator(ModelTransformations{glm::vec3(-10.0f, 10.0f, -10.0f)});
+	mainScene.addDrawableUpdatableObject(&particleGenerator);
 	 
 	Ground ground("grass.png", "grass_specular.png", 100.f);
 	Skybox skybox("skybox", "sky.jpg");

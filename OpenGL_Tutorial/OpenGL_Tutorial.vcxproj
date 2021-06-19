@@ -208,6 +208,7 @@
     <ClInclude Include="source\world\interfaces\CollidableDrawableObject.h" />
     <ClInclude Include="source\world\interfaces\CollidableObject.h" />
     <ClInclude Include="source\world\interfaces\DrawableObject.h" />
+    <ClInclude Include="source\world\interfaces\DrawableUpdatableObject.h" />
     <ClInclude Include="source\world\interfaces\PositionedObject.h" />
     <ClInclude Include="source\world\interfaces\UpdatableObject.h" />
     <ClInclude Include="source\world\interfaces\WorldObject.h" />

@@ -7,6 +7,7 @@
 #include "../world/interfaces/CollidableDrawableObject.h"
 #include "../world/interfaces/CollidableObject.h"
 #include "../world/interfaces/DrawableObject.h"
+#include "../world/interfaces/DrawableUpdatableObject.h"
 #include "../world/interfaces/UpdatableObject.h"
 #include "../world/interfaces/WorldObject.h"
 
@@ -83,6 +84,13 @@ public:
 	{
 		allObjects.push_back(drawableObject);
 		drawableObjects.push_back(drawableObject);
+	}
+
+	void addDrawableUpdatableObject(DrawableUpdatableObject* drawableUpdatableObject)
+	{
+		allObjects.push_back((DrawableObject*)drawableUpdatableObject);
+		drawableObjects.push_back(drawableUpdatableObject);
+		updatableObjects.push_back(drawableUpdatableObject);
 	}
 
 	void addCollidableObject(CollidableDrawableObject* collidableObject)

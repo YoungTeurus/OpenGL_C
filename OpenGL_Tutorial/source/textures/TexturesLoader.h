@@ -56,7 +56,7 @@ public:
 
 	Texture* getOrLoad2DTexture(const std::string& fileName, const bool isUV_flipped = false)
 	{
-		getOrLoad2DTexture(fileName, FilePaths::getPathToTexturesFolder(), isUV_flipped);
+		return getOrLoad2DTexture(fileName, FilePaths::getPathToTexturesFolder(), isUV_flipped);
 	}
 
 	Texture* getOrLoad2DTexture(const std::string& fileName, const std::string& directory, const bool isUV_flipped = false)
