@@ -3,7 +3,7 @@
 #include "DrawableObject.h"
 #include "../model/VAOBuilder.h"
 
-class CollidableDrawableObject : public DrawableObject, public CollidableObject
+class CollidableDrawableObject : public CollidableObject, public DrawableObject
 {
 private:
 	bool isColliderDrawing = false;
@@ -22,39 +22,30 @@ private:
 			};
 	}
 public:
-	CollidableDrawableObject(const ColliderCube& colliderCube, const ModelTransformations& transformations, const std::string& shader, const bool& shaderWithGeometry = false)
-		:DrawableObject(transformations, shader, shaderWithGeometry),
-		 CollidableObject(colliderCube)
+	CollidableDrawableObject(const ModelTransformations& transformations, const ColliderCube& colliderCube, const std::string& shader, const bool& shaderWithGeometry = false)
+		:CollidableObject(transformations, colliderCube),
+		 DrawableObject(shader, shaderWithGeometry)
 	{
 		calculateColliderTransformations();
 	}
 
-	void checkCollisionAndCorrectPositionIfNeeded(CollidableObject *other)
-	{
-		if (hasCollision(other))
-		{
-			CollizionResolver collizionResolver = getCollizionResolver(other);
-			offsetPosition( collizionResolver.pushOutVector * collizionResolver.pushOutOffset );
-		}
-	}
-
 	void setPosition(const glm::vec3& pos) override
 	{
-		DrawableObject::setPosition(pos);
+		CollidableObject::setPosition(pos);
 		colliderCube.setPosition(pos);
 		calculateColliderTransformations();
 	}
 
 	void offsetPosition(const glm::vec3& offset) override
 	{
-		DrawableObject::offsetPosition(offset);
+		CollidableObject::offsetPosition(offset);
 		colliderCube.offsetPosition(offset);
 		calculateColliderTransformations();
 	}
 
 	void setScale(const glm::vec3& scale) override
 	{
-		DrawableObject::setScale(scale);
+		CollidableObject::setScale(scale);
 		colliderCube.scale(scale);
 		calculateColliderTransformations();
 	}

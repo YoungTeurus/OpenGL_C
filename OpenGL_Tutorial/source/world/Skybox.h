@@ -3,7 +3,7 @@
 #include "../model/VAOBuilder.h"
 #include "../model/VOsAndIndices.h"
 
-class Skybox : public DrawableObject
+class Skybox : public PositionedWorldObject, public DrawableObject
 {
 private:
 	VOsAndIndices* skyboxVOsAndIndices = VAOBuilder::getInstance()->getSkybox();
@@ -13,7 +13,7 @@ private:
 	std::string cubeMapFileName;
 public:
 	Skybox(const std::string& cubeMapFolderName, const std::string& cubeMapFileName)
-		:DrawableObject(ModelTransformations{}, "skybox"),
+		:PositionedWorldObject({}), DrawableObject("skybox"),
 		 cubeMapFolderName(cubeMapFolderName), cubeMapFileName(cubeMapFileName)
 	{
 	}

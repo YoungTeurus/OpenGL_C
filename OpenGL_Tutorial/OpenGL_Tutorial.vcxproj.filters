@@ -182,6 +182,9 @@
     <ClInclude Include="source\world\CollidableDrawableObject.h">
       <Filter>Исходные файлы\world</Filter>
     </ClInclude>
+    <ClInclude Include="source\world\PositionedWorldObject.h">
+      <Filter>Исходные файлы\world</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\shaders\lightCube.vert">

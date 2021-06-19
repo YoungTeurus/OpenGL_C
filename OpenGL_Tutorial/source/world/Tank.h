@@ -15,7 +15,7 @@ private:
 	
 public:
 	Tank(Model* tankBase, Model* tankTurret)
-		:CollidableDrawableObject(ColliderCube(0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f), {}, "backpack_mixLightWithExplosion", true),
+		:CollidableDrawableObject({}, ColliderCube(0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f), "backpack_mixLightWithExplosion", true),
 		 tankBase(tankBase), tankTurret(tankTurret)
 	{
 		transformations.scale = glm::vec3(0.59, 0.75, 0.26);  // Вмещаем танк в единичный куб.

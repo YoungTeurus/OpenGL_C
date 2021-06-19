@@ -3,7 +3,7 @@
 #include "../model/VAOBuilder.h"
 #include "../model/VOsAndIndices.h"
 
-class Ground : public DrawableObject
+class Ground : public PositionedWorldObject, public DrawableObject
 {
 private:
 	VOsAndIndices* groundVOsAndIndices = VAOBuilder::getInstance()->getGroundQuad();
@@ -13,15 +13,12 @@ private:
 	std::string textureSpecularFilename;
 public:
 	Ground(const std::string& textureFilename, const std::string& textureSpecularFilename, float width)
-		:DrawableObject(
-			ModelTransformations{
+		:PositionedWorldObject(ModelTransformations{
 				glm::vec3(0.f),
 				glm::vec3(1.0f, 0.0f, 0.0f),
 				90.0f,
 				glm::vec3(width)
-			},
-			"groundQuad_mixLight"
-		),
+			}), DrawableObject("groundQuad_mixLight"),
 		textureFilename(textureFilename), textureSpecularFilename(textureSpecularFilename)
 	{
 	}

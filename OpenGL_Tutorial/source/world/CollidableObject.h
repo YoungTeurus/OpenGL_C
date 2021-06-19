@@ -2,8 +2,7 @@
 #include <algorithm>
 #include <glm/glm.hpp>
 
-
-#include "WorldObject.h"
+#include "PositionedWorldObject.h"
 
 struct CollizionResolver
 {
@@ -12,7 +11,6 @@ struct CollizionResolver
 };
 
 using namespace std;
-
 class ColliderCube
 {
 public:
@@ -170,7 +168,7 @@ public:
 	}
 };
 
-class CollidableObject : public WorldObject
+class CollidableObject : public PositionedWorldObject
 {
 protected:
 	ColliderCube colliderCube;
@@ -180,9 +178,18 @@ protected:
 		return colliderCube.getCollizionResolver(other->colliderCube);
 	}
 public:
-	CollidableObject(ColliderCube colliderCube)
-		:colliderCube(colliderCube)
+	CollidableObject(ModelTransformations transformations, ColliderCube colliderCube)
+		: PositionedWorldObject(transformations), colliderCube(colliderCube)
 	{
+	}
+
+	void checkCollisionAndCorrectPositionIfNeeded(CollidableObject *other)
+	{
+		if (hasCollision(other))
+		{
+			CollizionResolver collizionResolver = getCollizionResolver(other);
+			offsetPosition( collizionResolver.pushOutVector * collizionResolver.pushOutOffset );
+		}
 	}
 	
 	bool hasCollision(CollidableObject *other)
