@@ -12,6 +12,7 @@ private:
 	Shader* colliderShader = nullptr;
 	VOsAndIndices* cubeVOsAndIndices = VAOBuilder::getInstance()->getCube();
 
+protected:
 	void calculateColliderTransformations()
 	{
 		colliderTransformations = ModelTransformations{
@@ -49,7 +50,7 @@ public:
 		colliderCube.scale(scale);
 		calculateColliderTransformations();
 	}
-
+	
 	void draw(Renderer* renderer) override
 	{
 		if(!isColliderDrawing)
@@ -62,12 +63,17 @@ public:
 			colliderShader = ShaderLoader::getInstance()->getOrLoadByName("lightCube", FilePaths::getPathToShaderFolderWithTrailingSplitter());
 		}
 
-		glm::mat4 cubeModel = transformations.createModelMatrixWithTransformations();
+		glm::mat4 cubeModel = colliderTransformations.createModelMatrixWithTransformations();
 		shader->use();
 		shader->setFloatMat4("projectionAndView", renderer->getPV());
 		shader->setFloatMat4("model", cubeModel);
 		shader->setFloatVec3("uColor", glm::vec3(0.8f, 0.0f, 0.0f));
 		glBindVertexArray(cubeVOsAndIndices->vao);
 		glDrawElements(GL_TRIANGLES, cubeVOsAndIndices->indices.size(), GL_UNSIGNED_INT, 0);
+	}
+
+	void setColliderDrawing(const bool& state)
+	{
+		isColliderDrawing = state;
 	}
 };

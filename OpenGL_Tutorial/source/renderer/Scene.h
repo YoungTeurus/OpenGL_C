@@ -3,6 +3,7 @@
 
 
 
+#include "../world/CollidableDrawableObject.h"
 #include "../world/CollidableObject.h"
 #include "../world/DrawableObject.h"
 #include "../world/Skybox.h"
@@ -10,10 +11,13 @@
 
 class Scene
 {
+private:
+	bool drawColliders = false;
 public:
 	std::vector<WorldObject*> allObjects;
 	std::vector<DrawableObject*> drawableObjects;
 	std::vector<CollidableObject*> collidableObjects;
+	std::vector<CollidableDrawableObject*> collidableDrawableObjects;
 	std::vector<CollidableObject*> dynamicCollidableObjects;
 	
 	Skybox* skybox = nullptr;
@@ -49,6 +53,15 @@ public:
 		}
 	}
 
+	void toggleCollidersDrawing()
+	{
+		drawColliders = !drawColliders;
+		for (auto *collidableDrawableObject : collidableDrawableObjects)
+		{
+			collidableDrawableObject->setColliderDrawing(drawColliders);
+		}
+	}
+
 	void addObject(WorldObject* worldObject)
 	{
 		allObjects.push_back(worldObject);
@@ -60,16 +73,20 @@ public:
 		drawableObjects.push_back(drawableObject);
 	}
 
-	void addCollidableObject(CollidableObject* collidableObject)
+	void addCollidableObject(CollidableDrawableObject* collidableObject)
 	{
-		allObjects.push_back(collidableObject);
+		allObjects.push_back((PositionedWorldObject*)collidableObject);
+		drawableObjects.push_back(collidableObject);
 		collidableObjects.push_back(collidableObject);
+		collidableDrawableObjects.push_back(collidableObject);
 	}
 
-	void addDynamicCollidableObject(CollidableObject* collidableObject)
+	void addDynamicCollidableObject(CollidableDrawableObject* collidableObject)
 	{
-		allObjects.push_back(collidableObject);
+		allObjects.push_back((PositionedWorldObject*)collidableObject);
+		drawableObjects.push_back(collidableObject);
 		collidableObjects.push_back(collidableObject);
+		collidableDrawableObjects.push_back(collidableObject);
 		dynamicCollidableObjects.push_back(collidableObject);
 	}
 

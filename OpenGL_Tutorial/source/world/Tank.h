@@ -18,7 +18,14 @@ public:
 		:CollidableDrawableObject({}, ColliderCube(0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f), "backpack_mixLightWithExplosion", true),
 		 tankBase(tankBase), tankTurret(tankTurret)
 	{
-		transformations.scale = glm::vec3(0.59, 0.75, 0.26);  // Вмещаем танк в единичный куб.
+	}
+
+	void setPosition(const glm::vec3& pos) override
+	{
+		// TODO: избавиться от этого workaround-а.
+		CollidableDrawableObject::setPosition(pos);
+		colliderCube.offsetPosition(glm::vec3(0.0f, 1.0f, 0.0f));  // Поправка коллайдера.
+		calculateColliderTransformations();
 	}
 	
 	void draw(Renderer* renderer) override

@@ -34,6 +34,8 @@ bool firstMouse = true;
  
 Renderer* renderer = Renderer::getInstance();
 Camera mainCamera = renderer->getMainCamera();
+
+Scene mainScene;
  
 bool wireframeMode = false;
  
@@ -113,7 +115,8 @@ void processInput(GLFWwindow* window)
 	if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS) {
  		globalGamma = max( globalGamma - 0.5f * deltaTime, 0.01f );
 	}
-	 
+
+	// TODO: контроль взрыва.
 	if (glfwGetKey(window, GLFW_KEY_EQUAL) == GLFW_PRESS) {
  		globalExplosionForce = min( globalExplosionForce + 1.f * deltaTime, 20.0f );
 	}
@@ -126,6 +129,19 @@ void processInput(GLFWwindow* window)
 	if (glfwGetKey(window, GLFW_KEY_LEFT_BRACKET) == GLFW_PRESS) {
  		globalTimeSinceExplosion = max( globalTimeSinceExplosion - 0.5f * deltaTime, 0.0f );
 	}
+
+	// if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+ 	// 	playerTank->offsetPosition( glm::vec3(0.0f, 0.0f, 1.0f) * 10.0f * deltaTime );
+	// }
+	// if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+ 	// 	playerTank->offsetPosition( glm::vec3(-1.0f, 0.0f, 0.0f) * 10.0f * deltaTime );
+	// }
+	// if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+ 	// 	playerTank->offsetPosition( glm::vec3(0.0f, 0.0f, -1.0f) * 10.0f * deltaTime );
+	// }
+	// if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+ 	// 	playerTank->offsetPosition( glm::vec3(1.0f, 0.0f, 1.0f) * 10.0f * deltaTime );
+	// }
  		
 	// Поднятие-спуск камеры:
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
@@ -151,6 +167,9 @@ void onKeyAction(GLFWwindow* window, int key, int scancode, int action, int mods
  		case GLFW_KEY_F:
  			changeFlashlightState();
  			break;
+		case GLFW_KEY_K:
+			mainScene.toggleCollidersDrawing();
+			break;
  		default:
  			break;
  		}
@@ -308,17 +327,15 @@ int main()
 	Ground ground("grass.png", "grass_specular.png", 100.f);
 	Skybox skybox("skybox", "sky.jpg");
 	 
-	Scene scene;
-	 
-	scene.addDrawableObject(&mainTank);
-	scene.addDrawableObject(&backgroundTank);
-	scene.addDrawableObject(&backgroundTank2);
-	scene.addDrawableObject(&ground);
+	mainScene.addDynamicCollidableObject(&mainTank);
+	mainScene.addDynamicCollidableObject(&backgroundTank);
+	mainScene.addDynamicCollidableObject(&backgroundTank2);
+	mainScene.addDrawableObject(&ground);
 	for (auto positionedLight : positionedLights)
 	{
- 		scene.addDrawableObject(new LightCube(positionedLight));
+ 		mainScene.addDrawableObject(new LightCube(positionedLight));
 	}
-	scene.addSkybox(&skybox);
+	mainScene.addSkybox(&skybox);
 	 
 	#pragma region Инициализация Framebuffer-а и разных VAO
 	 
@@ -387,10 +404,10 @@ int main()
 	}
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+#pragma endregion
  		
 	VOsAndIndices *screenQuadVOsAndIndices = VAOBuilder::getInstance()->get2DQuad();
-	VOsAndIndices *worldQuadVOsAndIndices = VAOBuilder::getInstance()->getGroundQuad();
-	VOsAndIndices *skyboxVOsAndIndices = VAOBuilder::getInstance()->getSkybox();
  		
 	#pragma endregion
 	 
@@ -411,8 +428,14 @@ int main()
  		mainTank.setPosition(glm::vec3(glm::cos(currentTime) * 2.5f, 0.0f, glm::cos(currentTime) * 2.5f));
  		mainTank.setRotationAngleDegrees(glm::cos(currentTime) * 30.0f);
  		mainTank.setTurretRotationAngleDegrees(glm::cos(currentTime) * 90.0f);
-	 
- 		// Вращение камеры:
+
+		// Проверка столкновений:
+		mainScene.checkCollisions();
+
+		// Подготовка к отрисовке:
+		// renderer->updateViewAndProjection();
+
+		// Вращение камеры:
  		glm::mat4 view = mainCamera.getViewMatrix();
 	 
  		// Поправка на FOV камеры:
@@ -424,7 +447,7 @@ int main()
  		glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
  		glEnable(GL_DEPTH_TEST);
 	 
- 		scene.draw(renderer);
+ 		mainScene.draw(renderer);
  		// Конец отрисовки в framebuffer.
 	 
  		// Отрисовка в frambuffer для размытия:

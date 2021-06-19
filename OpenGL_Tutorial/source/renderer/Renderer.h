@@ -61,6 +61,14 @@ public:
 		return texturesLoader;
 	}
 
+	void updateViewAndProjection()
+	{
+		setViewAndProjection(
+			mainCamera.getViewMatrix(),
+			mainCamera.getProjectionMatrix()
+		);
+	}
+
 	glm::mat4 getPV()
 	{
 		return pv;
