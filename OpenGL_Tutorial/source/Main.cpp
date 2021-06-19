@@ -29,7 +29,7 @@
 float deltaTime = 0.0f;									 // Разница во времени между последним и предпоследним кадрами
 float lastFrameTime = 0.0f;								 // Время последнего кадра
  
-int windowInitialWidth = 600, windowInitialHeight = 600; // Стартовые размеры окна
+int windowInitialWidth = 1200, windowInitialHeight = 1200; // Стартовые размеры окна
  
 float lastCursorX = (float)windowInitialWidth / 2,
  	lastCursorY = (float)windowInitialHeight / 2;			 // Предыдущее положение курсора (стартовое - по центру окна)
@@ -41,14 +41,12 @@ Camera mainCamera = renderer->getMainCamera();
 
 Scene mainScene;
 Tank* playerTank;
+TextString* debugTextString;
  
 bool wireframeMode = false;
  
 float globalExposure = 1.0f;
 float globalGamma = 2.2f;
- 
-float globalExplosionForce = 0.0f;
-float globalTimeSinceExplosion = 0.0f;
  
 void setPolygoneDrawMode() {
 	if (wireframeMode) {
@@ -124,18 +122,21 @@ void processInput(GLFWwindow* window)
 
 	// TODO: контроль взрыва.
 	if (glfwGetKey(window, GLFW_KEY_EQUAL) == GLFW_PRESS) {
- 		globalExplosionForce = min( globalExplosionForce + 1.f * deltaTime, 20.0f );
+		float currentExplosionMagnitude = playerTank->getExplosionMagnitude();
+		playerTank->setExplosionMagnitude( min( currentExplosionMagnitude + 5.f * deltaTime, 50.0f ) );
 	}
 	if (glfwGetKey(window, GLFW_KEY_MINUS) == GLFW_PRESS) {
- 		globalExplosionForce = max( globalExplosionForce - 1.f * deltaTime, 0.0f );
+		float currentExplosionMagnitude = playerTank->getExplosionMagnitude();
+		playerTank->setExplosionMagnitude( max( currentExplosionMagnitude - 5.f * deltaTime, 0.0f ) );
 	}
-	if (glfwGetKey(window, GLFW_KEY_RIGHT_BRACKET) == GLFW_PRESS) {
- 		globalTimeSinceExplosion = min( globalTimeSinceExplosion + 0.5f * deltaTime, 10.0f );
-	}
-	if (glfwGetKey(window, GLFW_KEY_LEFT_BRACKET) == GLFW_PRESS) {
- 		globalTimeSinceExplosion = max( globalTimeSinceExplosion - 0.5f * deltaTime, 0.0f );
-	}
+	// if (glfwGetKey(window, GLFW_KEY_RIGHT_BRACKET) == GLFW_PRESS) {
+ 	// 	globalTimeSinceExplosion = min( globalTimeSinceExplosion + 0.5f * deltaTime, 10.0f );
+	// }
+	// if (glfwGetKey(window, GLFW_KEY_LEFT_BRACKET) == GLFW_PRESS) {
+ 	// 	globalTimeSinceExplosion = max( globalTimeSinceExplosion - 0.5f * deltaTime, 0.0f );
+	// }
 
+	// Управление танком:
 	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
  		playerTank->offsetPosition( glm::vec3(0.0f, 0.0f, -1.0f) * 10.0f * deltaTime );
 	}
@@ -147,6 +148,22 @@ void processInput(GLFWwindow* window)
 	}
 	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
  		playerTank->offsetPosition( glm::vec3(1.0f, 0.0f, 0.0f) * 10.0f * deltaTime );
+	}
+
+	// Поворот башни:
+	if (glfwGetKey(window, GLFW_KEY_COMMA) == GLFW_PRESS) {
+ 		playerTank->offsetTurretRotationAngleDegrees( 30.0f * deltaTime );
+	}
+	if (glfwGetKey(window, GLFW_KEY_PERIOD) == GLFW_PRESS) {
+ 		playerTank->offsetTurretRotationAngleDegrees( -30.0f * deltaTime );
+	}
+
+	// Поворот танка:
+	if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS) {
+ 		playerTank->offsetRotationAngleDegrees( 30.0f * deltaTime );
+	}
+	if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) {
+ 		playerTank->offsetRotationAngleDegrees( -30.0f * deltaTime );
 	}
  		
 	// Поднятие-спуск камеры:
@@ -166,14 +183,18 @@ void onKeyAction(GLFWwindow* window, int key, int scancode, int action, int mods
  			wireframeMode = !wireframeMode;
  			setPolygoneDrawMode();
  			break;
+		case GLFW_KEY_9:
+			mainCamera.setPosition(glm::vec3(-7.3f, 40.0f, 17.0f));
+			mainCamera.yaw = -90.0f;
+			mainCamera.pitch = -50.0f;
+ 			break;
  		case GLFW_KEY_0:
- 			globalExplosionForce = 0.0f;
- 			globalTimeSinceExplosion = 0.0f;
+ 			playerTank->setExplosionMagnitude(0.0f);
  			break;
  		case GLFW_KEY_F:
  			changeFlashlightState();
  			break;
-		case GLFW_KEY_K:
+		case GLFW_KEY_I:
 			mainScene.toggleCollidersDrawing();
 			break;
  		default:
@@ -257,11 +278,13 @@ int main()
 	// Загрузка шрифта:
 	Font *arialFont = FontLoader::getInstance()->getOrLoad("arial", 48);
 	Shader* fontShader = ShaderLoader::getInstance()->getOrLoad("font");
-	TextString* textString = new TextString(arialFont, "CooL TeXt 2027", glm::vec2(20.0f, 20.0f), 1.0f, glm::vec3(0.5f, 0.8f, 0.2f));
+	debugTextString = new TextString(arialFont, "CooL TeXt 2027", glm::vec2(20.0f, 20.0f), 0.5f, glm::vec3(0.5f, 0.8f, 0.2f));
 	 
 	renderer->setScreenWidthAndHeight(windowWidth, windowHeight);  // AspectRatio задаётся внутри.
 	mainCamera.setAspectRatio((float)windowInitialWidth / windowInitialHeight);
-	mainCamera.setPosition(glm::vec3(0.0f, 5.0f, 0.0f));
+	mainCamera.setPosition(glm::vec3(-7.3f, 40.0f, 17.0f));
+	mainCamera.yaw = -90.0f;
+	mainCamera.pitch = -50.0f;
 	 
 	// Загрузка внешних данных:
 	Shader* screenRenderQuadShaderWithBlur = ShaderLoader::getInstance()->getOrLoad("screenRenderQuadShaderWithBlur");
@@ -343,7 +366,7 @@ int main()
 	mainScene.addDynamicCollidableObject(playerTank);
 	mainScene.addDynamicCollidableObject(&backgroundTank2);
 	mainScene.addDrawableObject(&ground);
-	for (auto positionedLight : positionedLights)
+	for (auto *positionedLight : positionedLights)
 	{
  		mainScene.addDrawableObject(new LightCube(positionedLight));
 	}
@@ -501,7 +524,15 @@ int main()
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		textString->draw(renderer);
+		debugTextString->setText( string("Camera position: ") + 
+			"{" +
+			to_string(mainCamera.position.x) + "," +
+			to_string(mainCamera.position.y) + "," +
+			to_string(mainCamera.position.z) + "}" +
+			" yaw = " + to_string(mainCamera.yaw) +
+			" pitch = " + to_string(mainCamera.pitch)
+		);
+		debugTextString->draw(renderer);
 		
 		glDisable(GL_BLEND);
 		

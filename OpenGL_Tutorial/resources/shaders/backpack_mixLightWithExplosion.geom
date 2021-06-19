@@ -36,8 +36,7 @@ void main(){
 	vec4 newPosition;
 	// vec3 normal = gs_in[0].fNormal;
 	
-	newPosition = gl_in[0].gl_Position;
-	// newPosition = explode(gl_in[0].gl_Position, normal, uExplosionMagnitude);
+	newPosition = explode(gl_in[0].gl_Position, normal, uExplosionMagnitude);
 	gl_Position = newPosition;
 	gTextureCoord = vTextureCoord[0];
 	gNormal = vNormal[0];
@@ -46,8 +45,7 @@ void main(){
 	// gFragPosition = newPosition.xyz;
 	EmitVertex();
 	
-	newPosition = gl_in[1].gl_Position;
-	// newPosition = explode(gl_in[1].gl_Position, normal, uExplosionMagnitude);
+	newPosition = explode(gl_in[1].gl_Position, normal, uExplosionMagnitude);
 	gl_Position = newPosition;
 	gTextureCoord = vTextureCoord[1];
 	gNormal = vNormal[1];
@@ -56,8 +54,7 @@ void main(){
 	// gFragPosition = newPosition.xyz;
 	EmitVertex();
 	
-	newPosition = gl_in[2].gl_Position;
-	// newPosition = explode(gl_in[2].gl_Position, normal, uExplosionMagnitude);
+	newPosition = explode(gl_in[2].gl_Position, normal, uExplosionMagnitude);
 	gl_Position = newPosition;
 	gTextureCoord = vTextureCoord[2];
 	gNormal = vNormal[2];

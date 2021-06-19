@@ -44,6 +44,11 @@ public:
 		transformations.rotationAngleDegrees = angleDegrees;
 	}
 
+	void offsetRotationAngleDegrees(const float& angleDegrees)
+	{
+		transformations.rotationAngleDegrees += angleDegrees;
+	}
+
 	float getRotationAngleDegrees() const
 	{
 		return transformations.rotationAngleDegrees;

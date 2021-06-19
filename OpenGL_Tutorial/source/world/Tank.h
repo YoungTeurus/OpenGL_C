@@ -66,8 +66,34 @@ public:
 		turretTransformations.rotationAngleDegrees = angleDegrees;
 	}
 
+	void offsetTurretRotationAngleDegrees(const float& angleDegrees)
+	{
+		turretTransformations.rotationAngleDegrees += angleDegrees;
+	}
+
 	float getTurretRotationAngleDegrees() const
 	{
 		return turretTransformations.rotationAngleDegrees;
+	}
+
+
+	float getExplosionMagnitude() const
+	{
+		return explosionMagnitude;
+	}
+
+	void setExplosionMagnitude(float explosionMagnitude)
+	{
+		this->explosionMagnitude = explosionMagnitude;
+	}
+
+	float getTimeSinceExplosion() const
+	{
+		return timeSinceExplosion;
+	}
+
+	void setTimeSinceExplosion(float timeSinceExplosion)
+	{
+		this->timeSinceExplosion = timeSinceExplosion;
 	}
 };
