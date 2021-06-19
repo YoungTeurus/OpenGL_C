@@ -11,6 +11,7 @@ private:
 	static string modelsFolderName;
 	static string shadersFolderName;
 	static string texturesFolderName;
+	static string fontsFolderName;
 
 	static string splitter;
 public:
@@ -52,5 +53,20 @@ public:
 	static string getPathToTexturesFolder()
 	{
 		return resourcesFolderName + splitter + texturesFolderName;
+	}
+
+	static string getPathToFont(const string& fontName)
+	{
+		return getPathToFontFolderWithTrailingSplitter() + fontName;
+	}
+
+	static string getPathToFontFolderWithTrailingSplitter()
+	{
+		return getPathToFontFolder() + splitter;
+	}
+
+	static string getPathToFontFolder()
+	{
+		return resourcesFolderName + splitter + fontsFolderName;
 	}
 };

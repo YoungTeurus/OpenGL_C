@@ -46,6 +46,9 @@
     <Filter Include="Исходные файлы\textures">
       <UniqueIdentifier>{396f55e6-75d5-495e-94da-b1e669dd791c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Исходные файлы\text">
+      <UniqueIdentifier>{f14a72f8-fa25-4eeb-9471-859a622d26bd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="include\glad.c">
@@ -83,6 +86,9 @@
     </ClCompile>
     <ClCompile Include="source\textures\CubeMap.cpp">
       <Filter>Исходные файлы\textures</Filter>
+    </ClCompile>
+    <ClCompile Include="source\text\Font.cpp">
+      <Filter>Исходные файлы\text</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -184,6 +190,12 @@
     </ClInclude>
     <ClInclude Include="source\world\PositionedWorldObject.h">
       <Filter>Исходные файлы\world</Filter>
+    </ClInclude>
+    <ClInclude Include="source\text\Font.h">
+      <Filter>Исходные файлы\text</Filter>
+    </ClInclude>
+    <ClInclude Include="source\textures\FontTexture.h">
+      <Filter>Исходные файлы\textures</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

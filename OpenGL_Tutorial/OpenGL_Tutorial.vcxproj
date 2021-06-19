@@ -130,7 +130,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;assimp-vc142-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;assimp-vc142-mtd.lib;freetyped.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -161,6 +161,7 @@
     <ClCompile Include="source\textures\CubeMap.cpp" />
     <ClCompile Include="source\textures\Texture.cpp" />
     <ClCompile Include="source\textures\TexturesLoader.cpp" />
+    <ClCompile Include="source\text\Font.cpp" />
     <ClCompile Include="source\utility\FilePaths.cpp" />
     <ClCompile Include="source\world\LightCube.h" />
   </ItemGroup>
@@ -186,8 +187,10 @@
     <ClInclude Include="source\shader\Shader.h" />
     <ClInclude Include="source\shader\ShaderLoader.h" />
     <ClInclude Include="source\textures\CubeMap.h" />
+    <ClInclude Include="source\textures\FontTexture.h" />
     <ClInclude Include="source\textures\Texture.h" />
     <ClInclude Include="source\textures\TexturesLoader.h" />
+    <ClInclude Include="source\text\Font.h" />
     <ClInclude Include="source\utility\FilePaths.h" />
     <ClInclude Include="source\world\CollidableDrawableObject.h" />
     <ClInclude Include="source\world\CollidableObject.h" />

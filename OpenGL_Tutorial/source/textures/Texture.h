@@ -11,6 +11,7 @@ enum class TextureType : unsigned {
 	NORMAL = 3,
 	HEIGHT = 4,
 	CUBE_MAP = 5,
+	FONT_GLYPH = 6
 };
 
 static std::map<TextureType, std::string> textureTypeShaderNames = {

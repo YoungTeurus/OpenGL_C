@@ -4,6 +4,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <GLFW/glfw3.h>
+
 #include <iostream>
  
 #include "light/PointLight.h"
@@ -18,6 +19,7 @@
 #include "renderer/Renderer.h"
 #include "renderer/Scene.h"
 #include "shader/ShaderLoader.h"
+#include "text/Font.h"
 #include "world/Ground.h"
 #include "world/Skybox.h"
 #include "world/Tank.h"
@@ -247,6 +249,9 @@ int main()
 	// glEnable(GL_CULL_FACE);
 	// Конец настройки glfw
 	#pragma endregion
+
+	// Загрузка шрифта:
+	Font arialFont("arial");
 	 
 	mainCamera.setAspectRatio((float)windowInitialWidth / windowInitialHeight);
 	mainCamera.setPosition(glm::vec3(0.0f, 5.0f, 0.0f));
