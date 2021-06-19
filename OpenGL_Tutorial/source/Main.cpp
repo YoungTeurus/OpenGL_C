@@ -299,8 +299,7 @@ int main()
 	renderer->setScreenWidthAndHeight(windowWidth, windowHeight);  // AspectRatio задаётся внутри.
 	mainCamera.setAspectRatio((float)windowInitialWidth / windowInitialHeight);
 	mainCamera.setPosition(glm::vec3(-7.3f, 40.0f, 17.0f));
-	mainCamera.yaw = -90.0f;
-	mainCamera.pitch = -50.0f;
+	mainCamera.setYawAndPitch(-90.0f, -50.0f);
 	 
 	// Загрузка внешних данных:
 	Shader* screenRenderQuadShaderWithBlur = ShaderLoader::getInstance()->getOrLoad("screenRenderQuadShaderWithBlur");
@@ -375,7 +374,15 @@ int main()
 	Tank backgroundTank2(&tankBase, &tankTurret);
 	backgroundTank2.setPosition(glm::vec3(-15.0f, 0.0f, -30.0f));
 
-	ParticleGenerator particleGenerator(ModelTransformations{glm::vec3(-10.0f, 10.0f, -10.0f)});
+	ParticleGenerator particleGenerator(
+		ModelTransformations{glm::vec3(-10.0f, 10.0f, -10.0f)},
+		500, 25,
+		0.025f,
+		2.5f, 1.5f,
+		glm::vec3(5.0f, 0.0f, 0.0f), glm::vec3(3.0f, 0.0f, 0.0f),
+		glm::vec3(0.25f),
+		glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(2.0f)
+		);
 	mainScene.addDrawableUpdatableObject(&particleGenerator);
 	 
 	Ground ground("grass.png", "grass_specular.png", 100.f);
@@ -540,15 +547,11 @@ int main()
  		glDrawElements(GL_TRIANGLES, screenQuadVOsAndIndices->indices.size(), GL_UNSIGNED_INT, NULL);
 
 		// Отрисовка текста:
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		
 		debugTextString->setText(
 			string("Tank rotation: ") + to_string(playerTank->getRotationAngleDegrees())
 		);
 		debugTextString->draw(renderer);
-		
-		glDisable(GL_BLEND);
 		
  		// Конец отрисовки в стандартный framebuffer.
 	 

@@ -65,6 +65,14 @@ public:
 	void setPosition(const glm::vec3& position)
 	{
 		this->position = position;
+		updateCameraVectors();
+	}
+
+	void setYawAndPitch(const float& yaw, const float& pitch)
+	{
+		this->yaw = yaw;
+		this->pitch = pitch;
+		updateCameraVectors();
 	}
 
 	// Получение видовой матрицы Look At

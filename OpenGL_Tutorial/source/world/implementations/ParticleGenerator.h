@@ -52,15 +52,20 @@ class ParticleGenerator : public PositionedObject, public DrawableUpdatableObjec
 {
 private:
 	VOsAndIndices* particleVOsAndIndices = VAOBuilder::getInstance()->getCube();
-	// Texture* particleTexture = TexturesLoader::getInstance()->getOrLoad2DTexture("particle.png");
-	
-	unsigned updateNumOfNewParticles = 25;
-	unsigned numOfParticles = 200;
 	std::vector<Particle> particles;
+	
+	unsigned updateNumOfNewParticles;
+	unsigned numOfParticles;
+	float particleScale;
+	float particleLifeDuration;
+	float possibleLifeDeviations;
+	glm::vec3 particleColor;
+	glm::vec3 possibleColorDeviations;
+	glm::vec3 possiblePositionDeviations;
+	glm::vec3 particleVelocity;
+	glm::vec3 possibleVelocityDeviations;
 
 	float lastUpdateTime = 0.0f;
-
-
 	unsigned indexOfLastUsedParticle = 0;
 	unsigned getIndexOfFirstUnusedParticle()
 	{
@@ -94,23 +99,42 @@ private:
 			return;
 		}
 		
-		float randomX = ((rand() % 10) - 5) / 10.0f;
-		float randomY = ((rand() % 10) - 5) / 10.0f;
-		float randomZ = ((rand() % 10) - 5) / 10.0f;
-		// float randColor = 0.5f + (rand() % 100) / 100.0f;
-		float randLife = 2.5f + (rand() % 251) / 100.0f;
+		float positionXDeviation =  (rand() % ((int)(possiblePositionDeviations.x * 100) + 1) - ((int)(possiblePositionDeviations.x * 50) + 1)) / 100.0f;
+		float positionYDeviation =  (rand() % ((int)(possiblePositionDeviations.y * 100) + 1) - ((int)(possiblePositionDeviations.y * 50) + 1)) / 100.0f;
+		float positionZDeviation =  (rand() % ((int)(possiblePositionDeviations.z * 100) + 1) - ((int)(possiblePositionDeviations.z * 50) + 1)) / 100.0f;
+		const glm::vec3 position = getPosition() + glm::vec3(positionXDeviation, positionYDeviation, positionZDeviation);
 
-		const glm::vec3 randomPosition = getPosition() + glm::vec3(randomX, randomY, randomZ);
-		const glm::vec3 velocity = glm::vec3(0.0f + randomX, -1.0f + randomY, 0.0f + randomZ);
-		// const glm::vec4 randomColor = glm::vec4(randColor, randColor, randColor, 1.0f);
-		const glm::vec4 randomColor = glm::vec4(5.0f, 2.5f, 0.0f, 1.0f);
+		float velocityXDeviation =  (rand() % ((int)(possibleVelocityDeviations.x * 100) + 1) - ((int)(possibleVelocityDeviations.x * 50) + 1)) / 100.0f;
+		float velocityYDeviation =  (rand() % ((int)(possibleVelocityDeviations.y * 100) + 1) - ((int)(possibleVelocityDeviations.y * 50) + 1)) / 100.0f;
+		float velocityZDeviation =  (rand() % ((int)(possibleVelocityDeviations.z * 100) + 1) - ((int)(possibleVelocityDeviations.z * 50) + 1)) / 100.0f;
+		const glm::vec3 velocity = particleVelocity + glm::vec3(velocityXDeviation, velocityYDeviation, velocityZDeviation);
 		
-		particle->spawn(randomPosition, velocity, randomColor, randLife);
+		float colorRDeviation =  (rand() % ((int)(possibleColorDeviations.r * 100) + 1) - ((int)(possibleColorDeviations.r * 50) + 1)) / 100.0f;
+		float colorGDeviation =  (rand() % ((int)(possibleColorDeviations.g * 100) + 1) - ((int)(possibleColorDeviations.g * 50) + 1)) / 100.0f;
+		float colorBDeviation =  (rand() % ((int)(possibleColorDeviations.b * 100) + 1) - ((int)(possibleColorDeviations.b * 50) + 1)) / 100.0f;
+		const glm::vec4 color = glm::vec4(particleColor + glm::vec3(colorRDeviation, colorGDeviation, colorBDeviation), 1.0f);
+		
+		float lifeDuration = particleLifeDuration + (rand() % ((int)(possibleLifeDeviations * 100) + 1) - ((int)(possibleLifeDeviations * 50) + 1)) / 100.0f;
+		
+		particle->spawn(position, velocity, color, lifeDuration);
 	}
 
 public:
-	ParticleGenerator(const ModelTransformations& transformations)
-		:PositionedObject(transformations), DrawableUpdatableObject("particles")
+	ParticleGenerator(const ModelTransformations& transformations,
+		const unsigned& numOfParticles, const unsigned& numOfNewParticles,
+		const float& particleScale,
+		const float& particleLifeDuration, const float& possibleLifeDeviations,
+		const glm::vec3& particleColor, const glm::vec3& possibleColorDeviations,
+		const glm::vec3& possiblePositionDeviations,
+		const glm::vec3& particleVelocity, const glm::vec3& possibleVelocityDeviations
+	)
+		:PositionedObject(transformations), DrawableUpdatableObject("particles"),
+		 numOfParticles(numOfParticles), updateNumOfNewParticles(numOfNewParticles),
+		 particleScale(particleScale),
+		 particleLifeDuration(particleLifeDuration), possibleLifeDeviations(possibleLifeDeviations),
+		 particleColor(particleColor), possibleColorDeviations(possibleColorDeviations),
+		 possiblePositionDeviations(possiblePositionDeviations),
+		 particleVelocity(particleVelocity), possibleVelocityDeviations(possibleVelocityDeviations)
 	{
 		for(unsigned i = 0; i < numOfParticles; i++)
 		{
@@ -125,6 +149,7 @@ public:
 
 		shader->use();
 		shader->setFloatMat4("pv", renderer->getPV());
+		shader->setFloat("uScale", particleScale);
 		for (auto && particle : particles)
 		{
 			if(particle.isAlive())
