@@ -30,10 +30,10 @@ struct Particle
 
 	void update(const float& deltaTime)
 	{
-		life -= deltaTime;
 		if (isAlive()) {
+			life -= deltaTime;
 			position += velocity * deltaTime;
-			color.a -= deltaTime * 2.5f;
+			color.a -= deltaTime * 0.025f;
 		}
 	}
 
@@ -52,10 +52,10 @@ class ParticleGenerator : public PositionedObject, public DrawableUpdatableObjec
 {
 private:
 	VOsAndIndices* particleVOsAndIndices = VAOBuilder::getInstance()->getCube();
-	Texture* particleTexture = TexturesLoader::getInstance()->getOrLoad2DTexture("particle.png");
+	// Texture* particleTexture = TexturesLoader::getInstance()->getOrLoad2DTexture("particle.png");
 	
-	unsigned updateNumOfNewParticles = 2;
-	unsigned numOfParticles = 50;
+	unsigned updateNumOfNewParticles = 25;
+	unsigned numOfParticles = 200;
 	std::vector<Particle> particles;
 
 	float lastUpdateTime = 0.0f;
@@ -86,11 +86,26 @@ private:
 		return 0;
 	}
 
-	void respawnParticle(Particle& particle)
+	void respawnParticle(unsigned particleId)
 	{
-		float random = ((rand() % 100) - 50) / 10.0f;
-		float randColor = 0.5f + ((rand() % 100) / 100.0f);
-		particle.spawn(getPosition() + random, glm::vec3(0.0f, -0.1f, 0.0f), glm::vec4(randColor, randColor, randColor, 1.0f), 3.0f);
+		Particle* particle = &particles.at(particleId);
+		if (particle->isAlive())
+		{
+			return;
+		}
+		
+		float randomX = ((rand() % 10) - 5) / 10.0f;
+		float randomY = ((rand() % 10) - 5) / 10.0f;
+		float randomZ = ((rand() % 10) - 5) / 10.0f;
+		// float randColor = 0.5f + (rand() % 100) / 100.0f;
+		float randLife = 2.5f + (rand() % 251) / 100.0f;
+
+		const glm::vec3 randomPosition = getPosition() + glm::vec3(randomX, randomY, randomZ);
+		const glm::vec3 velocity = glm::vec3(0.0f + randomX, -1.0f + randomY, 0.0f + randomZ);
+		// const glm::vec4 randomColor = glm::vec4(randColor, randColor, randColor, 1.0f);
+		const glm::vec4 randomColor = glm::vec4(5.0f, 2.5f, 0.0f, 1.0f);
+		
+		particle->spawn(randomPosition, velocity, randomColor, randLife);
 	}
 
 public:
@@ -110,9 +125,6 @@ public:
 
 		shader->use();
 		shader->setFloatMat4("pv", renderer->getPV());
-		glActiveTexture(GL_TEXTURE0);
-		shader->setInt("sprite", 0);
-		glBindTexture(GL_TEXTURE_2D, particleTexture->getId());
 		for (auto && particle : particles)
 		{
 			if(particle.isAlive())
@@ -138,10 +150,10 @@ public:
 
 		for(unsigned i = 0; i < updateNumOfNewParticles; i++)
 		{
-			unsigned unusedParticle = getIndexOfFirstUnusedParticle();
-			respawnParticle(particles[unusedParticle]);
+			unsigned indexOfUnusedParticle = getIndexOfFirstUnusedParticle();
+			respawnParticle(indexOfUnusedParticle);
 		}
-		for (auto particle : particles)
+		for (auto &particle : particles)
 		{
 			particle.update(deltaTime);
 		}

@@ -6,10 +6,8 @@ in vec4 fParticleColor;
 layout (location = 0) out vec4 fragColor;
 layout (location = 1) out vec4 brightColor;
 
-uniform sampler2D sprite;
-
 void main(){
-	fragColor = (texture(sprite, fTextureCoord) * fParticleColor);
+	fragColor = fParticleColor;
 
 	float brightness = dot(fragColor.rgb, vec3(0.2126, 0.7152, 0.0722));
 	if (brightness > 1.0){

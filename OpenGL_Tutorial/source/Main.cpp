@@ -242,6 +242,8 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
 int main()
 {
 	using namespace std;
+
+	srand(141254);
  		
 	#pragma region GLFW INIT
 	// Настройка glfw
