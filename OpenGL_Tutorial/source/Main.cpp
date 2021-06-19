@@ -36,6 +36,7 @@ Renderer* renderer = Renderer::getInstance();
 Camera mainCamera = renderer->getMainCamera();
 
 Scene mainScene;
+Tank* playerTank;
  
 bool wireframeMode = false;
  
@@ -130,18 +131,18 @@ void processInput(GLFWwindow* window)
  		globalTimeSinceExplosion = max( globalTimeSinceExplosion - 0.5f * deltaTime, 0.0f );
 	}
 
-	// if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
- 	// 	playerTank->offsetPosition( glm::vec3(0.0f, 0.0f, 1.0f) * 10.0f * deltaTime );
-	// }
-	// if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
- 	// 	playerTank->offsetPosition( glm::vec3(-1.0f, 0.0f, 0.0f) * 10.0f * deltaTime );
-	// }
-	// if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
- 	// 	playerTank->offsetPosition( glm::vec3(0.0f, 0.0f, -1.0f) * 10.0f * deltaTime );
-	// }
-	// if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
- 	// 	playerTank->offsetPosition( glm::vec3(1.0f, 0.0f, 1.0f) * 10.0f * deltaTime );
-	// }
+	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+ 		playerTank->offsetPosition( glm::vec3(0.0f, 0.0f, -1.0f) * 10.0f * deltaTime );
+	}
+	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+ 		playerTank->offsetPosition( glm::vec3(-1.0f, 0.0f, 0.0f) * 10.0f * deltaTime );
+	}
+	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+ 		playerTank->offsetPosition( glm::vec3(0.0f, 0.0f, 1.0f) * 10.0f * deltaTime );
+	}
+	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+ 		playerTank->offsetPosition( glm::vec3(1.0f, 0.0f, 0.0f) * 10.0f * deltaTime );
+	}
  		
 	// Поднятие-спуск камеры:
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
@@ -319,8 +320,8 @@ int main()
 	renderer->addLight(flashlight);
 	 
 	Tank mainTank(&tankBase, &tankTurret);
-	Tank backgroundTank(&tankBase, &tankTurret);
-	backgroundTank.setPosition(glm::vec3(-5.0f, 0.0f, -15.0f));
+	playerTank = new Tank(&tankBase, &tankTurret);
+	playerTank->setPosition(glm::vec3(-5.0f, 0.0f, -15.0f));
 	Tank backgroundTank2(&tankBase, &tankTurret);
 	backgroundTank2.setPosition(glm::vec3(-15.0f, 0.0f, -30.0f));
 	 
@@ -328,7 +329,7 @@ int main()
 	Skybox skybox("skybox", "sky.jpg");
 	 
 	mainScene.addDynamicCollidableObject(&mainTank);
-	mainScene.addDynamicCollidableObject(&backgroundTank);
+	mainScene.addDynamicCollidableObject(playerTank);
 	mainScene.addDynamicCollidableObject(&backgroundTank2);
 	mainScene.addDrawableObject(&ground);
 	for (auto positionedLight : positionedLights)
@@ -433,15 +434,11 @@ int main()
 		mainScene.checkCollisions();
 
 		// Подготовка к отрисовке:
-		// renderer->updateViewAndProjection();
-
-		// Вращение камеры:
- 		glm::mat4 view = mainCamera.getViewMatrix();
-	 
- 		// Поправка на FOV камеры:
+		// TODO: перенести функции в updateViewAndProjection().
+		glm::mat4 view = mainCamera.getViewMatrix();
  		glm::mat4 projection = mainCamera.getProjectionMatrix();
-	 
- 		renderer->setViewAndProjection(view, projection);
+		renderer->setViewAndProjection(view, projection);
+		// renderer->updateViewAndProjection();
 	 
  		// Отрисовка в framebuffer:
  		glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);

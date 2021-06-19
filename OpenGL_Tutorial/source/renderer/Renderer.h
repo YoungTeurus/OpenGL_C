@@ -63,10 +63,10 @@ public:
 
 	void updateViewAndProjection()
 	{
-		setViewAndProjection(
-			mainCamera.getViewMatrix(),
-			mainCamera.getProjectionMatrix()
-		);
+		glm::mat4 view = mainCamera.getViewMatrix();
+ 		glm::mat4 projection = mainCamera.getProjectionMatrix();
+	 
+ 		setViewAndProjection(view, projection);
 	}
 
 	glm::mat4 getPV()
