@@ -11,7 +11,13 @@ public:
 
 		if (abs(endValue - startAngle) > 180.0f)
 		{
-			endAngle = 360.0f - endValue;
+			if (startAngle <= endValue)
+			{
+				startAngle = startAngle + 360.0f;
+			} else
+			{
+				endAngle = endAngle + 360.0f;
+			}
 		}
 
 		void (PositionedWorldObject::* setFunction)(const float&) = &PositionedWorldObject::setRotationAngleDegrees;

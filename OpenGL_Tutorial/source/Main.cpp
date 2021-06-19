@@ -196,16 +196,16 @@ void onKeyAction(GLFWwindow* window, int key, int scancode, int action, int mods
  			changeFlashlightState();
  			break;
 		case GLFW_KEY_UP:
-			playerTank->addAnimation(Animations::rotateToAngle(playerTank, 3.0f, 180.0f));
+			playerTank->addAnimation(Animations::rotateToAngle(playerTank, 0.15f, 180.0f));
 			break;
  		case GLFW_KEY_DOWN:
-			playerTank->addAnimation(Animations::rotateToAngle(playerTank, 3.0f, 0.0f));
+			playerTank->addAnimation(Animations::rotateToAngle(playerTank, 0.15f, 0.0f));
 			break;
  		case GLFW_KEY_LEFT:
-			playerTank->addAnimation(Animations::rotateToAngle(playerTank, 3.0f, 270.0f));
+			playerTank->addAnimation(Animations::rotateToAngle(playerTank, 0.15f, 270.0f));
 			break;
  		case GLFW_KEY_RIGHT:
-			playerTank->addAnimation(Animations::rotateToAngle(playerTank, 3.0f, 90.0f));
+			playerTank->addAnimation(Animations::rotateToAngle(playerTank, 0.15f, 90.0f));
 			break;
 		case GLFW_KEY_I:
 			mainScene.toggleCollidersDrawing();
