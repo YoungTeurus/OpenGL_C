@@ -37,7 +37,12 @@ public:
 		return instance;
 	}
 
-	Texture* getByFileNameAndDirectory(const std::string& fileName, const std::string& directory) const
+	Texture* get(const std::string& fileName) const
+	{
+		get(fileName, FilePaths::getPathToTexturesFolder());
+	}
+
+	Texture* get(const std::string& fileName, const std::string& directory) const
 	{
 		const std::string key = directory + FilePaths::getSplitter() + fileName;
 		
@@ -49,9 +54,14 @@ public:
 		return nullptr;
 	}
 
-	Texture* getOrLoadByFileNameAndDirectory2DTexture(const std::string& fileName, const std::string& directory, const bool isUV_flipped = false)
+	Texture* getOrLoad2DTexture(const std::string& fileName, const bool isUV_flipped = false)
 	{
-		Texture* texture = getByFileNameAndDirectory(fileName, directory);
+		getOrLoad2DTexture(fileName, FilePaths::getPathToTexturesFolder(), isUV_flipped);
+	}
+
+	Texture* getOrLoad2DTexture(const std::string& fileName, const std::string& directory, const bool isUV_flipped = false)
+	{
+		Texture* texture = get(fileName, directory);
 		if (texture == nullptr)
 		{
 			texture = new Texture();
@@ -61,10 +71,10 @@ public:
 		return texture;
 	}
 
-	CubeMap* getOrLoadByFileNameAndDirectoryCubeMap(const std::string& fileName, const std::string& directory, const bool isUV_flipped = false)
+	CubeMap* getOrLoadCubeMap(const std::string& fileName, const std::string& directory, const bool isUV_flipped = false)
 	{
 		CubeMap* returnCubeMap;
-		Texture* texture = getByFileNameAndDirectory(fileName, directory);
+		Texture* texture = get(fileName, directory);
 		if (texture == nullptr)
 		{
 			returnCubeMap = new CubeMap();

@@ -7,11 +7,11 @@ protected:
 	bool hasStarted = false;
 	bool hasEnded = false;
 
-	PositionedWorldObject *object;
+	PositionedObject *object;
 	float length;  // Длительность анимации
 	float startTime;  // Время начала анимации
 
-	Animation(PositionedWorldObject *object, const float& length)
+	Animation(PositionedObject *object, const float& length)
 		:object(object), length(length), startTime(0.0f)
 	{
 	}

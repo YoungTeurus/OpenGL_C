@@ -2,13 +2,13 @@
 #include "Animation.h"
 #include "../interfaces/UpdatableObject.h"
 
-class AnimatedObject : public PositionedWorldObject, public UpdatableObject
+class AnimatedObject : public PositionedObject, public UpdatableObject
 {
 private:
 	Animation* currentAnimation = nullptr;
 public:
 	AnimatedObject(const ModelTransformations& transformations)
-		:PositionedWorldObject(transformations)
+		:PositionedObject(transformations)
 	{
 	}
 	

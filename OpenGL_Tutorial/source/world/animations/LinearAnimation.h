@@ -7,7 +7,7 @@
 class LinearAnimation : public Animation
 {
 protected:
-	LinearAnimation(PositionedWorldObject *object, const float& length)
+	LinearAnimation(PositionedObject *object, const float& length)
 		:Animation(object, length)
 	{
 	}
@@ -19,7 +19,7 @@ protected:
 		return interpolationValue;
 	}
 
-	PositionedWorldObject* getObject() const
+	PositionedObject* getObject() const
 	{
 		return object;
 	}

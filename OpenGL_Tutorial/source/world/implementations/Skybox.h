@@ -1,8 +1,8 @@
 #pragma once
 #include "../interfaces/DrawableObject.h"
-#include "../interfaces/PositionedWorldObject.h"
+#include "../interfaces/PositionedObject.h"
 
-class Skybox : public PositionedWorldObject, public DrawableObject
+class Skybox : public PositionedObject, public DrawableObject
 {
 private:
 	VOsAndIndices* skyboxVOsAndIndices = VAOBuilder::getInstance()->getSkybox();
@@ -12,7 +12,7 @@ private:
 	std::string cubeMapFileName;
 public:
 	Skybox(const std::string& cubeMapFolderName, const std::string& cubeMapFileName)
-		:PositionedWorldObject({}), DrawableObject("skybox"),
+		:PositionedObject({}), DrawableObject("skybox"),
 		 cubeMapFolderName(cubeMapFolderName), cubeMapFileName(cubeMapFileName)
 	{
 	}
@@ -24,7 +24,7 @@ public:
 		// Проверка загруженности текстур:
 		if(cubeMap == nullptr)
 		{
-			cubeMap = renderer->getTexturesLoader()->getOrLoadByFileNameAndDirectoryCubeMap(cubeMapFileName, FilePaths::getPathToTexturesFolderWithTrailingSplitter() + cubeMapFolderName);
+			cubeMap = renderer->getTexturesLoader()->getOrLoadCubeMap(cubeMapFileName, FilePaths::getPathToTexturesFolderWithTrailingSplitter() + cubeMapFolderName);
 		}
 		
 		glDepthFunc(GL_LEQUAL);

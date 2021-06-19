@@ -218,9 +218,6 @@
     <ClInclude Include="source\world\interfaces\DrawableObject.h">
       <Filter>Исходные файлы\world\interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="source\world\interfaces\PositionedWorldObject.h">
-      <Filter>Исходные файлы\world\interfaces</Filter>
-    </ClInclude>
     <ClInclude Include="source\world\interfaces\UpdatableObject.h">
       <Filter>Исходные файлы\world\interfaces</Filter>
     </ClInclude>
@@ -231,6 +228,12 @@
       <Filter>Исходные файлы\world\interfaces</Filter>
     </ClInclude>
     <ClInclude Include="source\world\interfaces\CollidableObject.h">
+      <Filter>Исходные файлы\world\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="source\world\implementations\ParticleGenerator.h">
+      <Filter>Исходные файлы\world\implementations</Filter>
+    </ClInclude>
+    <ClInclude Include="source\world\interfaces\PositionedObject.h">
       <Filter>Исходные файлы\world\interfaces</Filter>
     </ClInclude>
   </ItemGroup>
@@ -317,6 +320,12 @@
       <Filter>Файлы ресурсов\shaders</Filter>
     </None>
     <None Include="resources\shaders\font.vert">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\particles.frag">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\particles.vert">
       <Filter>Файлы ресурсов\shaders</Filter>
     </None>
   </ItemGroup>

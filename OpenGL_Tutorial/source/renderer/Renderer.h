@@ -95,6 +95,6 @@ public:
 
 	glm::mat4 getOrthoProjection() const
 	{
-		return glm::ortho(0.0f, (float)renderScreenWidth, 0.0f, (float)renderScreenHeight);
+		return glm::ortho(0.0f, (float)renderScreenWidth, 0.0f, (float)renderScreenHeight, -1.0f, 1.0f);
 	}
 };

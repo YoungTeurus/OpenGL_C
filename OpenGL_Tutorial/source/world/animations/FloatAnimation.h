@@ -7,9 +7,9 @@ private:
 	float startValue;
 	float endValue;
 
-	void (PositionedWorldObject::* setValueFunction)(const float&);
+	void (PositionedObject::* setValueFunction)(const float&);
 public:
-	FloatAnimation(PositionedWorldObject *object, float length, float startValue, float endValue, void (PositionedWorldObject::* setValueFunction)(const float&))
+	FloatAnimation(PositionedObject *object, float length, float startValue, float endValue, void (PositionedObject::* setValueFunction)(const float&))
 		: LinearAnimation(object, length), startValue(startValue), endValue(endValue), setValueFunction(setValueFunction)
 	{
 	}
@@ -103,5 +103,5 @@ public:
 //
 //Animations::rotateToAngle(угол_направления, время)
 //{
-//	return new FloatAnimation(время, PositionedWorldObject::getRotateAngle, угол_направления, PositionedWorldObject::setRotateAngle);
+//	return new FloatAnimation(время, PositionedObject::getRotateAngle, угол_направления, PositionedObject::setRotateAngle);
 //}

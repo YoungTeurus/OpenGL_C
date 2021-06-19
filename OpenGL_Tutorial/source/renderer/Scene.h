@@ -87,7 +87,7 @@ public:
 
 	void addCollidableObject(CollidableDrawableObject* collidableObject)
 	{
-		allObjects.push_back((PositionedWorldObject*)collidableObject);
+		allObjects.push_back((PositionedObject*)collidableObject);
 		drawableObjects.push_back(collidableObject);
 		updatableObjects.push_back(collidableObject);
 		collidableObjects.push_back(collidableObject);
@@ -96,7 +96,7 @@ public:
 
 	void addDynamicCollidableObject(CollidableDrawableObject* collidableObject)
 	{
-		allObjects.push_back((PositionedWorldObject*)collidableObject);
+		allObjects.push_back((PositionedObject*)collidableObject);
 		drawableObjects.push_back(collidableObject);
 		updatableObjects.push_back(collidableObject);
 		collidableObjects.push_back(collidableObject);
@@ -106,7 +106,7 @@ public:
 
 	void addSkybox(Skybox* skybox)
 	{
-		allObjects.push_back((PositionedWorldObject*)skybox);
+		allObjects.push_back((PositionedObject*)skybox);
 		this->skybox = skybox;
 	}
 };

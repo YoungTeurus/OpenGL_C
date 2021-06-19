@@ -4,7 +4,7 @@
 class Animations
 {
 public:
-	static Animation* rotateToAngle(PositionedWorldObject *object, const float& length, const float& endValue)
+	static Animation* rotateToAngle(PositionedObject *object, const float& length, const float& endValue)
 	{
 		float startAngle = object->getRotationAngleDegrees();
 		float endAngle = endValue;
@@ -20,7 +20,7 @@ public:
 			}
 		}
 
-		void (PositionedWorldObject::* setFunction)(const float&) = &PositionedWorldObject::setRotationAngleDegrees;
+		void (PositionedObject::* setFunction)(const float&) = &PositionedObject::setRotationAngleDegrees;
 		
 		return new FloatAnimation(
 			object,

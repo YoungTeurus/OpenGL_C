@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <glm/glm.hpp>
 
-#include "PositionedWorldObject.h"
+#include "PositionedObject.h"
 #include "../../model/ModelTransformations.h"
 #include "../animations/AnimatedObject.h"
 

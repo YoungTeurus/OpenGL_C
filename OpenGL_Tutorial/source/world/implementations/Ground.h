@@ -1,9 +1,9 @@
 #pragma once
 #include "../../model/ModelTransformations.h"
 #include "../interfaces/DrawableObject.h"
-#include "../interfaces/PositionedWorldObject.h"
+#include "../interfaces/PositionedObject.h"
 
-class Ground : public PositionedWorldObject, public DrawableObject
+class Ground : public PositionedObject, public DrawableObject
 {
 private:
 	VOsAndIndices* groundVOsAndIndices = VAOBuilder::getInstance()->getGroundQuad();
@@ -13,7 +13,7 @@ private:
 	std::string textureSpecularFilename;
 public:
 	Ground(const std::string& textureFilename, const std::string& textureSpecularFilename, float width)
-		:PositionedWorldObject(ModelTransformations{
+		:PositionedObject(ModelTransformations{
 				glm::vec3(0.f),
 				glm::vec3(1.0f, 0.0f, 0.0f),
 				90.0f,
@@ -30,11 +30,11 @@ public:
 		// Проверка загруженности текстур:
 		if(groundTexture == nullptr)
 		{
-			groundTexture = renderer->getTexturesLoader()->getOrLoadByFileNameAndDirectory2DTexture(textureFilename, FilePaths::getPathToTexturesFolder());
+			groundTexture = renderer->getTexturesLoader()->getOrLoad2DTexture(textureFilename, FilePaths::getPathToTexturesFolder());
 		}
 		if (groundSpecularTexture == nullptr)
 		{
-			groundSpecularTexture = renderer->getTexturesLoader()->getOrLoadByFileNameAndDirectory2DTexture(textureSpecularFilename, FilePaths::getPathToTexturesFolder());
+			groundSpecularTexture = renderer->getTexturesLoader()->getOrLoad2DTexture(textureSpecularFilename, FilePaths::getPathToTexturesFolder());
 		}
 		
 		glm::mat4 groundModel = transformations.createModelMatrixWithTransformations();

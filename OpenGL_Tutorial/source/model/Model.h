@@ -187,7 +187,7 @@ inline vector<Texture*> Model::loadMaterialTextures(aiMaterial* mat, aiTextureTy
         bool skip = false;
 
         TexturesLoader *texturesLoader = TexturesLoader::getInstance();
-    	Texture* loadedTexture = texturesLoader->getOrLoadByFileNameAndDirectory2DTexture(string(str.C_Str()), this->directory, isUV_flipped);
+    	Texture* loadedTexture = texturesLoader->getOrLoad2DTexture(string(str.C_Str()), this->directory, isUV_flipped);
     	loadedTexture->setType(textureType);
     	textures.push_back(loadedTexture);
     	

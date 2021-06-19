@@ -201,13 +201,14 @@
     <ClInclude Include="source\world\implementations\Cube.h" />
     <ClInclude Include="source\world\implementations\Ground.h" />
     <ClInclude Include="source\world\implementations\LightCube.h" />
+    <ClInclude Include="source\world\implementations\ParticleGenerator.h" />
     <ClInclude Include="source\world\implementations\Skybox.h" />
     <ClInclude Include="source\world\implementations\Tank.h" />
     <ClInclude Include="source\world\implementations\TextString.h" />
     <ClInclude Include="source\world\interfaces\CollidableDrawableObject.h" />
     <ClInclude Include="source\world\interfaces\CollidableObject.h" />
     <ClInclude Include="source\world\interfaces\DrawableObject.h" />
-    <ClInclude Include="source\world\interfaces\PositionedWorldObject.h" />
+    <ClInclude Include="source\world\interfaces\PositionedObject.h" />
     <ClInclude Include="source\world\interfaces\UpdatableObject.h" />
     <ClInclude Include="source\world\interfaces\WorldObject.h" />
   </ItemGroup>
@@ -228,6 +229,8 @@
     <None Include="resources\shaders\lightCubeWithExplosion.frag" />
     <None Include="resources\shaders\lightCubeWithExplosion.geom" />
     <None Include="resources\shaders\lightCubeWithExplosion.vert" />
+    <None Include="resources\shaders\particles.frag" />
+    <None Include="resources\shaders\particles.vert" />
     <None Include="resources\shaders\screenRenderQuadShader.frag" />
     <None Include="resources\shaders\screenRenderQuadShader.vert" />
     <None Include="resources\shaders\screenRenderQuadShaderWithBlur.frag" />

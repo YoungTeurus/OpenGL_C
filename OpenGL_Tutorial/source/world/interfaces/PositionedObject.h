@@ -2,7 +2,7 @@
 #include "WorldObject.h"
 #include "../../model/ModelTransformations.h"
 
-class PositionedWorldObject : public WorldObject
+class PositionedObject : public WorldObject
 {
 private:
 	// Приводит угол в диапазон [0, 360)
@@ -23,12 +23,12 @@ private:
 protected:
 	ModelTransformations transformations;
 public:
-	PositionedWorldObject(const ModelTransformations& transformations)
+	PositionedObject(const ModelTransformations& transformations)
 		:transformations(transformations)
 	{
 	}
 
-	virtual ~PositionedWorldObject() = default;
+	virtual ~PositionedObject() = default;
 	
 	virtual void setPosition(const glm::vec3& pos)
 	{
