@@ -3,14 +3,14 @@
 
 #include "Animation.h"
 
-
-class PackedAnimation final : public Animation
+template<class T>
+class PackedAnimation : public Animation<T>
 {
 private:
-	std::vector<Animation*> animations;
+	std::vector<Animation<T>*> animations;
 public:
-	PackedAnimation(PositionedObject *object, const float& length)
-		:Animation(object, length)
+	PackedAnimation(T *object, const float& length)
+		:Animation<T>(object, length)
 	{
 	}
 
@@ -22,7 +22,7 @@ public:
 		}
 	}
 
-	PackedAnimation* addAnimation(Animation* animation)
+	PackedAnimation* addAnimation(Animation<T>* animation)
 	{
 		animations.push_back(animation);
 		return this;

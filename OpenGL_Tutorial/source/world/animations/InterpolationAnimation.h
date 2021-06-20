@@ -1,13 +1,14 @@
 #pragma once
 #include "Animation.h"
 
-class InterpolationAnimation : public Animation
+template<class T>
+class InterpolationAnimation : public Animation<T>
 {
 protected:
 	virtual float getInterpolationValue(const float& currentTime) const = 0;
 public:
-	InterpolationAnimation(PositionedObject* object, const float& length)
-		: Animation(object, length)
+	InterpolationAnimation(T* object, const float& length)
+		: Animation<T>(object, length)
 	{
 	}
 

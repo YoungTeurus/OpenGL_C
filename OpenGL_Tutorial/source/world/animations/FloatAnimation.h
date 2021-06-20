@@ -1,40 +1,41 @@
 #pragma once
 #include "LinearAnimation.h"
 
-class FloatAnimation : public LinearAnimation
+template<class T>
+class FloatAnimation : public LinearAnimation<T>
 {
 private:
 	float startValue;
 	float endValue;
 
-	void (PositionedObject::* setValueFunction)(const float&);
+	void (T::* setValueFunction)(const float&);
 public:
-	FloatAnimation(PositionedObject *object, float length, float startValue, float endValue, void (PositionedObject::* setValueFunction)(const float&))
-		: LinearAnimation(object, length), startValue(startValue), endValue(endValue), setValueFunction(setValueFunction)
+	FloatAnimation(T *object, float length, float startValue, float endValue, void (T::* setValueFunction)(const float&))
+		: LinearAnimation<T>(object, length), startValue(startValue), endValue(endValue), setValueFunction(setValueFunction)
 	{
 	}
 
 	virtual void act(const float& currentTime) override
 	{
-		if (!hasStarted)
+		if (!this->hasStarted)
 		{
 			this->startTime = currentTime;
-			hasStarted = true;
+			this->hasStarted = true;
 		}
-		if (hasEnded)
+		if (this->hasEnded)
 		{
 			return;
 		}
 
 		const float currentValue = getCurrentState(currentTime, startValue, endValue);
-		(getObject()->*setValueFunction)(currentValue);
+		(this->object->*setValueFunction)(currentValue);
 		
-		checkAndSetIfEnded(currentTime);
+		this->checkAndSetIfEnded(currentTime);
 	}
 
 	float getCurrentState(const float& currentTime, const float& a, const float& b) const
 	{
-		const float interpolatedValue = (b - a) * getInterpolationValue(currentTime) + a;
+		const float interpolatedValue = (b - a) * this->getInterpolationValue(currentTime) + a;
 		return interpolatedValue;
 	}
 
@@ -50,7 +51,7 @@ public:
 
 	void endImmediately() override
 	{
-		(getObject()->*setValueFunction)(endValue);
+		(this->object->*setValueFunction)(endValue);
 	}
 };
 

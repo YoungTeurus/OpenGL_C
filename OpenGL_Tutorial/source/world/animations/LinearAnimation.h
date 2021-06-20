@@ -1,26 +1,21 @@
 #pragma once
 #include <algorithm>
-#include <glm/common.hpp>
 
 #include "InterpolationAnimation.h"
 
-class LinearAnimation : public InterpolationAnimation
+template<class T>
+class LinearAnimation : public InterpolationAnimation<T>
 {
 protected:
-	LinearAnimation(PositionedObject *object, const float& length)
-		:InterpolationAnimation(object, length)
+	LinearAnimation(T *object, const float& length)
+		:InterpolationAnimation<T>(object, length)
 	{
 	}
 
 	float getInterpolationValue(const float& currentTime) const override
 	{
-		const float timeSinceStart = currentTime - startTime;
-		const float interpolationValue = std::min(1.0f, glm::max(0.0f, timeSinceStart/length));
+		const float timeSinceStart = currentTime - this->startTime;
+		const float interpolationValue = std::min(1.0f, std::max(0.0f, timeSinceStart/this->length));
 		return interpolationValue;
-	}
-
-	PositionedObject* getObject() const
-	{
-		return object;
 	}
 };

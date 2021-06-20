@@ -5,7 +5,7 @@
 class AnimatedObject : public PositionedObject, public UpdatableObject
 {
 private:
-	Animation* currentAnimation = nullptr;
+	Animation<PositionedObject>* currentAnimation = nullptr;
 public:
 	AnimatedObject(const ModelTransformations& transformations)
 		:PositionedObject(transformations)
@@ -28,7 +28,7 @@ public:
 		}
 	}
 	
-	void addAnimation(Animation* animation)
+	void addAnimation(Animation<PositionedObject>* animation)
 	{
 		if (currentAnimation != nullptr)
 		{
