@@ -25,6 +25,6 @@ void main(){
 	vec3 T = normalize((model*vec4(inTangent, 0.0f)).xyz);
 	vec3 B = normalize((model*vec4(inBiTangent, 0.0f)).xyz);
 	vec3 N = normalize((model*vec4(inNormal, 0.0f)).xyz);
-
+	
 	vTBN = mat3(T, B, N);
 }

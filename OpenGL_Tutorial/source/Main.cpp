@@ -213,6 +213,12 @@ void onKeyAction(GLFWwindow* window, int key, int scancode, int action, int mods
  			wireframeMode = !wireframeMode;
  			setPolygoneDrawMode();
  			break;
+ 		case GLFW_KEY_1:
+			playerTank->setShader(ShaderLoader::getInstance()->reload("backpack_mixLightWithExplosion", true));
+			break;
+ 		case GLFW_KEY_2:
+			playerTank->setShader(ShaderLoader::getInstance()->reload("backpack_mixLight"));
+			break;
 		case GLFW_KEY_9:
 			mainCamera.setPosition(glm::vec3(-7.3f, 40.0f, 17.0f));
 			mainCamera.yaw = -90.0f;
@@ -390,9 +396,9 @@ int main()
 	flashlight = new SpotLight(
  		glm::radians(10.f), glm::radians(20.f),
  		glm::vec3(0.0f, 0.0f, 0.0f),
- 		glm::vec3(0.05f, 0.05f, 0.05f),
- 		glm::vec3(3.7f, 3.7f, 3.6f),
- 		glm::vec3(8.8f, 8.8f, 8.7f),
+ 		glm::vec3(0.0f, 0.0f, 0.0f),
+ 		glm::vec3(0.0f, 0.0f, 3.6f),
+ 		glm::vec3(0.0f, 0.0f, 8.7f),
  		1.0f, 0.05f, 0.009f,
  		glm::vec3(0.0f, 0.0f, 0.0f),
  		"FlashLight"

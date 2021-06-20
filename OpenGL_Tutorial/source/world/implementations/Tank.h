@@ -18,6 +18,7 @@ private:
 public:
 	Tank()
 		:CollidableDrawableObject({}, ColliderCube(0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f), "backpack_mixLightWithExplosion", true),
+		// :CollidableDrawableObject({}, ColliderCube(0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f), "backpack_mixLight"),
 		 tankBase(ModelsLoader::getInstance()->getOrLoad("tank/base.obj", true)), tankTurret(ModelsLoader::getInstance()->getOrLoad("tank/turret.obj", true))
 	{
 	}

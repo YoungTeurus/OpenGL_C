@@ -73,13 +73,13 @@ void main(){
 	viewDir = normalize(viewPos - fFragPosition);
 
 	vec3 result = vec3(0, 0, 0);
-
+	
 	for(int i = 0; i < lightsCount; i++){
 		result += getColorFromLight(lights[i], normal, fFragPosition, viewDir, diffuseTextureColor, specularTextureColor);
 	}
 
 	fragColor = vec4(result, 1.0);
-	
+
 	float brightness = dot(fragColor.rgb, vec3(0.2126, 0.7152, 0.0722));
 	if (brightness > 1.0){
 		brightColor = vec4(fragColor.rgb, 1.0);

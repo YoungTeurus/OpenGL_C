@@ -50,6 +50,11 @@ public:
 		return nullptr;
 	}
 
+	Shader* reload(const std::string& name, const bool& withGeometry = false)
+	{
+		return load(name, FilePaths::getPathToShaderFolderWithTrailingSplitter(), withGeometry);
+	}
+
 	Shader* getOrLoad(const std::string& name, const bool& withGeometry = false)
 	{
 		return getOrLoad(name, FilePaths::getPathToShaderFolderWithTrailingSplitter(), withGeometry);

@@ -24,6 +24,10 @@ public:
 		}
 	}
 
+	void setShader(Shader* shader)
+	{
+		this->shader = shader;
+	}
 
 	bool isVisible() const
 	{

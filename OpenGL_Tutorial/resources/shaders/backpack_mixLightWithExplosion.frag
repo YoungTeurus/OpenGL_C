@@ -30,10 +30,10 @@ int LightPointType = 2;
 int LightSpotType = 3;
 int LightAmbientType = 4;
 
-in vec3 gNormal;
-in vec3 gFragPosition;
 in vec2 gTextureCoord;
+in vec3 gNormal;
 in mat3 gTBN;
+in vec3 gFragPosition;
 
 layout (location = 0) out vec4 fragColor;
 layout (location = 1) out vec4 brightColor;
@@ -73,7 +73,7 @@ void main(){
 	viewDir = normalize(viewPos - gFragPosition);
 
 	vec3 result = vec3(0, 0, 0);
-
+	
 	for(int i = 0; i < lightsCount; i++){
 		result += getColorFromLight(lights[i], normal, gFragPosition, viewDir, diffuseTextureColor, specularTextureColor);
 	}
