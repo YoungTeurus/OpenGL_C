@@ -13,7 +13,7 @@ public:
 		transformations.scale = glm::vec3(scale);
 	}
 
-	void draw(Renderer* renderer) override
+	void drawAction(Renderer* renderer) override
 	{
 		if (! light->getIsActive())
 		{

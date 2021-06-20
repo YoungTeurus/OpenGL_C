@@ -23,7 +23,7 @@ public:
 	{
 	}
 
-	void draw(Renderer* renderer) override
+	void drawAction(Renderer* renderer) override
 	{
 		// Отрисовка "земли".
 

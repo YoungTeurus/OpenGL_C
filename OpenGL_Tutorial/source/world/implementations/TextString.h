@@ -1,6 +1,7 @@
 #pragma once
+#include "../interfaces/DrawableObject.h"
 
-class TextString : DrawableObject
+class TextString : public DrawableObject
 {
 private:
 	VOsAndIndices* fontVOsAndIndices = VAOBuilder::getInstance()->getFont();
@@ -17,7 +18,7 @@ public:
 	{
 	}
 
-	void draw(Renderer* renderer) override
+	void drawAction(Renderer* renderer) override
 	{
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

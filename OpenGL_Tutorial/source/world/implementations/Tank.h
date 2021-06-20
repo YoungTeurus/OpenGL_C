@@ -29,10 +29,10 @@ public:
 		calculateColliderTransformations();
 	}
 	
-	void draw(Renderer* renderer) override
+	void drawAction(Renderer* renderer) override
 	{
 		// Отрисовка коллайдера, если нужна:
-		CollidableDrawableObject::draw(renderer);
+		CollidableDrawableObject::drawAction(renderer);
 
 		// Отрисовка модели:
 		glm::mat4 tankBaseModel = transformations.createModelMatrixWithTransformations();

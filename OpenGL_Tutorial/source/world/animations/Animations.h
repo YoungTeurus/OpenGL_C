@@ -1,5 +1,6 @@
 #pragma once
 #include "FloatAnimation.h"
+#include "../implementations/Tank.h"
 
 class Animations
 {
@@ -29,5 +30,10 @@ public:
 			endAngle,
 			setFunction
 		);
+	}
+
+	static Animation* blowTank(Tank* tank, const float& length, const float& explosionForce)
+	{
+		
 	}
 };

@@ -142,7 +142,7 @@ public:
 		}
 	}
 
-	void draw(Renderer* renderer) override
+	void drawAction(Renderer* renderer) override
 	{
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE);

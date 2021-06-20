@@ -51,7 +51,7 @@ public:
 		calculateColliderTransformations();
 	}
 	
-	void draw(Renderer* renderer) override
+	void drawAction(Renderer* renderer) override
 	{
 		if(!isColliderDrawing)
 		{

@@ -12,8 +12,6 @@
 #include "light/DirectionalLight.h"
 #include "shader/Shader.h"
 #include "camera/Camera.h"
-#include "model/Model.h"
-#include "model/ModelsLoader.h"
 #include "model/VAOBuilder.h"
 #include "model/VOsAndIndices.h"
 #include "renderer/Renderer.h"
