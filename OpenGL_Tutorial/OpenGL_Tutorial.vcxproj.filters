@@ -99,6 +99,9 @@
     <ClCompile Include="source\text\FontLoader.cpp">
       <Filter>Исходные файлы\text</Filter>
     </ClCompile>
+    <ClCompile Include="source\model\ModelsLoader.cpp">
+      <Filter>Исходные файлы\model</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\stb_image.h">
@@ -238,6 +241,9 @@
     </ClInclude>
     <ClInclude Include="source\world\interfaces\DrawableUpdatableObject.h">
       <Filter>Исходные файлы\world\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="source\model\ModelsLoader.h">
+      <Filter>Исходные файлы\model</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

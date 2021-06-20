@@ -13,6 +13,7 @@
 #include "shader/Shader.h"
 #include "camera/Camera.h"
 #include "model/Model.h"
+#include "model/ModelsLoader.h"
 #include "model/VAOBuilder.h"
 #include "model/VOsAndIndices.h"
 #include "renderer/Renderer.h"
@@ -306,9 +307,9 @@ int main()
 	// Загрузка внешних данных:
 	Shader* screenRenderQuadShaderWithBlur = ShaderLoader::getInstance()->getOrLoad("screenRenderQuadShaderWithBlur");
 	Shader* screenRenderQuadWithHDRShader = ShaderLoader::getInstance()->getOrLoad("screenRenderQuadShaderWithHDR");
- 		
-	Model tankBase(FilePaths::getPathToModel("tank/base.obj"), true);
-	Model tankTurret(FilePaths::getPathToModel("tank/turret.obj"), true);
+
+	Model* tankBase = ModelsLoader::getInstance()->getOrLoad("tank/base.obj", true);
+	Model* tankTurret = ModelsLoader::getInstance()->getOrLoad("tank/turret.obj", true);
 	 
 	// Подготовка источников освещения:
 	vector<PositionedLight*> positionedLights;
@@ -370,10 +371,10 @@ int main()
 	);
 	renderer->addLight(flashlight);
 	 
-	Tank mainTank(&tankBase, &tankTurret);
-	playerTank = new Tank(&tankBase, &tankTurret);
+	Tank mainTank(tankBase, tankTurret);
+	playerTank = new Tank(tankBase, tankTurret);
 	playerTank->setPosition(glm::vec3(-5.0f, 0.0f, -15.0f));
-	Tank backgroundTank2(&tankBase, &tankTurret);
+	Tank backgroundTank2(tankBase, tankTurret);
 	backgroundTank2.setPosition(glm::vec3(-15.0f, 0.0f, -30.0f));
 
 	ParticleGenerator particleGenerator(

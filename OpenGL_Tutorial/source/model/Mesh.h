@@ -6,7 +6,7 @@
 
 
 #include "../textures/Texture.h"
-#include "shader/Shader.h"
+#include "../shader/Shader.h"
 
 using namespace std;
 
