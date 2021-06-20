@@ -200,6 +200,7 @@
     <ClInclude Include="source\world\animations\Animations.h" />
     <ClInclude Include="source\world\animations\DelayedAction.h" />
     <ClInclude Include="source\world\animations\FloatAnimation.h" />
+    <ClInclude Include="source\world\animations\InterpolationAnimation.h" />
     <ClInclude Include="source\world\animations\LinearAnimation.h" />
     <ClInclude Include="source\world\animations\PackedAnimation.h" />
     <ClInclude Include="source\world\implementations\Cube.h" />

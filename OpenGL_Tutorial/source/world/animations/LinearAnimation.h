@@ -2,13 +2,13 @@
 #include <algorithm>
 #include <glm/common.hpp>
 
-#include "Animation.h"
+#include "InterpolationAnimation.h"
 
-class LinearAnimation : public Animation
+class LinearAnimation : public InterpolationAnimation
 {
 protected:
 	LinearAnimation(PositionedObject *object, const float& length)
-		:Animation(object, length)
+		:InterpolationAnimation(object, length)
 	{
 	}
 

@@ -1,5 +1,6 @@
 #pragma once
 #include "FloatAnimation.h"
+#include "PackedAnimation.h"
 #include "../implementations/Tank.h"
 
 class Animations
@@ -34,6 +35,8 @@ public:
 
 	static Animation* blowTank(Tank* tank, const float& length, const float& explosionForce)
 	{
+		PackedAnimation *animation = new PackedAnimation(tank, length);
+
 		
 	}
 };

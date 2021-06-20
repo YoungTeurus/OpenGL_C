@@ -1,5 +1,5 @@
 #pragma once
-
+#include "../interfaces/PositionedObject.h"
 
 class Animation
 {
@@ -23,12 +23,11 @@ protected:
 			hasEnded = true;
 		}
 	}
-
-	virtual float getInterpolationValue(const float& currentTime) const = 0;
 public:
 	virtual void act(const float& currentTime) = 0;
 	virtual void endImmediately() = 0;
 
+	virtual ~Animation() = default;
 
 	bool isHasEnded() const
 	{

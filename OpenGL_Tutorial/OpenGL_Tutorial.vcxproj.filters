@@ -251,6 +251,9 @@
     <ClInclude Include="source\world\animations\DelayedAction.h">
       <Filter>Исходные файлы\world\animations</Filter>
     </ClInclude>
+    <ClInclude Include="source\world\animations\InterpolationAnimation.h">
+      <Filter>Исходные файлы\world\animations</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\shaders\lightCube.vert">
