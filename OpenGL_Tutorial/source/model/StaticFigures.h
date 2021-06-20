@@ -5,7 +5,7 @@
 class StaticFigures
 {
 public:
-	inline static std::vector<float> getCubeVertexesWithNormalsAndUV()
+	inline static std::vector<float> getCenteredCubeVertexesWithNormalsAndUV()
 	{
 		return std::vector<float>
 		{
@@ -40,6 +40,44 @@ public:
 			 1.0f,	1.0f,  -1.0f,	 0.0f,	0.0f,  -1.0f,	0.0f, 1.0f, // верхний левый
 			 1.0f, -1.0f,  -1.0f,	 0.0f,	0.0f,  -1.0f,	0.0f, 0.0f, // нижний левый
 			-1.0f, -1.0f,  -1.0f,	 0.0f,	0.0f,  -1.0f,	1.0f, 0.0f, // нижний правый
+        };
+	}
+
+	inline static std::vector<float> getCubeVertexesWithNormalsAndUV()
+	{
+		return std::vector<float>
+		{
+		//	  X		 Y		 Z		  Nx	 Ny		 Nz		 U	   V
+		// Передняя грань (z: +1)
+			 1.0f,	1.0f,	1.0f,	 0.0f,	0.0f,	1.0f,	1.0f, 1.0f, // верхний правый
+			 0.0f,	1.0f,	1.0f,	 0.0f,	0.0f,	1.0f,	0.0f, 1.0f, // верхний левый
+			 0.0f,  0.0f,	1.0f,	 0.0f,	0.0f,	1.0f,	0.0f, 0.0f, // нижний левый
+			 1.0f,  0.0f,	1.0f,	 0.0f,	0.0f,	1.0f,	1.0f, 0.0f, // нижний правый
+		// Правая грань (x: +1)
+			 1.0f,	1.0f,   0.0f,	 1.0f,	0.0f,	0.0f,	1.0f, 1.0f, // верхний правый
+			 1.0f,	1.0f,	1.0f,	 1.0f,	0.0f,	0.0f,	0.0f, 1.0f, // верхний левый
+			 1.0f,  0.0f,	1.0f,	 1.0f,	0.0f,	0.0f,	0.0f, 0.0f, // нижний левый
+			 1.0f,  0.0f,   0.0f,	 1.0f,	0.0f,	0.0f,	1.0f, 0.0f, // нижний правый
+		// Верхняя грань (y: +1)
+			 1.0f,	1.0f,   0.0f,	 0.0f,	1.0f,	0.0f,	1.0f, 1.0f, // верхний правый
+			 0.0f,	1.0f,   0.0f,	 0.0f,	1.0f,	0.0f,	0.0f, 1.0f, // верхний левый
+			 0.0f,	1.0f,   1.0f,	 0.0f,	1.0f,	0.0f,	0.0f, 0.0f, // нижний левый
+			 1.0f,	1.0f,   1.0f,	 0.0f,	1.0f,	0.0f,	1.0f, 0.0f, // нижний правый
+		// Левая грань (x: -1)
+			 0.0f,	1.0f,   1.0f,	-1.0f,	0.0f,	0.0f,	1.0f, 1.0f, // верхний правый
+			 0.0f,	1.0f,   0.0f,	-1.0f,	0.0f,	0.0f,	0.0f, 1.0f, // верхний левый
+			 0.0f,  0.0f,   0.0f,	-1.0f,	0.0f,	0.0f,	0.0f, 0.0f, // нижний левый
+			 0.0f,  0.0f,   1.0f,	-1.0f,	0.0f,	0.0f,	1.0f, 0.0f, // нижний правый
+		// Нижняя грань (y: -1)
+			 1.0f,  0.0f,   1.0f,	 0.0f, -1.0f,	0.0f,	1.0f, 1.0f, // верхний правый
+			 0.0f,  0.0f,   1.0f,	 0.0f, -1.0f,	0.0f,	0.0f, 1.0f, // верхний левый
+			 0.0f,  0.0f,   0.0f,	 0.0f, -1.0f,	0.0f,	0.0f, 0.0f, // нижний левый
+			 1.0f,  0.0f,   0.0f,	 0.0f, -1.0f,	0.0f,	1.0f, 0.0f, // нижний правый
+		// Задняя грань (z: -1)
+			 0.0f,	1.0f,   0.0f,	 0.0f,	0.0f,  -1.0f,	1.0f, 1.0f, // верхний правый
+			 1.0f,	1.0f,   0.0f,	 0.0f,	0.0f,  -1.0f,	0.0f, 1.0f, // верхний левый
+			 1.0f,  0.0f,   0.0f,	 0.0f,	0.0f,  -1.0f,	0.0f, 0.0f, // нижний левый
+			 0.0f,  0.0f,   0.0f,	 0.0f,	0.0f,  -1.0f,	1.0f, 0.0f, // нижний правый
         };
 	}
 
@@ -129,7 +167,7 @@ public:
 	// 	using namespace std;
 	// 	unsigned VAO = 0, VBO = 0, EBO = 0;
 	// 
-	// 	// vector<float> cubeVertexData = getCubeVertexesWithNormalsAndUV();
+	// 	// vector<float> cubeVertexData = getCenteredCubeVertexesWithNormalsAndUV();
 	// 	// vector<unsigned> cubeIndicesData = getCubeIndices();
 	// 	// 
 	// 	// glGenVertexArrays(1, &VAO);

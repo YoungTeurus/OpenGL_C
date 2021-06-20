@@ -1,24 +1,22 @@
 #pragma once
 #include "../../model/ModelsLoader.h"
 #include "../../model/ModelTransformations.h"
+#include "../../renderer/Renderer.h"
 #include "../animations/AnimatedObject.h"
 #include "../interfaces/CollidableDrawableObject.h"
 
-class Tank : public CollidableDrawableObject, public AnimatedObject<Tank>
+class BrickWall : public CollidableDrawableObject, public AnimatedObject<BrickWall>
 {
 private:	
 	float explosionMagnitude = 0.0f;
 	float timeSinceExplosion = 0.0f;
 
-	Model *tankBase;
-	Model *tankTurret;
-
-	ModelTransformations turretTransformations;
+	Model *model;
 	
 public:
-	Tank()
-		:CollidableDrawableObject({}, {glm::vec3(-1.0f, 0.0f, -1.0f), glm::vec3(2.0f)}, "model_mixLightWithExplosion", true),
-		 tankBase(ModelsLoader::getInstance()->getOrLoad("tank/base.obj", true)), tankTurret(ModelsLoader::getInstance()->getOrLoad("tank/turret.obj", true))
+	BrickWall(const ModelTransformations& transformations)
+		:CollidableDrawableObject(transformations, {glm::vec3(-1.0f, 0.0f, -1.0f), glm::vec3(2.0f)}, "model_mixLightWithExplosion", true),
+		 model(ModelsLoader::getInstance()->getOrLoad("walls/brick.obj", true))
 	{
 	}
 
@@ -26,6 +24,7 @@ public:
 	{
 		// TODO: избавиться от этого workaround-а.
 		CollidableDrawableObject::setPosition(pos);
+		colliderCube.offsetPosition(glm::vec3(0.0f, 1.0f, 0.0f));  // Поправка коллайдера.
 		calculateColliderTransformations();
 	}
 	
@@ -35,13 +34,13 @@ public:
 		CollidableDrawableObject::drawAction(renderer);
 
 		// Отрисовка модели:
-		glm::mat4 tankBaseModel = transformations.createModelMatrixWithTransformations();
+		glm::mat4 wallModel = transformations.createModelMatrixWithTransformations();
 		
 		shader->use();
 		shader->setFloat("uExplosionMagnitude", explosionMagnitude);
 		shader->setFloat("uTimeSinceExplosion", timeSinceExplosion);
 		shader->setFloatMat4("projectionAndView", renderer->getPV());
-		shader->setFloatMat4("model", tankBaseModel);
+		shader->setFloatMat4("model", wallModel);
 		shader->setFloat("shininess", 64.0f);
 		shader->setFloatVec3("viewPos", renderer->getMainCamera().position);
 		
@@ -53,30 +52,8 @@ public:
 		
 		shader->setInt("lightsCount", activeLights);
 		
-		tankBase->draw(*shader);
-		
-		glm::mat4 tankTurretModel = glm::mat4(1.0f);
-		tankTurretModel *= tankBaseModel;
-		tankTurretModel = turretTransformations.getModelWithAppliedTransformations(tankTurretModel);
-		shader->setFloatMat4("model", tankTurretModel);
-		tankTurret->draw(*shader);
+		model->draw(*shader);
 	}
-
-	void setTurretRotationAngleDegrees(const float& angleDegrees)
-	{
-		turretTransformations.rotationAngleDegrees = angleDegrees;
-	}
-
-	void offsetTurretRotationAngleDegrees(const float& angleDegrees)
-	{
-		turretTransformations.rotationAngleDegrees += angleDegrees;
-	}
-
-	float getTurretRotationAngleDegrees() const
-	{
-		return turretTransformations.rotationAngleDegrees;
-	}
-
 
 	float getExplosionMagnitude() const
 	{

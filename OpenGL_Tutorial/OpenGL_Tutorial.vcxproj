@@ -203,6 +203,7 @@
     <ClInclude Include="source\world\animations\InterpolationAnimation.h" />
     <ClInclude Include="source\world\animations\LinearAnimation.h" />
     <ClInclude Include="source\world\animations\PackedAnimation.h" />
+    <ClInclude Include="source\world\implementations\BrickWall.h" />
     <ClInclude Include="source\world\implementations\Cube.h" />
     <ClInclude Include="source\world\implementations\Ground.h" />
     <ClInclude Include="source\world\implementations\LightCube.h" />
@@ -219,11 +220,11 @@
     <ClInclude Include="source\world\interfaces\WorldObject.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="resources\shaders\backpack_mixLight.frag" />
-    <None Include="resources\shaders\backpack_mixLight.vert" />
-    <None Include="resources\shaders\backpack_mixLightWithExplosion.frag" />
-    <None Include="resources\shaders\backpack_mixLightWithExplosion.geom" />
-    <None Include="resources\shaders\backpack_mixLightWithExplosion.vert" />
+    <None Include="resources\shaders\model_mixLight.frag" />
+    <None Include="resources\shaders\model_mixLight.vert" />
+    <None Include="resources\shaders\model_mixLightWithExplosion.frag" />
+    <None Include="resources\shaders\model_mixLightWithExplosion.geom" />
+    <None Include="resources\shaders\model_mixLightWithExplosion.vert" />
     <None Include="resources\shaders\cube_mixLight.frag" />
     <None Include="resources\shaders\cube_mixLight.vert" />
     <None Include="resources\shaders\font.frag" />

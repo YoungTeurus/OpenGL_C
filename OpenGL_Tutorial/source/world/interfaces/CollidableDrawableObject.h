@@ -23,8 +23,8 @@ protected:
 			};
 	}
 public:
-	CollidableDrawableObject(const ModelTransformations& transformations, const ColliderCube& colliderCube, const std::string& shader, const bool& shaderWithGeometry = false)
-		:CollidableObject(transformations, colliderCube),
+	CollidableDrawableObject(const ModelTransformations& transformations, const OffsetAndSize& colliderOffsetAndSize, const std::string& shader, const bool& shaderWithGeometry = false)
+		:CollidableObject(transformations, colliderOffsetAndSize),
 		 DrawableObject(shader, shaderWithGeometry)
 	{
 		calculateColliderTransformations();
@@ -33,21 +33,18 @@ public:
 	void setPosition(glm::vec3 pos) override
 	{
 		CollidableObject::setPosition(pos);
-		colliderCube.setPosition(pos);
 		calculateColliderTransformations();
 	}
 
 	void offsetPosition(const glm::vec3& offset) override
 	{
 		CollidableObject::offsetPosition(offset);
-		colliderCube.offsetPosition(offset);
 		calculateColliderTransformations();
 	}
 
 	void setScale(const glm::vec3& scale) override
 	{
 		CollidableObject::setScale(scale);
-		colliderCube.scale(scale);
 		calculateColliderTransformations();
 	}
 	

@@ -86,4 +86,12 @@ public:
 	{
 		return transformations.scale;
 	}
+
+	virtual std::string toString()
+	{
+		return string("posObj{") +
+			"(" + to_string(transformations.position.x) + "," + to_string(transformations.position.y) + "," + to_string(transformations.position.z) + ")" +
+			"}"
+		; 
+	}
 };

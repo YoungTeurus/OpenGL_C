@@ -11,6 +11,12 @@ struct CollizionResolver
 	float pushOutOffset;
 };
 
+struct OffsetAndSize
+{
+	glm::vec3 offset;
+	glm::vec3 size;
+};
+
 using namespace std;
 class ColliderCube
 {
@@ -19,6 +25,21 @@ public:
 	// Координаты ...2 > ...1
 	float x1, y1, z1, x2, y2, z2;
 
+	ColliderCube(const glm::vec3& objectPosition, const OffsetAndSize& offsetAndSize)
+		:ColliderCube(objectPosition, offsetAndSize.offset, offsetAndSize.size)
+	{
+	}
+
+	ColliderCube(const glm::vec3& objectPosition, const glm::vec3& offset, const glm::vec3& size)
+	{
+		x1 = objectPosition.x + offset.x;
+		y1 = objectPosition.y + offset.y;
+		z1 = objectPosition.z + offset.z;
+
+		x2 = x1 + size.x;
+		y2 = y1 + size.y;
+		z2 = z1 + size.z;
+	}
 
 	ColliderCube(float x1, float y1, float z1, float x2, float y2, float z2)
 		: x1(min(x1, x2)),
@@ -167,20 +188,38 @@ public:
 		y2 = y2 + size.y;
 		z2 = z2 + size.z;
 	}
+
+	string toString()
+	{
+		return string("{") + 
+			"(" + to_string(x1) + "," + to_string(y1) + "," + to_string(z1) + ")" + 
+			"," +
+			"(" + to_string(x2) + "," + to_string(y2) + "," + to_string(z2) + ")" +
+			"}";
+	}
 };
 
 class CollidableObject : public PositionedObject
 {
-protected:
+	// TODO: вернуть модификатор доступа private.
+public:
 	ColliderCube colliderCube;
+	OffsetAndSize colliderOffsetAndSize;
 
 	CollizionResolver getCollizionResolver(CollidableObject *other)
 	{
 		return colliderCube.getCollizionResolver(other->colliderCube);
 	}
+protected:
+	OffsetAndSize getColliderOffsetAndSize() const
+		{
+			return colliderOffsetAndSize;
+		}
 public:
-	CollidableObject(const ModelTransformations& transformations, ColliderCube colliderCube)
-		: PositionedObject(transformations), colliderCube(colliderCube)
+
+	CollidableObject(const ModelTransformations& transformations, const OffsetAndSize& colliderOffsetAndSize)
+		:PositionedObject(transformations), colliderCube(ColliderCube{transformations.position, colliderOffsetAndSize}),
+		 colliderOffsetAndSize(colliderOffsetAndSize)
 	{
 	}
 
@@ -196,5 +235,29 @@ public:
 	bool hasCollision(CollidableObject *other)
 	{
 		return colliderCube.hasCollision(other->colliderCube);
+	}
+
+	void setScale(const glm::vec3& scale) override
+	{
+		PositionedObject::setScale(scale);
+		colliderCube.scale(scale);
+	}
+
+	void setPosition(glm::vec3 pos) override
+	{
+		PositionedObject::setPosition(pos);
+		colliderCube.setPosition(pos);
+		colliderCube.offsetPosition(colliderOffsetAndSize.offset);
+	}
+
+	void offsetPosition(const glm::vec3& offset) override
+	{
+		PositionedObject::offsetPosition(offset);
+		colliderCube.offsetPosition(offset);
+	}
+
+	virtual std::string toString() override
+	{
+		return PositionedObject::toString() + " collCube:" + colliderCube.toString(); 
 	}
 };

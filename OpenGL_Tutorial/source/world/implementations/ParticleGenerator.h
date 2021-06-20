@@ -283,7 +283,6 @@ public:
 
 	void setParticleVelocity(glm::vec3 particleVelocity)
 	{
-		std::cout << particleVelocity.x << " " << particleVelocity.y << " " << particleVelocity.z << std::endl;
 		this->particleVelocity = particleVelocity;
 	}
 

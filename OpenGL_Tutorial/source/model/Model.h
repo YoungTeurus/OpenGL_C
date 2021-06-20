@@ -190,25 +190,6 @@ inline vector<Texture*> Model::loadMaterialTextures(aiMaterial* mat, aiTextureTy
     	Texture* loadedTexture = texturesLoader->getOrLoad2DTexture(string(str.C_Str()), this->directory, isUV_flipped);
     	loadedTexture->setType(textureType);
     	textures.push_back(loadedTexture);
-    	
-        // for (unsigned int j = 0; j < textures_loaded.size(); j++)
-        // {
-        //     if (std::strcmp(textures_loaded[j].getDirectory().data(), str.C_Str()) == 0)
-        //     {
-        //         textures.push_back(textures_loaded[j]);
-        //         skip = true;
-        //         break;
-        //     }
-        // }
-        // if (!skip)
-        // {
-        //     Texture texture;
-        //     texture.loadFromFile(string(str.C_Str()), this->directory, isUV_flipped);
-        // 	texture.setType(textureType);
-        // 	
-        //     textures.push_back(texture);
-        //     textures_loaded.push_back(texture);
-        // }
     }
     return textures;
 }

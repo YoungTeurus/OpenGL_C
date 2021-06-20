@@ -254,6 +254,9 @@
     <ClInclude Include="source\world\animations\InterpolateValueAnimation.h">
       <Filter>Исходные файлы\world\animations</Filter>
     </ClInclude>
+    <ClInclude Include="source\world\implementations\BrickWall.h">
+      <Filter>Исходные файлы\world\implementations</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\shaders\lightCube.vert">
@@ -298,21 +301,6 @@
     <None Include="resources\shaders\skybox.vert">
       <Filter>Файлы ресурсов\shaders</Filter>
     </None>
-    <None Include="resources\shaders\backpack_mixLight.frag">
-      <Filter>Файлы ресурсов\shaders</Filter>
-    </None>
-    <None Include="resources\shaders\backpack_mixLight.vert">
-      <Filter>Файлы ресурсов\shaders</Filter>
-    </None>
-    <None Include="resources\shaders\backpack_mixLightWithExplosion.frag">
-      <Filter>Файлы ресурсов\shaders</Filter>
-    </None>
-    <None Include="resources\shaders\backpack_mixLightWithExplosion.geom">
-      <Filter>Файлы ресурсов\shaders</Filter>
-    </None>
-    <None Include="resources\shaders\backpack_mixLightWithExplosion.vert">
-      <Filter>Файлы ресурсов\shaders</Filter>
-    </None>
     <None Include="resources\shaders\cube_mixLight.frag">
       <Filter>Файлы ресурсов\shaders</Filter>
     </None>
@@ -344,6 +332,21 @@
       <Filter>Файлы ресурсов\shaders</Filter>
     </None>
     <None Include="resources\shaders\particles.vert">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\model_mixLight.frag">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\model_mixLight.vert">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\model_mixLightWithExplosion.frag">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\model_mixLightWithExplosion.vert">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\model_mixLightWithExplosion.geom">
       <Filter>Файлы ресурсов\shaders</Filter>
     </None>
   </ItemGroup>

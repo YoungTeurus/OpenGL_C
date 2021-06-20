@@ -23,6 +23,10 @@ enum class ValueTypes
 
 class Shader
 {
+private:
+	std::string filename;
+	std::string folder;
+	bool withGeometry;
 public:
 	Shader(const std::string& shaderFileName, const std::string& pathToShaderFiles, const bool withGeometry = false);
 	~Shader();

@@ -20,6 +20,7 @@
 #include "text/Font.h"
 #include "text/FontLoader.h"
 #include "world/animations/Animations.h"
+#include "world/implementations/BrickWall.h"
 #include "world/implementations/Ground.h"
 #include "world/implementations/LightCube.h"
 #include "world/implementations/ParticleGenerator.h"
@@ -43,8 +44,10 @@ Camera mainCamera = renderer->getMainCamera();
 Scene mainScene;
 Tank* playerTank;
 TextString* debugTextString;
+TextString* debugTextString2;
 ParticleGenerator* particleGenerator;
- 
+BrickWall *brickWall;
+
 bool wireframeMode = false;
  
 float globalExposure = 1.0f;
@@ -214,10 +217,10 @@ void onKeyAction(GLFWwindow* window, int key, int scancode, int action, int mods
  			setPolygoneDrawMode();
  			break;
  		case GLFW_KEY_1:
-			playerTank->setShader(ShaderLoader::getInstance()->reload("backpack_mixLightWithExplosion", true));
+			playerTank->setShader(ShaderLoader::getInstance()->reload("model_mixLightWithExplosion", true));
 			break;
  		case GLFW_KEY_2:
-			playerTank->setShader(ShaderLoader::getInstance()->reload("backpack_mixLight"));
+			playerTank->setShader(ShaderLoader::getInstance()->reload("model_mixLight"));
 			break;
 		case GLFW_KEY_9:
 			mainCamera.setPosition(glm::vec3(-7.3f, 40.0f, 17.0f));
@@ -225,6 +228,7 @@ void onKeyAction(GLFWwindow* window, int key, int scancode, int action, int mods
 			mainCamera.pitch = -50.0f;
  			break;
  		case GLFW_KEY_0:
+			playerTank->setPosition(glm::vec3(0.0f));
  			playerTank->setExplosionMagnitude(0.0f);
  			playerTank->setTimeSinceExplosion(0.0f);
  			playerTank->setVisible(true);
@@ -332,9 +336,10 @@ int main()
 	#pragma endregion
 
 	// Загрузка шрифта:
-	Font *arialFont = FontLoader::getInstance()->getOrLoad("arial", 48);
+	Font *arialFont = FontLoader::getInstance()->getOrLoad("arial", 24);
 	Shader* fontShader = ShaderLoader::getInstance()->getOrLoad("font");
-	debugTextString = new TextString(arialFont, "CooL TeXt 2027", glm::vec2(20.0f, 20.0f), 0.5f, glm::vec3(0.5f, 0.8f, 0.2f));
+	debugTextString = new TextString(arialFont, "", glm::vec2(20.0f, 20.0f), 0.5f, glm::vec3(0.5f, 0.8f, 0.2f));
+	debugTextString2 = new TextString(arialFont, "", glm::vec2(20.0f, 50.0f), 0.5f, glm::vec3(0.5f, 0.8f, 0.2f));
 	 
 	renderer->setScreenWidthAndHeight(windowWidth, windowHeight);  // AspectRatio задаётся внутри.
 	mainCamera.setAspectRatio((float)windowInitialWidth / windowInitialHeight);
@@ -411,6 +416,8 @@ int main()
 	Tank backgroundTank2;
 	backgroundTank2.setPosition(glm::vec3(-15.0f, 0.0f, -30.0f));
 
+	brickWall = new BrickWall(ModelTransformations{glm::vec3(-10.0f, 0.0f, 0.0f)});
+
 	particleGenerator = new ParticleGenerator(
 		ModelTransformations{glm::vec3(-10.0f, 10.0f, -10.0f)},
 		500, 25,
@@ -457,9 +464,11 @@ int main()
 	 
 	mainScene.addSkybox(&skybox);
 	
-	mainScene.addTank(&mainTank);
+	// mainScene.addTank(&mainTank);
 	mainScene.addTank(playerTank);
 	mainScene.addTank(&backgroundTank2);
+
+	mainScene.addCollidableDrawableObject(brickWall);
 	
 	mainScene.addDrawableObject(&ground);
 	
@@ -623,8 +632,12 @@ int main()
 
 		// Отрисовка текста:
 		
+		debugTextString2->setText(
+			string("Tank: ") + playerTank->toString()
+		);
+		debugTextString2->draw(renderer);
 		debugTextString->setText(
-			string("Tank position: {") + to_string(playerTank->getPosition().x) + "," + to_string(playerTank->getPosition().y) + "," + to_string(playerTank->getPosition().z) + "}"
+			string("Wall: ") + brickWall->toString() 
 		);
 		debugTextString->draw(renderer);
 		

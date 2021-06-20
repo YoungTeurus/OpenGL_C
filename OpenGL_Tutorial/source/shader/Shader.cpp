@@ -5,7 +5,9 @@ unsigned Shader::getProgramID() const {
 	return programID;
 }
 
-Shader::Shader(const std::string& shaderFileName, const std::string& pathToShaderFiles, const bool withGeometry) {
+Shader::Shader(const std::string& shaderFileName, const std::string& pathToShaderFiles, const bool withGeometry)
+	:filename(filename), folder(pathToShaderFiles), withGeometry(withGeometry)
+{
 	std::string vertexCode, fragmentCode, geometryCode;
 	std::string vTempString, fTempString, gTempString;
 
