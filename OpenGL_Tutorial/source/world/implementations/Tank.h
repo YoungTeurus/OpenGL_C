@@ -62,7 +62,7 @@ public:
 		tankTurret->draw(*shader);
 	}
 
-	void setTurretRotationAngleDegrees(const float& angleDegrees)
+	void setTurretRotationAngleDegrees(float angleDegrees)
 	{
 		turretTransformations.rotationAngleDegrees = angleDegrees;
 	}

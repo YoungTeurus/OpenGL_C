@@ -195,4 +195,33 @@ public:
 
 		return allAnimations;
 	}
+
+	static Animation<Tank>* rotateTurretToAngle(Tank* tank, const float& duration, const float& endAngle)
+	{
+		float startAngle = tank->getTurretRotationAngleDegrees();
+		float _endAngle = Tank::clampAngleTo360(endAngle);
+
+		if (abs(_endAngle - startAngle) > 180.0f)
+		{
+			if (startAngle <= _endAngle)
+			{
+				startAngle = startAngle + 360.0f;
+			} else
+			{
+				_endAngle = endAngle + 360.0f;
+			}
+		}
+		
+		void (Tank::* setTurretRotation)(float) = &Tank::setTurretRotationAngleDegrees;
+
+		auto *animation = new FloatAnimation<Tank>(
+			tank,
+			duration,
+			startAngle,
+			_endAngle,
+			setTurretRotation
+		);
+		
+		return animation;
+	}
 };

@@ -265,22 +265,69 @@ void onKeyAction(GLFWwindow* window, int key, int scancode, int action, int mods
 void scrollCallback(GLFWwindow* window, double xOffset, double yOffset) {
 	mainCamera->handleMouseScroll((float)yOffset);
 }
+
+void rotateTankTurretToWorldPoint(Tank* tank, const glm::vec3& worldPoint)
+{
+	glm::vec3 tankPosition = tank->getPosition();
+
+	float tankBaseAngle = tank->getRotationAngleDegrees();
+	float tankTurretAngle = tank->getTurretRotationAngleDegrees();
+
+	float dx = worldPoint.x - tankPosition.x;
+	float dz = worldPoint.z - tankPosition.z;
+
+	float angleTang = dx / dz;
+
+	float angleDegreeToSouthRay = glm::degrees(std::atan(angleTang));
+
+	if (dz < 0.0f)
+	{
+		angleDegreeToSouthRay += 180.0f;
+	}
+
+	float rotationAngleRelativeToBase = angleDegreeToSouthRay - tankBaseAngle;
+	tank->setAnimation(Animations::rotateTurretToAngle(tank, 0.25f, rotationAngleRelativeToBase));
+}
  
 // Обработка движения мыши
 void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
-	// Обработка первого движения камеры:
-	if (firstMouse) {
- 		lastCursorX = (float)xpos;
- 		lastCursorY = (float)ypos;
- 		firstMouse = false;
+	glm::vec3 worldPoint = mainCamera->screenCoordToWorldCoords(glm::vec2(xpos, ypos));
+	rotateTankTurretToWorldPoint(playerTank, worldPoint);
+	
+	// // Обработка первого движения камеры:
+	// if (firstMouse) {
+ 	// 	lastCursorX = (float)xpos;
+ 	// 	lastCursorY = (float)ypos;
+ 	// 	firstMouse = false;
+	// }
+	//  
+	// // Подсчитываем смещение курсора относительно предыдущего кадра:
+	// float dx = (float)xpos - lastCursorX,
+ 	// 		dy = lastCursorY - (float)ypos;  // Отражаем Y, так как в OpenGl ось Y идёт вверх, а в окнах - вниз
+	// lastCursorX = (float)xpos; lastCursorY = (float)ypos;
+	//  
+	// mainCamera->handleMouseMovement(dx, dy);
+}
+
+void onMouseClick(GLFWwindow* window, int button, int action, int mods)
+{
+	if (action == GLFW_PRESS)
+	{
+		switch (button)
+		{
+		case GLFW_MOUSE_BUTTON_LEFT:
+			// double clickXPos, clickYPos;
+			// glfwGetCursorPos(window, &clickXPos, &clickYPos);
+			// glm::vec3 worldPoint = mainCamera->screenCoordToWorldCoords(glm::vec2(clickXPos, clickYPos));
+			// cout << "Clicked on: {" << worldPoint.x << "," << worldPoint.y << "," << worldPoint.z << "}" << std::endl;
+			// 
+			// rotateTankTurretToWorldPoint(playerTank, worldPoint);
+			
+			break;
+		case GLFW_MOUSE_BUTTON_RIGHT:
+			break;
+		}
 	}
-	 
-	// Подсчитываем смещение курсора относительно предыдущего кадра:
-	float dx = (float)xpos - lastCursorX,
- 			dy = lastCursorY - (float)ypos;  // Отражаем Y, так как в OpenGl ось Y идёт вверх, а в окнах - вниз
-	lastCursorX = (float)xpos; lastCursorY = (float)ypos;
-	 
-	mainCamera->handleMouseMovement(dx, dy);
 }
 
 int main()
@@ -320,10 +367,11 @@ int main()
  		return -1;
 	}
 	 
-	glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_DISABLED);  // Захватываем курсор
+	// glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_DISABLED);  // Захватываем курсор
 	glfwSetCursorPosCallback(win, mouseCallback);  // Функция, вызываемая при перемещении курсора
 	glfwSetScrollCallback(win, scrollCallback);
 	glfwSetKeyCallback(win, onKeyAction);
+	glfwSetMouseButtonCallback(win, onMouseClick);
 	setPolygoneDrawMode();
 	 
 	glfwSetFramebufferSizeCallback(win, OnResize);
@@ -343,8 +391,10 @@ int main()
 	debugTextString2 = new TextString(arialFont, "", glm::vec2(20.0f, 50.0f), 0.5f, glm::vec3(0.5f, 0.8f, 0.2f));
 	
 	mainCamera->setViewSize({windowInitialWidth, windowInitialHeight});
-	mainCamera->setPosition(glm::vec3(-7.3f, 40.0f, 17.0f));
-	mainCamera->setYawAndPitch(-90.0f, -50.0f);
+	// mainCamera->setPosition(glm::vec3(-7.3f, 40.0f, 17.0f));
+	// mainCamera->setYawAndPitch(-90.0f, -50.0f);
+	mainCamera->setPosition(glm::vec3(0.0f, 10.0f, 0.0f));
+	mainCamera->setYawAndPitch(-90.0f, -89.9f);
 	 
 	// Загрузка внешних данных:
 	Shader* screenRenderQuadShaderWithBlur = ShaderLoader::getInstance()->getOrLoad("screenRenderQuadShaderWithBlur");

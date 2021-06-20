@@ -96,9 +96,31 @@ public:
 	// Изменение FOV камеры при скролле колёсика
 	void handleMouseScroll(float yOffset);
 
-	glm::vec3 screenCoordToWorldCoords(const glm::ivec2& screenCoords)
+	glm::vec3 screenCoordToWorldCoords(const glm::vec2& screenCoords)
 	{
-		const glm::vec4 clipSpaceCoords((float)screenCoords.x/viewSize.x, (float)screenCoords.y/viewSize.y, 0.0f, 0.0f);
+		const glm::vec4 clipSpaceCoords(2.0f * screenCoords.x / viewSize.x - 1.0f, -2.0f * (float)screenCoords.y/viewSize.y + 1.0f, -1.0f, 1.0f);
+		const glm::vec4 tmp = glm::inverse(getProjectionMatrix()) * clipSpaceCoords;
+		const glm::vec4 viewSpaceCoords(tmp.x, tmp.y, -1.0f, 0.0f);
+
+		const glm::vec3 worldSpaceDirection = glm::normalize(glm::inverse(getViewMatrix()) * viewSpaceCoords);
+
+		// Ax + By + Cz + R = 0
+		// N = (A, B, C)
+		// R - расстояние до центр. коорд
+		// P * N + d = 0
+		// d = - P0 * N;
+		// O + Dir * t
+		// (O + Dir * t) * N - P0 * N = 0
+		// t = (P0 * N - O * N) / (Dir * N)
+		// result = O + Dir * t
+
+		glm::vec3 N(0.0f, 1.0f, 0.0f); // Нормаль к поверхности
+		glm::vec3 O = position; // Позиция камеры
+
+		float t = (- glm::dot(O, N)) / glm::dot(worldSpaceDirection, N);
+		glm::vec3 result = O + worldSpaceDirection * t;
+
+		return result;
 	}
 
 private:

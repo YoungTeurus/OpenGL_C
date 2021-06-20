@@ -4,21 +4,11 @@
 
 class PositionedObject : public WorldObject
 {
-private:
+private:	
 	// Приводит угол в диапазон [0, 360)
 	void clampAngleDegrees()
 	{
-		if (transformations.rotationAngleDegrees < 0.0f)
-		{
-			float absedAngleDegrees = abs(transformations.rotationAngleDegrees);
-			int fullCircles = (int)absedAngleDegrees / 360.0f;
-			absedAngleDegrees = absedAngleDegrees - fullCircles * 360.0f;
-			transformations.rotationAngleDegrees = 360.0f - absedAngleDegrees;
-		} else if (transformations.rotationAngleDegrees >= 360.0f)
-		{
-			int fullCircles = (int)transformations.rotationAngleDegrees / 360.0f;
-			transformations.rotationAngleDegrees = transformations.rotationAngleDegrees - fullCircles * 360.0f;
-		}
+		transformations.rotationAngleDegrees = clampAngleTo360(transformations.rotationAngleDegrees);
 	}
 protected:
 	ModelTransformations transformations;
@@ -93,5 +83,22 @@ public:
 			"(" + to_string(transformations.position.x) + "," + to_string(transformations.position.y) + "," + to_string(transformations.position.z) + ")" +
 			"}"
 		; 
+	}
+
+	static float clampAngleTo360(const float& angle)
+	{
+		if (angle < 0.0f)
+		{
+			float absedAngleDegrees = abs(angle);
+			int fullCircles = (int)absedAngleDegrees / 360.0f;
+			absedAngleDegrees = absedAngleDegrees - fullCircles * 360.0f;
+			return 360.0f - absedAngleDegrees;
+		}
+		if (angle >= 360.0f)
+		{
+			int fullCircles = (int)angle / 360.0f;
+			return angle - fullCircles * 360.0f;
+		}
+		return angle;
 	}
 };
