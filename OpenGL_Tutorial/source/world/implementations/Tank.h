@@ -1,4 +1,5 @@
 #pragma once
+#include "../../model/ModelsLoader.h"
 #include "../../model/ModelTransformations.h"
 #include "../interfaces/CollidableDrawableObject.h"
 
@@ -14,10 +15,9 @@ private:
 	ModelTransformations turretTransformations;
 	
 public:
-	Tank(Model* tankBase, Model* tankTurret)
-	// TODO: ѕон€ть, что ломаетс€ в геометрическом шейдере.
+	Tank()
 		:CollidableDrawableObject({}, ColliderCube(0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f), "backpack_mixLightWithExplosion", true),
-		 tankBase(tankBase), tankTurret(tankTurret)
+		 tankBase(ModelsLoader::getInstance()->getOrLoad("tank/base.obj", true)), tankTurret(ModelsLoader::getInstance()->getOrLoad("tank/turret.obj", true))
 	{
 	}
 
