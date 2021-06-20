@@ -177,6 +177,24 @@ void processInput(GLFWwindow* window)
  		mainCamera.handleKeyboard(MovementDirection::DOWN, deltaTime);
 	}
 }
+
+void blowTank(Tank* tank, ParticleGenerator* particleGenerator, const float& duration = 1.5f)
+{
+	ParticleGeneratorSettings pgs{
+			tank->getPosition(),
+			30, 500,
+			0.065, duration / 2, duration / 10,
+			glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.0f),
+			glm::vec3(0.75f),
+			glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(1.5f)
+		};
+
+	particleGenerator->updateSettings(pgs);
+	particleGenerator->activate();
+	particleGenerator->addAnimation(Animations::deactivateIn(particleGenerator, duration * 2));
+
+	tank->addAnimation(Animations::blowTank(tank, 1.5f, 5.0f));
+}
  
 void onKeyAction(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	if (action == GLFW_PRESS) {
@@ -213,8 +231,7 @@ void onKeyAction(GLFWwindow* window, int key, int scancode, int action, int mods
 			playerTank->addAnimation(Animations::rotateToAngle(playerTank, 0.15f, 90.0f));
 			break;
 		case GLFW_KEY_Y:
-			playerTank->addAnimation(Animations::blowTank(playerTank, 1.5f, 5.0f));
- 			particleGenerator->activate();
+			blowTank(playerTank, particleGenerator);
  			break;
 		case GLFW_KEY_I:
 			mainScene.toggleCollidersDrawing();
@@ -387,21 +404,59 @@ int main()
 		glm::vec3(5.0f, 0.0f, 0.0f), glm::vec3(3.0f, 0.0f, 0.0f),
 		glm::vec3(0.25f),
 		glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(2.0f)
-		);
-	mainScene.addDrawableUpdatableObject(particleGenerator);
+	);
+
+	ParticleGenerator *xAxis = new ParticleGenerator(
+		ModelTransformations{glm::vec3(0.0f)},
+		50, 1,
+		0.05f,
+		3.0f, 0.0f,
+		glm::vec3(10.0f, 0.0f, 0.0f), glm::vec3(0.0f),
+		glm::vec3(0.0f),
+		glm::vec3(5.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f)
+	);
+	xAxis->activate();
+	ParticleGenerator *yAxis = new ParticleGenerator(
+		ModelTransformations{glm::vec3(0.0f)},
+		50, 1,
+		0.05f,
+		3.0f, 0.0f,
+		glm::vec3(0.0f, 10.0f, 0.0f), glm::vec3(0.0f),
+		glm::vec3(0.0f),
+		glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)
+	);
+	yAxis->activate();
+	ParticleGenerator *zAxis = new ParticleGenerator(
+		ModelTransformations{glm::vec3(0.0f)},
+		50, 1,
+		0.05f,
+		3.0f, 0.0f,
+		glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f),
+		glm::vec3(0.0f),
+		glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, 1.0f)
+	);
+	zAxis->activate();
 	 
 	Ground ground("grass.png", "grass_specular.png", 100.f);
 	Skybox skybox("skybox", "sky.jpg");
 	 
+	mainScene.addSkybox(&skybox);
+	
 	mainScene.addTank(&mainTank);
 	mainScene.addTank(playerTank);
 	mainScene.addTank(&backgroundTank2);
+	
 	mainScene.addDrawableObject(&ground);
+	
 	for (auto *positionedLight : positionedLights)
 	{
  		mainScene.addDrawableObject(new LightCube(positionedLight));
 	}
-	mainScene.addSkybox(&skybox);
+	
+	mainScene.addDrawableUpdatableObject(particleGenerator);
+	mainScene.addDrawableUpdatableObject(xAxis);
+	mainScene.addDrawableUpdatableObject(yAxis);
+	mainScene.addDrawableUpdatableObject(zAxis);
 	 
 	#pragma region Инициализация Framebuffer-а и разных VAO
 	 
@@ -554,7 +609,7 @@ int main()
 		// Отрисовка текста:
 		
 		debugTextString->setText(
-			string("Tank rotation: ") + to_string(playerTank->getRotationAngleDegrees())
+			string("Tank position: {") + to_string(playerTank->getPosition().x) + "," + to_string(playerTank->getPosition().y) + "," + to_string(playerTank->getPosition().z) + "}"
 		);
 		debugTextString->draw(renderer);
 		

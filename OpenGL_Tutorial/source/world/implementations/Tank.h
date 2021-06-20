@@ -84,7 +84,7 @@ public:
 		return explosionMagnitude;
 	}
 
-	void setExplosionMagnitude(const float& explosionMagnitude)
+	void setExplosionMagnitude(float explosionMagnitude)
 	{
 		this->explosionMagnitude = explosionMagnitude;
 	}
@@ -94,7 +94,7 @@ public:
 		return timeSinceExplosion;
 	}
 
-	void setTimeSinceExplosion(const float&  timeSinceExplosion)
+	void setTimeSinceExplosion(float timeSinceExplosion)
 	{
 		this->timeSinceExplosion = timeSinceExplosion;
 	}

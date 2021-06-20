@@ -191,9 +191,6 @@
     <ClInclude Include="source\world\animations\Animations.h">
       <Filter>Исходные файлы\world\animations</Filter>
     </ClInclude>
-    <ClInclude Include="source\world\animations\FloatAnimation.h">
-      <Filter>Исходные файлы\world\animations</Filter>
-    </ClInclude>
     <ClInclude Include="source\world\animations\LinearAnimation.h">
       <Filter>Исходные файлы\world\animations</Filter>
     </ClInclude>
@@ -252,6 +249,9 @@
       <Filter>Исходные файлы\world\animations</Filter>
     </ClInclude>
     <ClInclude Include="source\world\animations\InterpolationAnimation.h">
+      <Filter>Исходные файлы\world\animations</Filter>
+    </ClInclude>
+    <ClInclude Include="source\world\animations\InterpolateValueAnimation.h">
       <Filter>Исходные файлы\world\animations</Filter>
     </ClInclude>
   </ItemGroup>

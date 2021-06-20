@@ -48,14 +48,9 @@ struct Particle
 	}
 };
 
-class ParticleGenerator : public PositionedObject, public DrawableUpdatableObject
+struct ParticleGeneratorSettings
 {
-private:
-	VOsAndIndices* particleVOsAndIndices = VAOBuilder::getInstance()->getCube();
-	std::vector<Particle> particles;
-
-	bool isActive = false;
-	
+	glm::vec3 initialPosition;
 	unsigned updateNumOfNewParticles;
 	unsigned numOfParticles;
 	float particleScale;
@@ -66,6 +61,26 @@ private:
 	glm::vec3 possiblePositionDeviations;
 	glm::vec3 particleVelocity;
 	glm::vec3 possibleVelocityDeviations;
+};
+
+class ParticleGenerator : public PositionedObject, public DrawableUpdatableObject, public AnimatedObject<ParticleGenerator>
+{
+private:
+	VOsAndIndices* particleVOsAndIndices = VAOBuilder::getInstance()->getCube();
+	std::vector<Particle> particles;
+
+	bool isActive = false;
+	
+	unsigned	updateNumOfNewParticles;
+	unsigned	numOfParticles;
+	float		particleScale;
+	float		particleLifeDuration;
+	float		possibleLifeDeviations;
+	glm::vec3	particleColor;
+	glm::vec3	possibleColorDeviations;
+	glm::vec3	possiblePositionDeviations;
+	glm::vec3	particleVelocity;
+	glm::vec3	possibleVelocityDeviations;
 
 	float lastUpdateTime = 0.0f;
 	unsigned indexOfLastUsedParticle = 0;
@@ -121,6 +136,13 @@ private:
 		particle->spawn(position, velocity, color, lifeDuration);
 	}
 
+	void createNewParticles(unsigned count)
+	{
+		for(unsigned i = 0; i < count; i++)
+		{
+			particles.push_back(Particle());
+		}
+	}
 public:
 	ParticleGenerator(const ModelTransformations& transformations,
 		const unsigned& numOfParticles, const unsigned& numOfNewParticles,
@@ -138,22 +160,32 @@ public:
 		 possiblePositionDeviations(possiblePositionDeviations),
 		 particleVelocity(particleVelocity), possibleVelocityDeviations(possibleVelocityDeviations)
 	{
-		for(unsigned i = 0; i < numOfParticles; i++)
-		{
-			particles.push_back(Particle());
-		}
+		createNewParticles(numOfParticles);
 	}
 
-	ParticleGenerator* activate()
+	void updateSettings(const ParticleGeneratorSettings& settings)
+	{
+		setPosition(settings.initialPosition);
+		this->updateNumOfNewParticles = settings.updateNumOfNewParticles;
+		setNumOfParticles(settings.numOfParticles);
+		this->particleScale = settings.particleScale;
+		this->particleLifeDuration = settings.particleLifeDuration;
+		this->possibleLifeDeviations = settings.possibleLifeDeviations;
+		this->particleColor = settings.particleColor;
+		this->possibleColorDeviations = settings.possibleColorDeviations;
+		this->possiblePositionDeviations = settings.possiblePositionDeviations;
+		this->particleVelocity = settings.particleVelocity;
+		this->possibleVelocityDeviations = settings.possibleVelocityDeviations;
+	}
+
+	void activate()
 	{
 		this->isActive = true;
-		return this;
 	}
 
-	ParticleGenerator* deactivate()
+	void deactivate()
 	{
 		this->isActive = false;
-		return this;
 	}
 
 	void drawAction(Renderer* renderer) override
@@ -181,7 +213,8 @@ public:
 
 	void update(const float& currentTime) override
 	{
-		UpdatableObject::update(currentTime);
+		DrawableUpdatableObject::update(currentTime);
+		AnimatedObject::update(currentTime);
 
 		// TODO: передавать в UpdatableObject-ы render, чтобы они сами выбирали формат времени?
 		const float deltaTime = currentTime - lastUpdateTime;
@@ -198,5 +231,61 @@ public:
 		{
 			particle.update(deltaTime);
 		}
+	}
+
+
+	void setUpdateNumOfNewParticles(unsigned updateNumOfNewParticles)
+	{
+		this->updateNumOfNewParticles = updateNumOfNewParticles;
+	}
+
+	void setNumOfParticles(unsigned numOfParticles)
+	{
+		const unsigned delta = this->numOfParticles - numOfParticles;
+		if (delta > 0)
+		{
+			createNewParticles(delta);
+		}
+		this->numOfParticles = numOfParticles;
+	}
+
+	void setParticleScale(float particleScale)
+	{
+		this->particleScale = particleScale;
+	}
+
+	void setParticleLifeDuration(float particleLifeDuration)
+	{
+		this->particleLifeDuration = particleLifeDuration;
+	}
+
+	void setPossibleLifeDeviations(float possibleLifeDeviations)
+	{
+		this->possibleLifeDeviations = possibleLifeDeviations;
+	}
+
+	void setParticleColor(const glm::vec3& particleColor)
+	{
+		this->particleColor = particleColor;
+	}
+
+	void setPossibleColorDeviations(const glm::vec3& possibleColorDeviations)
+	{
+		this->possibleColorDeviations = possibleColorDeviations;
+	}
+
+	void setPossiblePositionDeviations(const glm::vec3& possiblePositionDeviations)
+	{
+		this->possiblePositionDeviations = possiblePositionDeviations;
+	}
+
+	void setParticleVelocity(const glm::vec3& particleVelocity)
+	{
+		this->particleVelocity = particleVelocity;
+	}
+
+	void setPossibleVelocityDeviations(const glm::vec3& possibleVelocityDeviations)
+	{
+		this->possibleVelocityDeviations = possibleVelocityDeviations;
 	}
 };

@@ -55,7 +55,7 @@ public:
 		return transformations.rotationVector;
 	}
 
-	void setRotationAngleDegrees(const float& angleDegrees)
+	void setRotationAngleDegrees(float angleDegrees)
 	{
 		transformations.rotationAngleDegrees = angleDegrees;
 		clampAngleDegrees();
