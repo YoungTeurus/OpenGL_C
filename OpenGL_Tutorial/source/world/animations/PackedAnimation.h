@@ -28,7 +28,7 @@ public:
 		return this;
 	}
 
-	void act(const float& currentTime) override
+	void actCore(const float& currentTime) override
 	{
 		for (auto &&animation : animations)
 		{

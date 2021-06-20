@@ -193,6 +193,7 @@ void onKeyAction(GLFWwindow* window, int key, int scancode, int action, int mods
  		case GLFW_KEY_0:
  			playerTank->setExplosionMagnitude(0.0f);
  			playerTank->setTimeSinceExplosion(0.0f);
+ 			playerTank->setVisible(true);
  			break;
  		case GLFW_KEY_F:
  			changeFlashlightState();

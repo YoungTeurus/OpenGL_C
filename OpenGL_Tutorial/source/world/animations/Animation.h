@@ -3,6 +3,15 @@
 template<class T>
 class Animation
 {
+private:
+	void checkAndSetIfEnded(const float& currentTime)
+	{
+		if (currentTime - startTime > length)
+		{
+			hasEnded = true;
+		}
+	}
+
 protected:
 	bool hasStarted = false;
 	bool hasEnded = false;
@@ -16,15 +25,25 @@ protected:
 	{
 	}
 
-	void checkAndSetIfEnded(const float& currentTime)
-	{
-		if (currentTime - startTime > length)
-		{
-			hasEnded = true;
-		}
-	}
+	virtual void actCore(const float& currentTime) = 0;
 public:
-	virtual void act(const float& currentTime) = 0;
+	void act(const float& currentTime)
+	{
+		if (!this->hasStarted)
+		{
+			this->startTime = currentTime;
+			this->hasStarted = true;
+		}
+		if (this->hasEnded)
+		{
+			return;
+		}
+
+		actCore(currentTime);
+
+		checkAndSetIfEnded(currentTime);
+	}
+	
 	virtual void endImmediately() = 0;
 
 	virtual ~Animation() = default;

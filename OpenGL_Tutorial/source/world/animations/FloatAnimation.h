@@ -15,22 +15,10 @@ public:
 	{
 	}
 
-	virtual void act(const float& currentTime) override
+	virtual void actCore(const float& currentTime) override
 	{
-		if (!this->hasStarted)
-		{
-			this->startTime = currentTime;
-			this->hasStarted = true;
-		}
-		if (this->hasEnded)
-		{
-			return;
-		}
-
 		const float currentValue = getCurrentState(currentTime, startValue, endValue);
 		(this->object->*setValueFunction)(currentValue);
-		
-		this->checkAndSetIfEnded(currentTime);
 	}
 
 	float getCurrentState(const float& currentTime, const float& a, const float& b) const
