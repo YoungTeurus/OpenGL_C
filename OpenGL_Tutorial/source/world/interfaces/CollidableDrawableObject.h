@@ -57,16 +57,20 @@ public:
 
 		if (colliderShader == nullptr)
 		{
-			colliderShader = ShaderLoader::getInstance()->getOrLoad("lightCube", FilePaths::getPathToShaderFolderWithTrailingSplitter());
+			colliderShader = ShaderLoader::getInstance()->getOrLoad("collider", FilePaths::getPathToShaderFolderWithTrailingSplitter());
 		}
 
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 		glm::mat4 cubeModel = colliderTransformations.createModelMatrixWithTransformations();
-		shader->use();
-		shader->setFloatMat4("projectionAndView", renderer->getPV());
-		shader->setFloatMat4("model", cubeModel);
-		shader->setFloatVec3("uColor", glm::vec3(0.8f, 0.0f, 0.0f));
+		colliderShader->use();
+		colliderShader->setFloatMat4("projectionAndView", renderer->getPV());
+		colliderShader->setFloatMat4("model", cubeModel);
 		glBindVertexArray(cubeVOsAndIndices->vao);
 		glDrawElements(GL_TRIANGLES, cubeVOsAndIndices->indices.size(), GL_UNSIGNED_INT, 0);
+
+		glDisable(GL_BLEND);
 	}
 
 	void setColliderDrawing(const bool& state)
