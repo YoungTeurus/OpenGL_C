@@ -122,7 +122,6 @@ void processInput(GLFWwindow* window)
  		globalGamma = max( globalGamma - 0.5f * deltaTime, 0.01f );
 	}
 
-	// TODO: контроль взрыва.
 	if (glfwGetKey(window, GLFW_KEY_EQUAL) == GLFW_PRESS) {
 		float currentExplosionMagnitude = playerTank->getExplosionMagnitude();
 		playerTank->setExplosionMagnitude( min( currentExplosionMagnitude + 5.f * deltaTime, 50.0f ) );
@@ -131,12 +130,14 @@ void processInput(GLFWwindow* window)
 		float currentExplosionMagnitude = playerTank->getExplosionMagnitude();
 		playerTank->setExplosionMagnitude( max( currentExplosionMagnitude - 5.f * deltaTime, 0.0f ) );
 	}
-	// if (glfwGetKey(window, GLFW_KEY_RIGHT_BRACKET) == GLFW_PRESS) {
- 	// 	globalTimeSinceExplosion = min( globalTimeSinceExplosion + 0.5f * deltaTime, 10.0f );
-	// }
-	// if (glfwGetKey(window, GLFW_KEY_LEFT_BRACKET) == GLFW_PRESS) {
- 	// 	globalTimeSinceExplosion = max( globalTimeSinceExplosion - 0.5f * deltaTime, 0.0f );
-	// }
+	if (glfwGetKey(window, GLFW_KEY_RIGHT_BRACKET) == GLFW_PRESS) {
+		float currentTimeSinceExplosion = playerTank->getTimeSinceExplosion();
+		playerTank->setTimeSinceExplosion( min( currentTimeSinceExplosion + 0.5f * deltaTime, 10.0f ) );
+	}
+	if (glfwGetKey(window, GLFW_KEY_LEFT_BRACKET) == GLFW_PRESS) {
+		float currentTimeSinceExplosion = playerTank->getTimeSinceExplosion();
+		playerTank->setTimeSinceExplosion( max( currentTimeSinceExplosion - 0.5f * deltaTime, 0.0f ) );
+	}
 
 	// ”правление танком:
 	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
@@ -192,6 +193,7 @@ void onKeyAction(GLFWwindow* window, int key, int scancode, int action, int mods
  			break;
  		case GLFW_KEY_0:
  			playerTank->setExplosionMagnitude(0.0f);
+ 			playerTank->setTimeSinceExplosion(0.0f);
  			break;
  		case GLFW_KEY_F:
  			changeFlashlightState();
