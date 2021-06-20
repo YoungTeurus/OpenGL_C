@@ -209,6 +209,9 @@ void onKeyAction(GLFWwindow* window, int key, int scancode, int action, int mods
  		case GLFW_KEY_RIGHT:
 			playerTank->addAnimation(Animations::rotateToAngle(playerTank, 0.15f, 90.0f));
 			break;
+		case GLFW_KEY_SPACE:
+			playerTank->addAnimation(Animations::blowTank(playerTank, 1.5f, 10.0f));
+ 			break;
 		case GLFW_KEY_I:
 			mainScene.toggleCollidersDrawing();
 			break;
@@ -386,9 +389,9 @@ int main()
 	Ground ground("grass.png", "grass_specular.png", 100.f);
 	Skybox skybox("skybox", "sky.jpg");
 	 
-	mainScene.addDynamicCollidableObject(&mainTank);
-	mainScene.addDynamicCollidableObject(playerTank);
-	mainScene.addDynamicCollidableObject(&backgroundTank2);
+	mainScene.addTank(&mainTank);
+	mainScene.addTank(playerTank);
+	mainScene.addTank(&backgroundTank2);
 	mainScene.addDrawableObject(&ground);
 	for (auto *positionedLight : positionedLights)
 	{

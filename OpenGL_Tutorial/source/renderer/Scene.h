@@ -4,6 +4,7 @@
 
 
 #include "../world/implementations/Skybox.h"
+#include "../world/implementations/Tank.h"
 #include "../world/interfaces/CollidableDrawableObject.h"
 #include "../world/interfaces/CollidableObject.h"
 #include "../world/interfaces/DrawableObject.h"
@@ -82,34 +83,33 @@ public:
 
 	void addDrawableObject(DrawableObject* drawableObject)
 	{
-		allObjects.push_back(drawableObject);
+		addObject(drawableObject);
 		drawableObjects.push_back(drawableObject);
 	}
 
 	void addDrawableUpdatableObject(DrawableUpdatableObject* drawableUpdatableObject)
 	{
-		allObjects.push_back((DrawableObject*)drawableUpdatableObject);
-		drawableObjects.push_back(drawableUpdatableObject);
+		addDrawableObject((DrawableObject*)drawableUpdatableObject);
 		updatableObjects.push_back(drawableUpdatableObject);
 	}
 
-	void addCollidableObject(CollidableDrawableObject* collidableObject)
+	void addCollidableDrawableObject(CollidableDrawableObject* collidableDrawableObject)
 	{
-		allObjects.push_back((PositionedObject*)collidableObject);
-		drawableObjects.push_back(collidableObject);
-		updatableObjects.push_back(collidableObject);
-		collidableObjects.push_back(collidableObject);
-		collidableDrawableObjects.push_back(collidableObject);
+		addDrawableObject((DrawableObject*)collidableDrawableObject);
+		collidableObjects.push_back(collidableDrawableObject);
+		collidableDrawableObjects.push_back(collidableDrawableObject);
 	}
 
-	void addDynamicCollidableObject(CollidableDrawableObject* collidableObject)
+	void addDynamicCollidableDrawableObjectObject(CollidableDrawableObject* dynamicCollidableDrawableObject)
 	{
-		allObjects.push_back((PositionedObject*)collidableObject);
-		drawableObjects.push_back(collidableObject);
-		updatableObjects.push_back(collidableObject);
-		collidableObjects.push_back(collidableObject);
-		collidableDrawableObjects.push_back(collidableObject);
-		dynamicCollidableObjects.push_back(collidableObject);
+		addCollidableDrawableObject(dynamicCollidableDrawableObject);
+		dynamicCollidableObjects.push_back(dynamicCollidableDrawableObject);
+	}
+
+	void addTank(Tank* tankObject)
+	{
+		addDynamicCollidableDrawableObjectObject(tankObject);
+		updatableObjects.push_back(tankObject);
 	}
 
 	void addSkybox(Skybox* skybox)

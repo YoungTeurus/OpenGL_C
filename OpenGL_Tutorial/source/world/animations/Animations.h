@@ -6,8 +6,10 @@
 class Animations
 {
 public:
-	static Animation<PositionedObject>* rotateToAngle(PositionedObject *object, const float& length, const float& endValue)
+	template<class T>
+	static Animation<T>* rotateToAngle(T *object, const float& length, const float& endValue)
 	{
+		static_cast<PositionedObject*>((T*)0);
 		float startAngle = object->getRotationAngleDegrees();
 		float endAngle = endValue;
 
@@ -23,19 +25,21 @@ public:
 		}
 
 		void (PositionedObject::* setFunction)(const float&) = &PositionedObject::setRotationAngleDegrees;
-		
-		return new FloatAnimation<PositionedObject>(
+
+		auto *animation = new FloatAnimation<T>(
 			object,
 			length,
 			startAngle,
 			endAngle,
 			setFunction
 		);
+		
+		return animation;
 	}
 
 	static Animation<Tank>* blowTank(Tank* tank, const float& length, const float& explosionForce)
 	{
-		PackedAnimation<Tank> *animation = new PackedAnimation<Tank>(tank, length);
+		auto *animation = new PackedAnimation<Tank>(tank, length);
 
 		void (Tank::* setExplosionMagnitude)(const float&) = &Tank::setExplosionMagnitude;
 		void (Tank::* setTimeSinceExplosion)(const float&) = &Tank::setTimeSinceExplosion;
@@ -49,5 +53,17 @@ public:
 				setExplosionMagnitude
 			)
 		);
+
+		animation->addAnimation(
+			new FloatAnimation<Tank>(
+				tank,
+				length,
+				0.0f,
+				length,
+				setTimeSinceExplosion
+			)
+		);
+
+		return animation;
 	}
 };

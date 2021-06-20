@@ -2,15 +2,13 @@
 #include "Animation.h"
 #include "../interfaces/UpdatableObject.h"
 
-class AnimatedObject : public PositionedObject, public UpdatableObject
+template<class T>
+class AnimatedObject : public UpdatableObject
 {
 private:
-	Animation<PositionedObject>* currentAnimation = nullptr;
+	Animation<T>* currentAnimation = nullptr;
 public:
-	AnimatedObject(const ModelTransformations& transformations)
-		:PositionedObject(transformations)
-	{
-	}
+	AnimatedObject() = default;
 	
 	virtual void update(const float& currentTime) override
 	{
@@ -28,7 +26,7 @@ public:
 		}
 	}
 	
-	void addAnimation(Animation<PositionedObject>* animation)
+	void addAnimation(Animation<T>* animation)
 	{
 		if (currentAnimation != nullptr)
 		{
@@ -36,5 +34,23 @@ public:
 			delete currentAnimation;
 		}
 		currentAnimation = animation;
+	}
+};
+
+class ActualAnimatedObject : public AnimatedObject<ActualAnimatedObject>
+{
+	
+};
+
+
+
+template<class T>
+class Anim
+{
+private:
+	T obj;
+public:
+	void use()
+	{
 	}
 };

@@ -1,9 +1,10 @@
 #pragma once
 #include "../../model/ModelsLoader.h"
 #include "../../model/ModelTransformations.h"
+#include "../animations/AnimatedObject.h"
 #include "../interfaces/CollidableDrawableObject.h"
 
-class Tank : public CollidableDrawableObject
+class Tank : public CollidableDrawableObject, public AnimatedObject<Tank>
 {
 private:	
 	float explosionMagnitude = 0.0f;

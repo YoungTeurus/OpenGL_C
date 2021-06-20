@@ -4,7 +4,6 @@
 
 #include "PositionedObject.h"
 #include "../../model/ModelTransformations.h"
-#include "../animations/AnimatedObject.h"
 
 struct CollizionResolver
 {
@@ -170,7 +169,7 @@ public:
 	}
 };
 
-class CollidableObject : public AnimatedObject
+class CollidableObject : public PositionedObject
 {
 protected:
 	ColliderCube colliderCube;
@@ -181,7 +180,7 @@ protected:
 	}
 public:
 	CollidableObject(const ModelTransformations& transformations, ColliderCube colliderCube)
-		: AnimatedObject(transformations), colliderCube(colliderCube)
+		: PositionedObject(transformations), colliderCube(colliderCube)
 	{
 	}
 
