@@ -6,7 +6,7 @@ template<class T>
 class DelayedAction : public Animation<T>
 {
 protected:
-	virtual void performAction(const float& currentTime) = 0;
+	virtual void performAction() = 0;
 public:
 	DelayedAction(T *object, const float& delay)
 		:Animation<T>(object, delay)
@@ -17,8 +17,13 @@ public:
 	{
 		if(currentTime - this->startTime > this->length)
 		{
-			performAction(currentTime);
+			performAction();
 		}
+	}
+
+	virtual void endImmediately() override
+	{
+		performAction();
 	}
 };
 
@@ -28,7 +33,7 @@ class DelayedVoidAction : public DelayedAction<T>
 private:
 	void (T::* action)(void);
 protected:
-	virtual void performAction(const float& currentTime) override
+	virtual void performAction() override
 	{
 		(this->object->*action)();
 	}
@@ -37,6 +42,8 @@ public:
 		:DelayedAction<T>(object, delay), action(action)
 	{
 	}
+
+	
 };
 
 template<class T, typename Arg>
@@ -46,7 +53,7 @@ private:
 	Arg actionParameter;
 	void (T::* action)(Arg);
 protected:
-	virtual void performAction(const float& currentTime) override
+	virtual void performAction() override
 	{
 		(this->object->*action)(actionParameter);
 	}

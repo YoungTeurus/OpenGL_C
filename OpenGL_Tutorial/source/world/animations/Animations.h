@@ -2,6 +2,7 @@
 #include "FloatAnimation.h"
 #include "PackedAnimation.h"
 #include "../implementations/Tank.h"
+#include "DelayedAction.h"
 
 class Animations
 {
@@ -43,6 +44,7 @@ public:
 
 		void (Tank::* setExplosionMagnitude)(const float&) = &Tank::setExplosionMagnitude;
 		void (Tank::* setTimeSinceExplosion)(const float&) = &Tank::setTimeSinceExplosion;
+		void (Tank::* setVisible)(bool) = &Tank::setVisible;
 
 		animation->addAnimation(
 			new FloatAnimation<Tank>(
@@ -61,6 +63,15 @@ public:
 				0.0f,
 				length,
 				setTimeSinceExplosion
+			)
+		);
+
+		animation->addAnimation(
+			new DelayedSingleParameterAction<Tank, bool>(
+				tank,
+				length,
+				setVisible,
+				false
 			)
 		);
 

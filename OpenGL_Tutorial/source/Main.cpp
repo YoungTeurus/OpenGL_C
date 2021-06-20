@@ -211,7 +211,7 @@ void onKeyAction(GLFWwindow* window, int key, int scancode, int action, int mods
 			playerTank->addAnimation(Animations::rotateToAngle(playerTank, 0.15f, 90.0f));
 			break;
 		case GLFW_KEY_SPACE:
-			playerTank->addAnimation(Animations::blowTank(playerTank, 1.5f, 10.0f));
+			playerTank->addAnimation(Animations::blowTank(playerTank, 1.5f, 5.0f));
  			break;
 		case GLFW_KEY_I:
 			mainScene.toggleCollidersDrawing();

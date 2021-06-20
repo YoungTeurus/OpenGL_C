@@ -30,7 +30,7 @@ public:
 		return visible;
 	}
 
-	void setVisible(const bool& visible)
+	void setVisible(bool visible)
 	{
 		this->visible = visible;
 	}
