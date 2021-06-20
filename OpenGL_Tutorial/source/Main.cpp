@@ -182,16 +182,25 @@ void blowTank(Tank* tank, ParticleGenerator* particleGenerator, const float& dur
 {
 	ParticleGeneratorSettings pgs{
 			tank->getPosition(),
-			30, 500,
-			0.065, duration / 2, duration / 10,
-			glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.0f),
+			30, 100,
+			0.01f, 0.1f, 0.05f,
+			glm::vec3(5.0f, 0.0f, 0.0f), glm::vec3(0.0f),
 			glm::vec3(0.75f),
-			glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(1.5f)
-		};
+			glm::vec3(0.0f), glm::vec3(10.0f)
+	};
+	ParticleGeneratorSettings pgs_end{
+			tank->getPosition(),
+			30, 200,
+			0.3f, 3.0f, 1.0f,
+			glm::vec3(0.05f), glm::vec3(0.0f),
+			glm::vec3(0.75f),
+			glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(0.25f)
+	};
 
 	particleGenerator->updateSettings(pgs);
 	particleGenerator->activate();
-	particleGenerator->addAnimation(Animations::deactivateIn(particleGenerator, duration * 2));
+	particleGenerator->addAnimation(Animations::changeParticleSettings(particleGenerator, duration * 3, pgs, pgs_end));
+	// particleGenerator->addAnimation(Animations::deactivateIn(particleGenerator, duration * 2));
 
 	tank->addAnimation(Animations::blowTank(tank, 1.5f, 5.0f));
 }
@@ -454,9 +463,9 @@ int main()
 	}
 	
 	mainScene.addDrawableUpdatableObject(particleGenerator);
-	mainScene.addDrawableUpdatableObject(xAxis);
-	mainScene.addDrawableUpdatableObject(yAxis);
-	mainScene.addDrawableUpdatableObject(zAxis);
+	// mainScene.addDrawableUpdatableObject(xAxis);
+	// mainScene.addDrawableUpdatableObject(yAxis);
+	// mainScene.addDrawableUpdatableObject(zAxis);
 	 
 	#pragma region Инициализация Framebuffer-а и разных VAO
 	 

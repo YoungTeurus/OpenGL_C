@@ -14,18 +14,20 @@ struct Particle
 	glm::vec3 position, velocity;
 	glm::vec4 color;
 	float life;
+	float scale;
 
 	Particle()
-		:position(0.0f), velocity(0.0f), color(1.0f), life(0.0f)
+		:position(0.0f), velocity(0.0f), color(1.0f), life(0.0f), scale(1.0f)
 	{
 	}
 
-	void spawn(const glm::vec3& position, const glm::vec3& velocity, const glm::vec4& color, const float& lifeDuration)
+	void spawn(const glm::vec3& position, const glm::vec3& velocity, const glm::vec4& color, const float& lifeDuration, const float& scale)
 	{
 		this->position = position;
 		this->velocity = velocity;
 		this->color = color;
 		this->life = lifeDuration;
+		this->scale = scale;
 	}
 
 	void update(const float& deltaTime)
@@ -133,7 +135,7 @@ private:
 		
 		float lifeDuration = particleLifeDuration + (rand() % ((int)(possibleLifeDeviations * 100) + 1) - ((int)(possibleLifeDeviations * 50) + 1)) / 100.0f;
 		
-		particle->spawn(position, velocity, color, lifeDuration);
+		particle->spawn(position, velocity, color, lifeDuration, particleScale);
 	}
 
 	void createNewParticles(unsigned count)
@@ -195,11 +197,11 @@ public:
 
 		shader->use();
 		shader->setFloatMat4("pv", renderer->getPV());
-		shader->setFloat("uScale", particleScale);
 		for (auto && particle : particles)
 		{
 			if(particle.isAlive())
 			{
+				shader->setFloat("uScale", particle.scale);
 				shader->setFloatMat4("model", particle.getTransformations().createModelMatrixWithTransformations());
 				shader->setFloatVec4("uColor", particle.color);
 
@@ -241,10 +243,10 @@ public:
 
 	void setNumOfParticles(unsigned numOfParticles)
 	{
-		const unsigned delta = this->numOfParticles - numOfParticles;
+		const int delta = (int)numOfParticles - (int)this->numOfParticles;
 		if (delta > 0)
 		{
-			createNewParticles(delta);
+			createNewParticles((unsigned)delta);
 		}
 		this->numOfParticles = numOfParticles;
 	}
@@ -264,27 +266,28 @@ public:
 		this->possibleLifeDeviations = possibleLifeDeviations;
 	}
 
-	void setParticleColor(const glm::vec3& particleColor)
+	void setParticleColor(glm::vec3 particleColor)
 	{
 		this->particleColor = particleColor;
 	}
 
-	void setPossibleColorDeviations(const glm::vec3& possibleColorDeviations)
+	void setPossibleColorDeviations(glm::vec3 possibleColorDeviations)
 	{
 		this->possibleColorDeviations = possibleColorDeviations;
 	}
 
-	void setPossiblePositionDeviations(const glm::vec3& possiblePositionDeviations)
+	void setPossiblePositionDeviations(glm::vec3 possiblePositionDeviations)
 	{
 		this->possiblePositionDeviations = possiblePositionDeviations;
 	}
 
-	void setParticleVelocity(const glm::vec3& particleVelocity)
+	void setParticleVelocity(glm::vec3 particleVelocity)
 	{
+		std::cout << particleVelocity.x << " " << particleVelocity.y << " " << particleVelocity.z << std::endl;
 		this->particleVelocity = particleVelocity;
 	}
 
-	void setPossibleVelocityDeviations(const glm::vec3& possibleVelocityDeviations)
+	void setPossibleVelocityDeviations(glm::vec3 possibleVelocityDeviations)
 	{
 		this->possibleVelocityDeviations = possibleVelocityDeviations;
 	}

@@ -22,7 +22,7 @@ public:
 	{
 	}
 
-	void setPosition(const glm::vec3& pos) override
+	void setPosition(glm::vec3 pos) override
 	{
 		// TODO: избавиться от этого workaround-а.
 		CollidableDrawableObject::setPosition(pos);

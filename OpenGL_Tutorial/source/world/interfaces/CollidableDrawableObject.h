@@ -30,7 +30,7 @@ public:
 		calculateColliderTransformations();
 	}
 
-	void setPosition(const glm::vec3& pos) override
+	void setPosition(glm::vec3 pos) override
 	{
 		CollidableObject::setPosition(pos);
 		colliderCube.setPosition(pos);

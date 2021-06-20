@@ -30,7 +30,7 @@ public:
 
 	virtual ~PositionedObject() = default;
 	
-	virtual void setPosition(const glm::vec3& pos)
+	virtual void setPosition(glm::vec3 pos)
 	{
 		transformations.position = pos;
 	}

@@ -17,7 +17,7 @@ class InterpolateValueAnimation : public LinearAnimation<T>
 		(this->object->*setValueFunction)(currentValue);
 	}
 
-	Value getCurrentState(const float& currentTime, const Value& a, const Value& b) const
+	virtual Value getCurrentState(const float& currentTime, const Value& a, const Value& b) const
 	{
 		const Value interpolatedValue = (Value)((b - a) * this->getInterpolationValue(currentTime)) + a;
 		return interpolatedValue;
@@ -52,6 +52,14 @@ public:
 template<class T>
 class UnsignedAnimation : public InterpolateValueAnimation<T, unsigned>
 {
+private:
+	virtual unsigned getCurrentState(const float& currentTime, const unsigned& a, const unsigned& b) const override
+	{
+		const unsigned _b = std::max(a, b), _a = std::min(a, b);
+		const unsigned delta = _b - _a;
+		const unsigned interpolatedValue = (unsigned)(delta * this->getInterpolationValue(currentTime)) + _a;
+		return interpolatedValue;
+	}
 public:
 	UnsignedAnimation(T *object, float length, unsigned startValue, unsigned endValue, void (T::* setValueFunction)(unsigned))
 		:InterpolateValueAnimation<T, unsigned>(object, length, startValue, endValue, setValueFunction)
@@ -60,11 +68,20 @@ public:
 };
 
 template<class T>
-class Vec3Animation : public InterpolateValueAnimation<T, const glm::vec3&>
+class Vec3Animation : public InterpolateValueAnimation<T, glm::vec3>
 {
+private:
+	virtual glm::vec3 getCurrentState(const float& currentTime, const glm::vec3& a, const glm::vec3& b) const override
+	{
+		const float interValue = this->getInterpolationValue(currentTime);
+		const glm::vec3 delta = b - a;
+		const glm::vec3 deltaXInterValue = delta * interValue;
+		const glm::vec3 interpolatedValue = deltaXInterValue + a;
+		return interpolatedValue;
+	}
 public:
-	Vec3Animation(T *object, float length, const glm::vec3& startValue, const glm::vec3& endValue, void (T::* setValueFunction)(const glm::vec3&))
-		:InterpolateValueAnimation<T, const glm::vec3&>(object, length, startValue, endValue, setValueFunction)
+	Vec3Animation(T *object, float length, glm::vec3 startValue, glm::vec3 endValue, void (T::* setValueFunction)(glm::vec3))
+		:InterpolateValueAnimation<T, glm::vec3>(object, length, startValue, endValue, setValueFunction)
 	{
 	}
 };
