@@ -191,7 +191,7 @@ void blowTank(Tank* tank, ParticleGenerator* particleGenerator, const float& dur
 	ParticleGeneratorSettings pgs_end{
 			tank->getPosition(),
 			30, 200,
-			0.3f, 3.0f, 1.0f,
+			0.3f, 3.5f, 1.0f,
 			glm::vec3(0.05f), glm::vec3(0.0f),
 			glm::vec3(0.75f),
 			glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(0.25f)
@@ -199,10 +199,10 @@ void blowTank(Tank* tank, ParticleGenerator* particleGenerator, const float& dur
 
 	particleGenerator->updateSettings(pgs);
 	particleGenerator->activate();
-	particleGenerator->addAnimation(Animations::changeParticleSettings(particleGenerator, duration * 3, pgs, pgs_end));
-	// particleGenerator->addAnimation(Animations::deactivateIn(particleGenerator, duration * 2));
+	particleGenerator->addAnimation(Animations::changeParticleSettings(particleGenerator, duration, pgs, pgs_end));
+	particleGenerator->addAnimation(Animations::deactivateIn(particleGenerator, duration));
 
-	tank->addAnimation(Animations::blowTank(tank, 1.5f, 5.0f));
+	tank->addAnimation(Animations::blowTank(tank, duration / 2, 5.0f));
 }
  
 void onKeyAction(GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -228,19 +228,19 @@ void onKeyAction(GLFWwindow* window, int key, int scancode, int action, int mods
  			changeFlashlightState();
  			break;
 		case GLFW_KEY_UP:
-			playerTank->addAnimation(Animations::rotateToAngle(playerTank, 0.15f, 180.0f));
+			playerTank->setAnimation(Animations::rotateToAngle(playerTank, 0.15f, 180.0f), false);
 			break;
  		case GLFW_KEY_DOWN:
-			playerTank->addAnimation(Animations::rotateToAngle(playerTank, 0.15f, 0.0f));
+			playerTank->setAnimation(Animations::rotateToAngle(playerTank, 0.15f, 0.0f), false);
 			break;
  		case GLFW_KEY_LEFT:
-			playerTank->addAnimation(Animations::rotateToAngle(playerTank, 0.15f, 270.0f));
+			playerTank->setAnimation(Animations::rotateToAngle(playerTank, 0.15f, 270.0f), false);
 			break;
  		case GLFW_KEY_RIGHT:
-			playerTank->addAnimation(Animations::rotateToAngle(playerTank, 0.15f, 90.0f));
+			playerTank->setAnimation(Animations::rotateToAngle(playerTank, 0.15f, 90.0f), false);
 			break;
 		case GLFW_KEY_Y:
-			blowTank(playerTank, particleGenerator);
+			blowTank(playerTank, particleGenerator, 3.0f);
  			break;
 		case GLFW_KEY_I:
 			mainScene.toggleCollidersDrawing();
@@ -463,9 +463,9 @@ int main()
 	}
 	
 	mainScene.addDrawableUpdatableObject(particleGenerator);
-	// mainScene.addDrawableUpdatableObject(xAxis);
-	// mainScene.addDrawableUpdatableObject(yAxis);
-	// mainScene.addDrawableUpdatableObject(zAxis);
+	mainScene.addDrawableUpdatableObject(xAxis);
+	mainScene.addDrawableUpdatableObject(yAxis);
+	mainScene.addDrawableUpdatableObject(zAxis);
 	 
 	#pragma region Инициализация Framebuffer-а и разных VAO
 	 
