@@ -53,6 +53,8 @@ class ParticleGenerator : public PositionedObject, public DrawableUpdatableObjec
 private:
 	VOsAndIndices* particleVOsAndIndices = VAOBuilder::getInstance()->getCube();
 	std::vector<Particle> particles;
+
+	bool isActive = false;
 	
 	unsigned updateNumOfNewParticles;
 	unsigned numOfParticles;
@@ -142,6 +144,18 @@ public:
 		}
 	}
 
+	ParticleGenerator* activate()
+	{
+		this->isActive = true;
+		return this;
+	}
+
+	ParticleGenerator* deactivate()
+	{
+		this->isActive = false;
+		return this;
+	}
+
 	void drawAction(Renderer* renderer) override
 	{
 		glEnable(GL_BLEND);
@@ -173,10 +187,12 @@ public:
 		const float deltaTime = currentTime - lastUpdateTime;
 		lastUpdateTime = currentTime;
 
-		for(unsigned i = 0; i < updateNumOfNewParticles; i++)
-		{
-			unsigned indexOfUnusedParticle = getIndexOfFirstUnusedParticle();
-			respawnParticle(indexOfUnusedParticle);
+		if (isActive){
+			for(unsigned i = 0; i < updateNumOfNewParticles; i++)
+			{
+				unsigned indexOfUnusedParticle = getIndexOfFirstUnusedParticle();
+				respawnParticle(indexOfUnusedParticle);
+			}
 		}
 		for (auto &particle : particles)
 		{

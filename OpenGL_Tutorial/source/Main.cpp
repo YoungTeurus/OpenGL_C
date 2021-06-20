@@ -43,6 +43,7 @@ Camera mainCamera = renderer->getMainCamera();
 Scene mainScene;
 Tank* playerTank;
 TextString* debugTextString;
+ParticleGenerator* particleGenerator;
  
 bool wireframeMode = false;
  
@@ -194,6 +195,7 @@ void onKeyAction(GLFWwindow* window, int key, int scancode, int action, int mods
  			playerTank->setExplosionMagnitude(0.0f);
  			playerTank->setTimeSinceExplosion(0.0f);
  			playerTank->setVisible(true);
+ 			particleGenerator->deactivate();
  			break;
  		case GLFW_KEY_F:
  			changeFlashlightState();
@@ -210,8 +212,9 @@ void onKeyAction(GLFWwindow* window, int key, int scancode, int action, int mods
  		case GLFW_KEY_RIGHT:
 			playerTank->addAnimation(Animations::rotateToAngle(playerTank, 0.15f, 90.0f));
 			break;
-		case GLFW_KEY_SPACE:
+		case GLFW_KEY_Y:
 			playerTank->addAnimation(Animations::blowTank(playerTank, 1.5f, 5.0f));
+ 			particleGenerator->activate();
  			break;
 		case GLFW_KEY_I:
 			mainScene.toggleCollidersDrawing();
@@ -376,7 +379,7 @@ int main()
 	Tank backgroundTank2;
 	backgroundTank2.setPosition(glm::vec3(-15.0f, 0.0f, -30.0f));
 
-	ParticleGenerator particleGenerator(
+	particleGenerator = new ParticleGenerator(
 		ModelTransformations{glm::vec3(-10.0f, 10.0f, -10.0f)},
 		500, 25,
 		0.025f,
@@ -385,7 +388,7 @@ int main()
 		glm::vec3(0.25f),
 		glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(2.0f)
 		);
-	mainScene.addDrawableUpdatableObject(&particleGenerator);
+	mainScene.addDrawableUpdatableObject(particleGenerator);
 	 
 	Ground ground("grass.png", "grass_specular.png", 100.f);
 	Skybox skybox("skybox", "sky.jpg");
