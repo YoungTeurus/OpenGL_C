@@ -20,8 +20,6 @@ public:
 
 	void drawAction(Renderer* renderer) override
 	{
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		// activate corresponding render state	
 		shader->use();
 		shader->setFloatMat4("projection", renderer->getOrthoProjection());
@@ -63,8 +61,6 @@ public:
 		}
 		glBindVertexArray(0);
 		glBindTexture(GL_TEXTURE_2D, 0);
-		
-		glDisable(GL_BLEND);
 	}
 
 

@@ -192,7 +192,6 @@ public:
 
 	void drawAction(Renderer* renderer) override
 	{
-		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
 		shader->use();
@@ -210,7 +209,7 @@ public:
 			}
 		}
 
-		glDisable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
 	void update(const float& currentTime) override
