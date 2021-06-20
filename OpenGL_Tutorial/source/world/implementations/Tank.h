@@ -43,7 +43,7 @@ public:
 		shader->setFloatMat4("projectionAndView", renderer->getPV());
 		shader->setFloatMat4("model", tankBaseModel);
 		shader->setFloat("shininess", 64.0f);
-		shader->setFloatVec3("viewPos", renderer->getMainCamera().position);
+		shader->setFloatVec3("viewPos", renderer->getMainCamera()->position);
 		
 		int activeLights = 0;
 		for(auto *light : renderer->getLights())

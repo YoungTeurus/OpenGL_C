@@ -2,17 +2,19 @@
 
 using namespace glm;
 
-Camera::Camera(float aspectRatio, glm::vec3 pos, glm::vec3 up, float yaw, float pitch, float zNear, float zFar) 
+Camera::Camera(const glm::ivec2& viewSize, glm::vec3 pos, glm::vec3 up, float yaw, float pitch, float zNear, float zFar) 
 	: position(pos), worldUp(up), front(vec3(0.0f, 0.0f, -1.0f)), movementSpeed(DEFAULT_SPEED), mouseSensitivity(DEFAULT_SENSITIVITY), FOV(DEFAULT_FOV),
-	  yaw(yaw), pitch(pitch), zNear(zNear), zFar(zFar), aspectRatio(aspectRatio)
+	  yaw(yaw), pitch(pitch), zNear(zNear), zFar(zFar), viewSize(viewSize)
 {
+	calculateAspectRatio();
 	updateCameraVectors();
 }
 
-Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch, float aspectRatio, float zNear, float zFar)
+Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch, const glm::ivec2& viewSize, float zNear, float zFar)
 	: position(vec3(posX, posY, posZ)), worldUp(vec3(upX, upY, upZ)), movementSpeed(DEFAULT_SPEED), mouseSensitivity(DEFAULT_SENSITIVITY), FOV(DEFAULT_FOV),
-	  yaw(yaw), pitch(pitch), zNear(zNear), zFar(zFar), aspectRatio(aspectRatio)
+	  yaw(yaw), pitch(pitch), zNear(zNear), zFar(zFar), viewSize(viewSize)
 {
+	calculateAspectRatio();
 	updateCameraVectors();
 }
 

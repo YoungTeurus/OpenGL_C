@@ -18,13 +18,12 @@ private:
 
 	std::vector<BaseLight*> lights;
 
-	Camera mainCamera;
+	Camera *mainCamera;
 	TexturesLoader *texturesLoader = TexturesLoader::getInstance();
 
-	int renderScreenWidth, renderScreenHeight;
-
-	Renderer()
+	Renderer(const glm::ivec2& viewSize = {0, 0})
 	{
+		mainCamera = new Camera(viewSize);
 	}
 public:
 	static Renderer* getInstance()
@@ -53,7 +52,7 @@ public:
 		return lights;
 	}
 
-	Camera getMainCamera() const
+	Camera *getMainCamera() const
 	{
 		return mainCamera;
 	}
@@ -65,8 +64,8 @@ public:
 
 	void updateViewAndProjection()
 	{
-		glm::mat4 view = mainCamera.getViewMatrix();
- 		glm::mat4 projection = mainCamera.getProjectionMatrix();
+		glm::mat4 view = mainCamera->getViewMatrix();
+ 		glm::mat4 projection = mainCamera->getProjectionMatrix();
 	 
  		setViewAndProjection(view, projection);
 	}
@@ -88,13 +87,11 @@ public:
 
 	void setScreenWidthAndHeight(const int& width, const int& height)
 	{
-		this->renderScreenWidth = width;
-		this->renderScreenHeight = height;
-		mainCamera.setAspectRatio((float)width/height);
+		mainCamera->setViewSize({width, height});
 	}
 
 	glm::mat4 getOrthoProjection() const
 	{
-		return glm::ortho(0.0f, (float)renderScreenWidth, 0.0f, (float)renderScreenHeight, -1.0f, 1.0f);
+		return mainCamera->getOrthoProjection();
 	}
 };

@@ -24,12 +24,19 @@ const float DEFAULT_FOV			=  45.0f;
 
 class Camera
 {
+private:
+	void calculateAspectRatio()
+	{
+		this->aspectRatio = (float)this->viewSize.x / this->viewSize.y;
+	}
 public:
 	glm::vec3 position;		// Позиция камеры в мире
 	glm::vec3 front;		// Направление взгляда камеры ("вперёд")
 	glm::vec3 up;			// Направление вектора "вверх" камеры
 	glm::vec3 right;		// Направление вектора "вправо" камеры
 	glm::vec3 worldUp;		// Направление вектора "вверх" мира
+
+	glm::ivec2 viewSize;	// Размер видимой области камеры.
 
 	float yaw;				// Рыскание камеры: вращение вокруг оси Y (по часовой стрелке) - влево-вправо
 	float pitch;			// Тангаж камеры: вращение вокруг оси X (по часовой стрелке) - вниз-вверх
@@ -42,24 +49,19 @@ public:
 	float zFar;
 	float aspectRatio;
 
-	// Конструктор по-умолчанию. Не предназначено для прямого использования.
-	Camera()
-		:Camera(0.0f)
-	{
-	}
-
 	// Конструктор камеры с векторными параметрами
-	Camera(float aspectRatio, glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = DEFAULT_YAW, float pitch = DEFAULT_PITCH, float zNear = 1.0f, float zFar = 100.0f);
+	Camera(const glm::ivec2& viewSize, glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = DEFAULT_YAW, float pitch = DEFAULT_PITCH, float zNear = 1.0f, float zFar = 100.0f);
 
 	// Конструктор камеры со скалярными параметрами
-	Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch, float aspectRatio, float zNear = 1.0f, float zFar = 100.0f);
+	Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch, const glm::ivec2& viewSize, float zNear = 1.0f, float zFar = 100.0f);
 
 	// Деструктор камеры
 	~Camera();
 
-	void setAspectRatio(const float& aspectRatio)
+	void setViewSize(const glm::ivec2& viewSize)
 	{
-		this->aspectRatio = aspectRatio;
+		this->viewSize = viewSize;
+		calculateAspectRatio();
 	}
 
 	void setPosition(const glm::vec3& position)
@@ -80,6 +82,11 @@ public:
 	
 	glm::mat4 getProjectionMatrix();
 
+	glm::mat4 getOrthoProjection()
+	{
+		return glm::ortho(0.0f, (float)viewSize.x, 0.0f, (float)viewSize.y, -1.0f, 1.0f);
+	}
+
 	// Перемещение камеры в указанном направлении в течение deltaTime
 	void handleKeyboard(MovementDirection direction, float deltaTime);
 
@@ -88,6 +95,11 @@ public:
 
 	// Изменение FOV камеры при скролле колёсика
 	void handleMouseScroll(float yOffset);
+
+	glm::vec3 screenCoordToWorldCoords(const glm::ivec2& screenCoords)
+	{
+		const glm::vec4 clipSpaceCoords((float)screenCoords.x/viewSize.x, (float)screenCoords.y/viewSize.y, 0.0f, 0.0f);
+	}
 
 private:
 	// Рассчитывает векторы

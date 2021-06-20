@@ -39,7 +39,7 @@ float lastCursorX = (float)windowInitialWidth / 2,
 bool firstMouse = true;
  
 Renderer* renderer = Renderer::getInstance();
-Camera mainCamera = renderer->getMainCamera();
+Camera *mainCamera = renderer->getMainCamera();
 
 Scene mainScene;
 Tank* playerTank;
@@ -85,7 +85,7 @@ struct Material
 // Callback функция, вызываемая при изменении размеров окна.
 void OnResize(GLFWwindow* window, int width, int height)
 {
-	mainCamera.aspectRatio = (float)width / height;
+	mainCamera->aspectRatio = (float)width / height;
 	glViewport(0, 0, width, height);
 	renderer->setScreenWidthAndHeight(width, height);
 }
@@ -99,16 +99,16 @@ void processInput(GLFWwindow* window)
 	 
 	// Перемещение камеры:
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
- 		mainCamera.handleKeyboard(MovementDirection::FORWARD, deltaTime);
+ 		mainCamera->handleKeyboard(MovementDirection::FORWARD, deltaTime);
 	}
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
- 		mainCamera.handleKeyboard(MovementDirection::BACKWARD, deltaTime);
+ 		mainCamera->handleKeyboard(MovementDirection::BACKWARD, deltaTime);
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
- 		mainCamera.handleKeyboard(MovementDirection::STRAFE_LEFT, deltaTime);
+ 		mainCamera->handleKeyboard(MovementDirection::STRAFE_LEFT, deltaTime);
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
- 		mainCamera.handleKeyboard(MovementDirection::STRAFE_RIGHT, deltaTime);
+ 		mainCamera->handleKeyboard(MovementDirection::STRAFE_RIGHT, deltaTime);
 	}
 	 
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
@@ -174,10 +174,10 @@ void processInput(GLFWwindow* window)
  		
 	// Поднятие-спуск камеры:
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
- 		mainCamera.handleKeyboard(MovementDirection::UP, deltaTime);
+ 		mainCamera->handleKeyboard(MovementDirection::UP, deltaTime);
 	}
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
- 		mainCamera.handleKeyboard(MovementDirection::DOWN, deltaTime);
+ 		mainCamera->handleKeyboard(MovementDirection::DOWN, deltaTime);
 	}
 }
 
@@ -223,9 +223,9 @@ void onKeyAction(GLFWwindow* window, int key, int scancode, int action, int mods
 			playerTank->setShader(ShaderLoader::getInstance()->reload("model_mixLight"));
 			break;
 		case GLFW_KEY_9:
-			mainCamera.setPosition(glm::vec3(-7.3f, 40.0f, 17.0f));
-			mainCamera.yaw = -90.0f;
-			mainCamera.pitch = -50.0f;
+			mainCamera->setPosition(glm::vec3(-7.3f, 40.0f, 17.0f));
+			mainCamera->yaw = -90.0f;
+			mainCamera->pitch = -50.0f;
  			break;
  		case GLFW_KEY_0:
 			playerTank->setPosition(glm::vec3(0.0f));
@@ -263,7 +263,7 @@ void onKeyAction(GLFWwindow* window, int key, int scancode, int action, int mods
  
 // Обработка движения колёсика мыши
 void scrollCallback(GLFWwindow* window, double xOffset, double yOffset) {
-	mainCamera.handleMouseScroll((float)yOffset);
+	mainCamera->handleMouseScroll((float)yOffset);
 }
  
 // Обработка движения мыши
@@ -280,7 +280,7 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
  			dy = lastCursorY - (float)ypos;  // Отражаем Y, так как в OpenGl ось Y идёт вверх, а в окнах - вниз
 	lastCursorX = (float)xpos; lastCursorY = (float)ypos;
 	 
-	mainCamera.handleMouseMovement(dx, dy);
+	mainCamera->handleMouseMovement(dx, dy);
 }
 
 int main()
@@ -301,6 +301,7 @@ int main()
 	 
 	GLFWwindow* win = glfwCreateWindow(windowWidth, windowHeight, "OpenGL Window",
  		                                NULL, NULL);
+	renderer = Renderer::getInstance();
 	renderer->setScreenWidthAndHeight(windowWidth, windowHeight);
 	 
 	if (win == NULL)
@@ -340,11 +341,10 @@ int main()
 	Shader* fontShader = ShaderLoader::getInstance()->getOrLoad("font");
 	debugTextString = new TextString(arialFont, "", glm::vec2(20.0f, 20.0f), 0.5f, glm::vec3(0.5f, 0.8f, 0.2f));
 	debugTextString2 = new TextString(arialFont, "", glm::vec2(20.0f, 50.0f), 0.5f, glm::vec3(0.5f, 0.8f, 0.2f));
-	 
-	renderer->setScreenWidthAndHeight(windowWidth, windowHeight);  // AspectRatio задаётся внутри.
-	mainCamera.setAspectRatio((float)windowInitialWidth / windowInitialHeight);
-	mainCamera.setPosition(glm::vec3(-7.3f, 40.0f, 17.0f));
-	mainCamera.setYawAndPitch(-90.0f, -50.0f);
+	
+	mainCamera->setViewSize({windowInitialWidth, windowInitialHeight});
+	mainCamera->setPosition(glm::vec3(-7.3f, 40.0f, 17.0f));
+	mainCamera->setYawAndPitch(-90.0f, -50.0f);
 	 
 	// Загрузка внешних данных:
 	Shader* screenRenderQuadShaderWithBlur = ShaderLoader::getInstance()->getOrLoad("screenRenderQuadShaderWithBlur");
@@ -568,10 +568,10 @@ int main()
  		processInput(win);
 	 
  		// Update некоторых объектов сцены:
- 		flashlight->setPosition(mainCamera.position
- 			- mainCamera.up * 0.3f
+ 		flashlight->setPosition(mainCamera->position
+ 			- mainCamera->up * 0.3f
  		);
- 		flashlight->setDirection(mainCamera.front);
+ 		flashlight->setDirection(mainCamera->front);
 	 
  		mainTank.setPosition(glm::vec3(glm::cos(currentTime) * 2.5f, 0.0f, glm::cos(currentTime) * 2.5f));
  		mainTank.setRotationAngleDegrees(glm::cos(currentTime) * 30.0f);
@@ -582,8 +582,8 @@ int main()
 
 		// Подготовка к отрисовке:
 		// TODO: перенести функции в updateViewAndProjection().
-		glm::mat4 view = mainCamera.getViewMatrix();
- 		glm::mat4 projection = mainCamera.getProjectionMatrix();
+		glm::mat4 view = mainCamera->getViewMatrix();
+ 		glm::mat4 projection = mainCamera->getProjectionMatrix();
 		renderer->setViewAndProjection(view, projection);
 		// renderer->updateViewAndProjection();
 	 
