@@ -77,9 +77,9 @@ void main(){
 	for(int i = 0; i < lightsCount; i++){
 		result += getColorFromLight(lights[i], normal, gFragPosition, viewDir, diffuseTextureColor, specularTextureColor);
 	}
-
+	
 	fragColor = vec4(result, 1.0);
-
+	
 	float brightness = dot(fragColor.rgb, vec3(0.2126, 0.7152, 0.0722));
 	if (brightness > 1.0){
 		brightColor = vec4(fragColor.rgb, 1.0);
@@ -113,10 +113,10 @@ vec3 getColorFromDirLight(Light light, vec3 normal, vec3 viewDir, vec3 diffuseTe
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
 
 	// Комбинируем результаты:
-	vec3 _ambient = light.ambient * diffuseTextureColor;
-	vec3 _diffuse = light.diffuse * diff * diffuseTextureColor;
-	vec3 _specular = light.specular * spec * specularTextureColor;
-	return (_ambient + _diffuse + _specular);
+	vec3 ambient = light.ambient * diffuseTextureColor;
+	vec3 diffuse = light.diffuse * diff * diffuseTextureColor;
+	vec3 specular = light.specular * spec * specularTextureColor;
+	return (ambient + diffuse + specular * 10.0f);
 }
 
 vec3 getColorFromPointLight(Light light, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 diffuseTextureColor, vec3 specularTextureColor){
@@ -139,7 +139,7 @@ vec3 getColorFromPointLight(Light light, vec3 normal, vec3 fragPos, vec3 viewDir
 	vec3 ambient = light.ambient * diffuseTextureColor * attenuation;
 	vec3 diffuse = light.diffuse * diff * diffuseTextureColor * attenuation;
 	vec3 specular = light.specular * spec * specularMap * attenuation;
-	return (ambient + diffuse + specular);
+	return (ambient + diffuse + specular * 10.0f);
 }
 
 vec3 getColorFromSpotLight(Light light, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 diffuseTextureColor, vec3 specularTextureColor){
@@ -170,5 +170,5 @@ vec3 getColorFromSpotLight(Light light, vec3 normal, vec3 fragPos, vec3 viewDir,
 	vec3 ambient = light.ambient * diffuseTextureColor * intensity_angle * attenuation;
 	vec3 diffuse = light.diffuse * diff * diffuseTextureColor * intensity_angle * attenuation;
 	vec3 specular = light.specular * spec * specularTextureColor * intensity_angle * attenuation;
-	return (ambient + diffuse + specular);
+	return (ambient + diffuse + specular * 10.0f);
 }
