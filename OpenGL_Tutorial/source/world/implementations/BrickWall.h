@@ -18,6 +18,7 @@ public:
 		:CollidableDrawableObject(transformations, {glm::vec3(-1.0f, 0.0f, -1.0f), glm::vec3(2.0f)}, "model_mixLightWithExplosion", true),
 		 model(ModelsLoader::getInstance()->getOrLoad("walls/brick.obj", true))
 	{
+		setShininess(2.0f);
 	}
 
 	void setPosition(glm::vec3 pos) override
@@ -41,7 +42,7 @@ public:
 		shader->setFloat("uTimeSinceExplosion", timeSinceExplosion);
 		shader->setFloatMat4("projectionAndView", renderer->getPV());
 		shader->setFloatMat4("model", wallModel);
-		shader->setFloat("shininess", 64.0f);
+		shader->setFloat("shininess", getShininess());
 		shader->setFloatVec3("viewPos", renderer->getMainCamera()->position);
 		
 		int activeLights = 0;

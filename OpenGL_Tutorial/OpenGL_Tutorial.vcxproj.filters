@@ -355,5 +355,14 @@
     <None Include="resources\shaders\collider.vert">
       <Filter>Файлы ресурсов\shaders</Filter>
     </None>
+    <None Include="resources\shaders\model_hotSwap.frag">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\model_hotSwap.geom">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\model_hotSwap.vert">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

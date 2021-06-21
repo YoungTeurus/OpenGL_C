@@ -126,20 +126,12 @@ void processInput(GLFWwindow* window)
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_EQUAL) == GLFW_PRESS) {
-		float currentExplosionMagnitude = playerTank->getExplosionMagnitude();
-		playerTank->setExplosionMagnitude( min( currentExplosionMagnitude + 5.f * deltaTime, 50.0f ) );
+		float currentShininess = playerTank->getShininess();
+		playerTank->setShininess( min( currentShininess + 10.f * deltaTime, 256.0f ) );
 	}
 	if (glfwGetKey(window, GLFW_KEY_MINUS) == GLFW_PRESS) {
-		float currentExplosionMagnitude = playerTank->getExplosionMagnitude();
-		playerTank->setExplosionMagnitude( max( currentExplosionMagnitude - 5.f * deltaTime, 0.0f ) );
-	}
-	if (glfwGetKey(window, GLFW_KEY_RIGHT_BRACKET) == GLFW_PRESS) {
-		float currentTimeSinceExplosion = playerTank->getTimeSinceExplosion();
-		playerTank->setTimeSinceExplosion( min( currentTimeSinceExplosion + 0.5f * deltaTime, 10.0f ) );
-	}
-	if (glfwGetKey(window, GLFW_KEY_LEFT_BRACKET) == GLFW_PRESS) {
-		float currentTimeSinceExplosion = playerTank->getTimeSinceExplosion();
-		playerTank->setTimeSinceExplosion( max( currentTimeSinceExplosion - 0.5f * deltaTime, 0.0f ) );
+		float currentShininess = playerTank->getShininess();
+		playerTank->setShininess( max( currentShininess - 10.f * deltaTime, 1.0f ) );
 	}
 
 	// ”правление танком:
@@ -217,10 +209,10 @@ void onKeyAction(GLFWwindow* window, int key, int scancode, int action, int mods
  			setPolygoneDrawMode();
  			break;
  		case GLFW_KEY_1:
-			playerTank->setShader(ShaderLoader::getInstance()->reload("model_mixLightWithExplosion", true));
+			playerTank->setShader(ShaderLoader::getInstance()->getOrLoad("model_mixLightWithExplosion", true));
 			break;
  		case GLFW_KEY_2:
-			playerTank->setShader(ShaderLoader::getInstance()->reload("model_mixLight"));
+			playerTank->setShader(ShaderLoader::getInstance()->reload("model_hotSwap", true));
 			break;
 		case GLFW_KEY_9:
 			mainCamera->setPosition(glm::vec3(-7.3f, 40.0f, 17.0f));
@@ -384,8 +376,8 @@ int main()
 	 
 	PointLight *pointLight = new PointLight(
  			glm::vec3(0.1f),
- 			glm::vec3(20.0f, 20.0f, 5.0f),
- 			glm::vec3(20.0f, 20.0f, 5.0f),
+ 			glm::vec3(3.0f, 3.0f, 0.2f),
+ 			glm::vec3(3.0f, 3.0f, 0.2f),
  			1.0f, 0.01f, 0.009f,
  			glm::vec3(0.0f, 10.0f, -10.0f),
  			"VERY bright yellow lamp"
@@ -396,8 +388,8 @@ int main()
 
 	pointLight = new PointLight(
  			glm::vec3(0.1f),
- 			glm::vec3(5.0f, 20.0f, 20.0f),
- 			glm::vec3(5.0f, 20.0f, 20.0f),
+ 			glm::vec3(0.2f, 3.0f, 3.0f),
+ 			glm::vec3(0.2f, 3.0f, 3.0f),
  			1.0f, 0.01f, 0.009f,
  			glm::vec3(-20.0f, 10.0f, -10.0f),
  			"VERY bright green lamp"

@@ -8,6 +8,7 @@ class DrawableObject : public WorldObject
 private:
 	bool visible = true;
 protected:
+	float shininess = 64.0f;
 	Shader* shader;
 	virtual void drawAction(Renderer* renderer) = 0;
 public:
@@ -37,5 +38,15 @@ public:
 	void setVisible(bool visible)
 	{
 		this->visible = visible;
+	}
+
+	float getShininess() const
+	{
+		return shininess;
+	}
+
+	void setShininess(float shininess)
+	{
+		this->shininess = shininess;
 	}
 };

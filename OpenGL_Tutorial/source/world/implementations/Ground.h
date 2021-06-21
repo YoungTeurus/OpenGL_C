@@ -41,7 +41,7 @@ public:
 		shader->use();
 		shader->setFloatMat4("projectionAndView", renderer->getPV());
 		shader->setFloatMat4("model", groundModel);
-		shader->setFloat("shininess", 64.0f);
+		shader->setFloat("shininess", getShininess());
 		shader->setFloatVec3("viewPos", renderer->getMainCamera()->position);
 		
 		int activeLights = 0;
