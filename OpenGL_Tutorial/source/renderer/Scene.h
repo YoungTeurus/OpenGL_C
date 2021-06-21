@@ -28,18 +28,18 @@ public:
 	Skybox* skybox = nullptr;
 	glm::vec4 backgroundColor = {0.25f, 0.25f, 0.25f, 1.f};
 
-	void draw(Renderer* renderer)
+	void draw()
 	{
 		glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
 		for (auto * drawableObject : drawableObjects)
 		{
-			drawableObject->draw(renderer);
+			drawableObject->draw();
 		}
 		if (skybox != nullptr)
 		{
-			skybox->draw(renderer);
+			skybox->draw();
 		}
 	}
 

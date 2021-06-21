@@ -358,7 +358,7 @@ int main()
 	// Загрузка шрифта:
 	Font *arialFont = FontLoader::getInstance()->getOrLoad("arial", 24);
 	Shader* fontShader = ShaderLoader::getInstance()->getOrLoad("font");
-	debugTextString = new TextString(arialFont,
+	debugTextString = new TextString(renderer, arialFont,
 		"Text = {%tank.x%, %tank.y%, %tank.z%}\nWall = {%wall.x%, %wall.y%, %wall.z%}",
 		glm::vec2(20.0f, 50.0f), 0.5f, glm::vec3(0.5f, 0.8f, 0.2f));
 	
@@ -442,10 +442,10 @@ int main()
 	);
 	renderer->addLight(flashlight);
 	
-	playerTank = new Tank();
+	playerTank = new Tank(renderer);
 	playerTank->setPosition(glm::vec3(-5.0f, 0.0f, -15.0f));
-	Tank backgroundTank2;
-	backgroundTank2.setPosition(glm::vec3(-15.0f, 0.0f, -30.0f));
+	Tank *backgroundTank2 = new Tank(renderer);
+	backgroundTank2->setPosition(glm::vec3(-15.0f, 0.0f, -30.0f));
 
 	std::vector<glm::vec3> wallsCoords = {
 		glm::vec3(-10.0f, 0.0f, 0.0f),
@@ -459,7 +459,7 @@ int main()
 		glm::vec3(-4.0f, 0.0f, -2.0f),
 	};
 
-	particleGenerator = new ParticleGenerator(
+	particleGenerator = new ParticleGenerator(renderer, 
 		ModelTransformations{glm::vec3(-10.0f, 10.0f, -10.0f)},
 		500, 25,
 		0.025f,
@@ -469,7 +469,7 @@ int main()
 		glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(2.0f)
 	);
 
-	ParticleGenerator *xAxis = new ParticleGenerator(
+	ParticleGenerator *xAxis = new ParticleGenerator(renderer, 
 		ModelTransformations{glm::vec3(0.0f)},
 		50, 1,
 		0.05f,
@@ -479,7 +479,7 @@ int main()
 		glm::vec3(5.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f)
 	);
 	xAxis->activate();
-	ParticleGenerator *yAxis = new ParticleGenerator(
+	ParticleGenerator *yAxis = new ParticleGenerator(renderer, 
 		ModelTransformations{glm::vec3(0.0f)},
 		50, 1,
 		0.05f,
@@ -489,7 +489,7 @@ int main()
 		glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)
 	);
 	yAxis->activate();
-	ParticleGenerator *zAxis = new ParticleGenerator(
+	ParticleGenerator *zAxis = new ParticleGenerator(renderer, 
 		ModelTransformations{glm::vec3(0.0f)},
 		50, 1,
 		0.05f,
@@ -500,17 +500,17 @@ int main()
 	);
 	zAxis->activate();
 	 
-	Ground ground("grass.png", "grass_specular.png", 100.f);
-	Skybox skybox("skybox", "sky.jpg");
+	Ground ground(renderer, "grass.png", "grass_specular.png", 100.f);
+	Skybox skybox(renderer, "skybox", "sky.jpg");
 	 
 	mainScene.addSkybox(&skybox);
 	
 	mainScene.addTank(playerTank);
-	mainScene.addTank(&backgroundTank2);
+	mainScene.addTank(backgroundTank2);
 
 	for (auto && wallsCoord : wallsCoords)
 	{
-		brickWall = new BrickWall(ModelTransformations{wallsCoord});
+		brickWall = new BrickWall(renderer, ModelTransformations{wallsCoord});
 		mainScene.addCollidableDrawableObject(brickWall);
 	}
 
@@ -524,7 +524,7 @@ int main()
 	
 	for (auto *positionedLight : positionedLights)
 	{
- 		mainScene.addDrawableObject(new LightCube(positionedLight));
+ 		mainScene.addDrawableObject(new LightCube(renderer, positionedLight));
 	}
 	
 	mainScene.addDrawableUpdatableObject(particleGenerator);
@@ -625,19 +625,15 @@ int main()
 
 		// Проверка столкновений:
 		mainScene.update(currentTime);
-
+		
 		// Подготовка к отрисовке:
-		// TODO: перенести функции в updateViewAndProjection().
-		glm::mat4 view = mainCamera->getViewMatrix();
- 		glm::mat4 projection = mainCamera->getProjectionMatrix();
-		renderer->setViewAndProjection(view, projection);
-		// renderer->updateViewAndProjection();
+		renderer->updateViewAndProjection();
 	 
  		// Отрисовка в framebuffer:
  		glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
  		glEnable(GL_DEPTH_TEST);
 	 
- 		mainScene.draw(renderer);
+ 		mainScene.draw();
  		// Конец отрисовки в framebuffer.
 	 
  		// Отрисовка в frambuffer для размытия:
@@ -686,7 +682,7 @@ int main()
 			{"tank.y", to_string(playerTank->getPosition().y)},
 			{"tank.z", to_string(playerTank->getPosition().z)},
 		});
-		debugTextString->draw(renderer);
+		debugTextString->draw();
 		
  		// Конец отрисовки в стандартный framebuffer.
 	 

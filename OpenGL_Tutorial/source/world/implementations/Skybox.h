@@ -11,29 +11,29 @@ private:
 	std::string cubeMapFolderName;
 	std::string cubeMapFileName;
 public:
-	Skybox(const std::string& cubeMapFolderName, const std::string& cubeMapFileName)
-		:PositionedObject({}), DrawableObject("skybox"),
+	Skybox(Renderer* renderer, const std::string& cubeMapFolderName, const std::string& cubeMapFileName)
+		:PositionedObject({}), DrawableObject(renderer, "skybox"),
 		 cubeMapFolderName(cubeMapFolderName), cubeMapFileName(cubeMapFileName)
 	{
 	}
 
-	void drawAction(Renderer* renderer) override
+	void drawAction() override
 	{
 		// Отрисовка skybox:
 
 		// Проверка загруженности текстур:
 		if(cubeMap == nullptr)
 		{
-			cubeMap = renderer->getTexturesLoader()->getOrLoadCubeMap(cubeMapFileName, FilePaths::getPathToTexturesFolderWithTrailingSplitter() + cubeMapFolderName);
+			cubeMap = getAttachedRenderer()->getTexturesLoader()->getOrLoadCubeMap(cubeMapFileName, FilePaths::getPathToTexturesFolderWithTrailingSplitter() + cubeMapFolderName);
 		}
 		
 		glDepthFunc(GL_LEQUAL);
 		shader->use();
 		
 		// Избавляемся от перемещения камеры, сохраняя поворот
-		glm::mat4 skyboxView = glm::mat4(glm::mat3(renderer->getView()));
+		glm::mat4 skyboxView = glm::mat4(glm::mat3(getAttachedRenderer()->getView()));
 		
-		shader->setFloatMat4("projection", renderer->getProjection());
+		shader->setFloatMat4("projection", getAttachedRenderer()->getProjection());
 		shader->setFloatMat4("view", skyboxView);
 		
 		glActiveTexture(GL_TEXTURE0);

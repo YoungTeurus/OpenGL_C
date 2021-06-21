@@ -16,8 +16,8 @@ private:
 	ModelTransformations turretTransformations;
 	
 public:
-	Tank()
-		:CollidableDrawableObject({}, {glm::vec3(-1.0f, 0.0f, -1.0f), glm::vec3(2.0f)}, "model_mixLightWithExplosion", true),
+	Tank(Renderer* renderer)
+		:CollidableDrawableObject(renderer, {}, {glm::vec3(-1.0f, 0.0f, -1.0f), glm::vec3(2.0f)}, "model_mixLightWithExplosion", true),
 		 tankBase(ModelsLoader::getInstance()->getOrLoad("tank/base.obj", true)), tankTurret(ModelsLoader::getInstance()->getOrLoad("tank/turret.obj", true))
 	{
 	}
@@ -29,10 +29,10 @@ public:
 		calculateColliderTransformations();
 	}
 	
-	void drawAction(Renderer* renderer) override
+	void drawAction() override
 	{
-		// Отрисовка коллайдера, если нужна:
-		CollidableDrawableObject::drawAction(renderer);
+		// Отрисовка коллайдера, если нужно:
+		CollidableDrawableObject::drawAction();
 
 		// Отрисовка модели:
 		glm::mat4 tankBaseModel = transformations.createModelMatrixWithTransformations();
@@ -40,13 +40,13 @@ public:
 		shader->use();
 		shader->setFloat("uExplosionMagnitude", explosionMagnitude);
 		shader->setFloat("uTimeSinceExplosion", timeSinceExplosion);
-		shader->setFloatMat4("projectionAndView", renderer->getPV());
+		shader->setFloatMat4("projectionAndView", getAttachedRenderer()->getPV());
 		shader->setFloatMat4("model", tankBaseModel);
 		shader->setFloat("shininess", getShininess());
-		shader->setFloatVec3("viewPos", renderer->getMainCamera()->position);
+		shader->setFloatVec3("viewPos", getAttachedRenderer()->getMainCamera()->position);
 		
 		int activeLights = 0;
-		for(auto *light : renderer->getLights())
+		for(auto *light : getAttachedRenderer()->getLights())
 		{
 			activeLights += light->useAndReturnSuccess(shader, activeLights);
 		}

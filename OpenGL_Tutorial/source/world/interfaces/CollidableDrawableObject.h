@@ -23,9 +23,9 @@ protected:
 			};
 	}
 public:
-	CollidableDrawableObject(const ModelTransformations& transformations, const OffsetAndSize& colliderOffsetAndSize, const std::string& shader, const bool& shaderWithGeometry = false)
+	CollidableDrawableObject(Renderer* renderer, const ModelTransformations& transformations, const OffsetAndSize& colliderOffsetAndSize, const std::string& shader, const bool& shaderWithGeometry = false)
 		:CollidableObject(transformations, colliderOffsetAndSize),
-		 DrawableObject(shader, shaderWithGeometry)
+		 DrawableObject(renderer, shader, shaderWithGeometry)
 	{
 		calculateColliderTransformations();
 	}
@@ -48,7 +48,7 @@ public:
 		calculateColliderTransformations();
 	}
 	
-	void drawAction(Renderer* renderer) override
+	void drawAction() override
 	{
 		if(!isColliderDrawing)
 		{
@@ -62,7 +62,7 @@ public:
 
 		glm::mat4 cubeModel = colliderTransformations.createModelMatrixWithTransformations();
 		colliderShader->use();
-		colliderShader->setFloatMat4("projectionAndView", renderer->getPV());
+		colliderShader->setFloatMat4("projectionAndView", getAttachedRenderer()->getPV());
 		colliderShader->setFloatMat4("model", cubeModel);
 		glBindVertexArray(cubeVOsAndIndices->vao);
 		glDrawElements(GL_TRIANGLES, cubeVOsAndIndices->indices.size(), GL_UNSIGNED_INT, 0);

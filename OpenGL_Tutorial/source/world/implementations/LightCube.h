@@ -6,14 +6,14 @@ class LightCube : public Cube
 public:
 	PositionedLight *light;
 
-	LightCube(PositionedLight* light, const float scale = 1.0f)
-		:Cube( ModelTransformations(light->getPosition()), "lightCube"),
+	LightCube(Renderer* renderer, PositionedLight* light, const float scale = 1.0f)
+		:Cube(renderer, ModelTransformations(light->getPosition()), "lightCube"),
 		 light(light)
 	{
 		transformations.scale = glm::vec3(scale);
 	}
 
-	void drawAction(Renderer* renderer) override
+	void drawAction() override
 	{
 		if (! light->getIsActive())
 		{
@@ -23,7 +23,7 @@ public:
 		
 		glm::mat4 lightCubeModel = transformations.createModelMatrixWithTransformations();
 		shader->use();
-		shader->setFloatMat4("projectionAndView", renderer->getPV());
+		shader->setFloatMat4("projectionAndView", getAttachedRenderer()->getPV());
 		shader->setFloatMat4("model", lightCubeModel);
 		shader->setFloatVec3("uColor", light->getDiffuse());
 		glBindVertexArray(cubeVOsAndIndices->vao);

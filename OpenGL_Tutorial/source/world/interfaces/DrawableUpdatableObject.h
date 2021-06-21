@@ -5,8 +5,8 @@
 class DrawableUpdatableObject : public DrawableObject, public UpdatableObject
 {
 public:
-	DrawableUpdatableObject(const std::string& shaderName, const bool& shaderWithGeometry = false)
-		:DrawableObject(shaderName, shaderWithGeometry)
+	DrawableUpdatableObject(Renderer* renderer, const std::string& shaderName, const bool& shaderWithGeometry = false)
+		:DrawableObject(renderer, shaderName, shaderWithGeometry)
 	{
 	}
 };

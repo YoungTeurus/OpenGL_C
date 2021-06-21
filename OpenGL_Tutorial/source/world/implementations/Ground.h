@@ -12,40 +12,40 @@ private:
 	std::string textureFilename;
 	std::string textureSpecularFilename;
 public:
-	Ground(const std::string& textureFilename, const std::string& textureSpecularFilename, float width)
+	Ground(Renderer* renderer, const std::string& textureFilename, const std::string& textureSpecularFilename, float width)
 		:PositionedObject(ModelTransformations{
 				glm::vec3(0.f),
 				glm::vec3(1.0f, 0.0f, 0.0f),
 				90.0f,
 				glm::vec3(width)
-			}), DrawableObject("groundQuad_mixLight"),
+			}), DrawableObject(renderer, "groundQuad_mixLight"),
 		textureFilename(textureFilename), textureSpecularFilename(textureSpecularFilename)
 	{
 	}
 
-	void drawAction(Renderer* renderer) override
+	void drawAction() override
 	{
 		// Отрисовка "земли".
 
 		// Проверка загруженности текстур:
 		if(groundTexture == nullptr)
 		{
-			groundTexture = renderer->getTexturesLoader()->getOrLoad2DTexture(textureFilename, FilePaths::getPathToTexturesFolder());
+			groundTexture = getAttachedRenderer()->getTexturesLoader()->getOrLoad2DTexture(textureFilename, FilePaths::getPathToTexturesFolder());
 		}
 		if (groundSpecularTexture == nullptr)
 		{
-			groundSpecularTexture = renderer->getTexturesLoader()->getOrLoad2DTexture(textureSpecularFilename, FilePaths::getPathToTexturesFolder());
+			groundSpecularTexture = getAttachedRenderer()->getTexturesLoader()->getOrLoad2DTexture(textureSpecularFilename, FilePaths::getPathToTexturesFolder());
 		}
 		
 		glm::mat4 groundModel = transformations.createModelMatrixWithTransformations();
 		shader->use();
-		shader->setFloatMat4("projectionAndView", renderer->getPV());
+		shader->setFloatMat4("projectionAndView", getAttachedRenderer()->getPV());
 		shader->setFloatMat4("model", groundModel);
 		shader->setFloat("shininess", getShininess());
-		shader->setFloatVec3("viewPos", renderer->getMainCamera()->position);
+		shader->setFloatVec3("viewPos", getAttachedRenderer()->getMainCamera()->position);
 		
 		int activeLights = 0;
-		for(auto *light : renderer->getLights())
+		for(auto *light : getAttachedRenderer()->getLights())
 		{
 			activeLights += light->useAndReturnSuccess(shader, activeLights);
 		}

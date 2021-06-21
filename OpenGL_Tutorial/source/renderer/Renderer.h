@@ -64,8 +64,8 @@ public:
 
 	void updateViewAndProjection()
 	{
-		glm::mat4 view = mainCamera->getViewMatrix();
- 		glm::mat4 projection = mainCamera->getProjectionMatrix();
+		const glm::mat4 view = mainCamera->getViewMatrix();
+ 		const glm::mat4 projection = mainCamera->getProjectionMatrix();
 	 
  		setViewAndProjection(view, projection);
 	}

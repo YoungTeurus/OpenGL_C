@@ -146,7 +146,7 @@ private:
 		}
 	}
 public:
-	ParticleGenerator(const ModelTransformations& transformations,
+	ParticleGenerator(Renderer* renderer, const ModelTransformations& transformations,
 		const unsigned& numOfParticles, const unsigned& numOfNewParticles,
 		const float& particleScale,
 		const float& particleLifeDuration, const float& possibleLifeDeviations,
@@ -154,7 +154,7 @@ public:
 		const glm::vec3& possiblePositionDeviations,
 		const glm::vec3& particleVelocity, const glm::vec3& possibleVelocityDeviations
 	)
-		:PositionedObject(transformations), DrawableUpdatableObject("particles"),
+		:PositionedObject(transformations), DrawableUpdatableObject(renderer, "particles"),
 		 numOfParticles(numOfParticles), updateNumOfNewParticles(numOfNewParticles),
 		 particleScale(particleScale),
 		 particleLifeDuration(particleLifeDuration), possibleLifeDeviations(possibleLifeDeviations),
@@ -190,12 +190,12 @@ public:
 		this->isActive = false;
 	}
 
-	void drawAction(Renderer* renderer) override
+	void drawAction() override
 	{
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
 		shader->use();
-		shader->setFloatMat4("pv", renderer->getPV());
+		shader->setFloatMat4("pv", getAttachedRenderer()->getPV());
 		for (auto && particle : particles)
 		{
 			if(particle.isAlive())

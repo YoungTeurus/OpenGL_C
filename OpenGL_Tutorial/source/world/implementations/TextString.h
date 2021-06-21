@@ -17,8 +17,8 @@ private:
 	float scale;
 	glm::vec3 color;
 public:
-	TextString(Font* font, const std::string& initialText, const glm::vec2& position, const float& scale, const glm::vec3& color)
-		:DrawableObject("font"),
+	TextString(Renderer* renderer, Font* font, const std::string& initialText, const glm::vec2& position, const float& scale, const glm::vec3& color)
+		:DrawableObject(renderer, "font"),
 		 font(font), templateString(initialText), position(position),scale(scale), color(color)
 	{
 	}
@@ -28,12 +28,12 @@ public:
 		templateString.setKeys(keysValues);
 	}
 
-	void drawAction(Renderer* renderer) override
+	void drawAction() override
 	{
 		string text = templateString.getString();
 		// activate corresponding render state	
 		shader->use();
-		shader->setFloatMat4("projection", renderer->getOrthoProjection());
+		shader->setFloatMat4("projection", getAttachedRenderer()->getOrthoProjection());
 		shader->setFloatVec3("uTextColor", color);
 		glActiveTexture(GL_TEXTURE0);
 		glBindVertexArray(fontVOsAndIndices->vao);

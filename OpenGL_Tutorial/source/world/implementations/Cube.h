@@ -9,8 +9,8 @@ class Cube : public PositionedObject, public DrawableObject
 protected:
 	VOsAndIndices* cubeVOsAndIndices = VAOBuilder::getInstance()->getCube();
 public:
-	Cube(ModelTransformations transformations, const std::string& shaderName, const bool& shaderWithGeometry = false)
-		:PositionedObject(transformations), DrawableObject(shaderName, shaderWithGeometry)
+	Cube(Renderer* renderer, ModelTransformations transformations, const std::string& shaderName, const bool& shaderWithGeometry = false)
+		:PositionedObject(transformations), DrawableObject(renderer, shaderName, shaderWithGeometry)
 	{
 	}
 
