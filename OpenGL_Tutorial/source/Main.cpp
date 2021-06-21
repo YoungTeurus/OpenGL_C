@@ -12,6 +12,7 @@
 #include "light/DirectionalLight.h"
 #include "shader/Shader.h"
 #include "camera/Camera.h"
+#include "level/LevelLoader.h"
 #include "model/VAOBuilder.h"
 #include "model/VOsAndIndices.h"
 #include "renderer/Renderer.h"
@@ -369,7 +370,9 @@ int main()
 	// Загрузка внешних данных:
 	Shader* screenRenderQuadShaderWithBlur = ShaderLoader::getInstance()->getOrLoad("screenRenderQuadShaderWithBlur");
 	Shader* screenRenderQuadWithHDRShader = ShaderLoader::getInstance()->getOrLoad("screenRenderQuadShaderWithHDR");
-	 
+
+	auto* level = LevelLoader::loadFromFile("level1.map", 5, 5);
+	
 	// Подготовка источников освещения:
 	vector<PositionedLight*> positionedLights;
 	 

@@ -18,7 +18,7 @@ private:
 	
 	Shader* load(const std::string& name, const bool& withGeometry = false)
 	{
-		return load(name, FilePaths::getPathToShaderFolderWithTrailingSplitter(), withGeometry);
+		return load(name, FilePaths::getPathToShadersFolderWithTrailingSplitter(), withGeometry);
 	}
 
 	Shader* load(const std::string& name, const std::string& pathToShaderFiles, const bool& withGeometry = false)
@@ -52,12 +52,12 @@ public:
 
 	Shader* reload(const std::string& name, const bool& withGeometry = false)
 	{
-		return load(name, FilePaths::getPathToShaderFolderWithTrailingSplitter(), withGeometry);
+		return load(name, FilePaths::getPathToShadersFolderWithTrailingSplitter(), withGeometry);
 	}
 
 	Shader* getOrLoad(const std::string& name, const bool& withGeometry = false)
 	{
-		return getOrLoad(name, FilePaths::getPathToShaderFolderWithTrailingSplitter(), withGeometry);
+		return getOrLoad(name, FilePaths::getPathToShadersFolderWithTrailingSplitter(), withGeometry);
 	}
 
 	Shader* getOrLoad(const std::string& name, const std::string& pathToShaderFiles, const bool& withGeometry = false)

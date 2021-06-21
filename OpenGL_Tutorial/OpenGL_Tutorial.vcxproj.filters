@@ -58,6 +58,9 @@
     <Filter Include="Исходные файлы\world\interfaces">
       <UniqueIdentifier>{dc356f23-9b82-41d1-8e64-1588e8456b94}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Исходные файлы\level">
+      <UniqueIdentifier>{6a2210c4-78a8-40bf-8072-9b8ba8eb3af1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="include\glad.c">
@@ -262,6 +265,12 @@
     </ClInclude>
     <ClInclude Include="source\utility\TemplateString.h">
       <Filter>Исходные файлы\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="source\level\Level.h">
+      <Filter>Исходные файлы\level</Filter>
+    </ClInclude>
+    <ClInclude Include="source\level\LevelLoader.h">
+      <Filter>Исходные файлы\level</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

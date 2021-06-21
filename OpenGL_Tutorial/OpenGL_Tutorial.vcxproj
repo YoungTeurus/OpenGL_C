@@ -170,6 +170,8 @@
   <ItemGroup>
     <ClInclude Include="include\stb_image.h" />
     <ClInclude Include="source\camera\Camera.h" />
+    <ClInclude Include="source\level\Level.h" />
+    <ClInclude Include="source\level\LevelLoader.h" />
     <ClInclude Include="source\light\AmbientLight.h" />
     <ClInclude Include="source\light\AttenuatedLight.h" />
     <ClInclude Include="source\light\BaseLight.h" />

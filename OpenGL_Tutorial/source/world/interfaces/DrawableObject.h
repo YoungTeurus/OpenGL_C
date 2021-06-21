@@ -14,7 +14,7 @@ protected:
 	virtual void drawAction() = 0;
 public:
 	DrawableObject(Renderer* renderer, const std::string& shaderName, const bool& shaderWithGeometry = false)
-		:attachedRenderer(renderer), shader( ShaderLoader::getInstance()->getOrLoad(shaderName, FilePaths::getPathToShaderFolderWithTrailingSplitter(), shaderWithGeometry) )
+		:attachedRenderer(renderer), shader( ShaderLoader::getInstance()->getOrLoad(shaderName, FilePaths::getPathToShadersFolderWithTrailingSplitter(), shaderWithGeometry) )
 	{
 	}
 

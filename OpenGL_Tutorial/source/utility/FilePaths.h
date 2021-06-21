@@ -12,6 +12,7 @@ private:
 	static string shadersFolderName;
 	static string texturesFolderName;
 	static string fontsFolderName;
+	static string levelsFolderName;
 
 	static string splitter;
 public:
@@ -27,15 +28,15 @@ public:
 
 	static string getPathToShader(const string& shaderName)
 	{
-		return getPathToShaderFolderWithTrailingSplitter() + shaderName;
+		return getPathToShadersFolderWithTrailingSplitter() + shaderName;
 	}
 
-	static string getPathToShaderFolderWithTrailingSplitter()
+	static string getPathToShadersFolderWithTrailingSplitter()
 	{
-		return getPathToShaderFolder() + splitter;
+		return getPathToShadersFolder() + splitter;
 	}
 
-	static string getPathToShaderFolder()
+	static string getPathToShadersFolder()
 	{
 		return resourcesFolderName + splitter + shadersFolderName;
 	}
@@ -57,16 +58,21 @@ public:
 
 	static string getPathToFont(const string& fontName)
 	{
-		return getPathToFontFolderWithTrailingSplitter() + fontName;
+		return getPathToFontsFolderWithTrailingSplitter() + fontName;
 	}
 
-	static string getPathToFontFolderWithTrailingSplitter()
+	static string getPathToFontsFolderWithTrailingSplitter()
 	{
-		return getPathToFontFolder() + splitter;
+		return getPathToFontsFolder() + splitter;
 	}
 
-	static string getPathToFontFolder()
+	static string getPathToFontsFolder()
 	{
 		return resourcesFolderName + splitter + fontsFolderName;
+	}
+
+	static string getPathToLevelsFolder()
+	{
+		return resourcesFolderName + splitter + levelsFolderName;
 	}
 };
