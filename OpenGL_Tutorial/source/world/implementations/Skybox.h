@@ -6,7 +6,7 @@ class Skybox : public PositionedObject, public DrawableObject
 {
 private:
 	VOsAndIndices* skyboxVOsAndIndices = VAOBuilder::getInstance()->getSkybox();
-	CubeMap* cubeMap = nullptr;
+	CubeMap* cubeMap;
 
 	std::string cubeMapFolderName;
 	std::string cubeMapFileName;
@@ -15,18 +15,12 @@ public:
 		:PositionedObject({}), DrawableObject(renderer, "skybox"),
 		 cubeMapFolderName(cubeMapFolderName), cubeMapFileName(cubeMapFileName)
 	{
+		cubeMap = TexturesLoader::getInstance()->getOrLoadCubeMap(cubeMapFileName, FilePaths::getPathToTexturesFolderWithTrailingSplitter() + cubeMapFolderName);
 	}
 
 	void drawAction() override
 	{
 		// Отрисовка skybox:
-
-		// Проверка загруженности текстур:
-		if(cubeMap == nullptr)
-		{
-			cubeMap = getAttachedRenderer()->getTexturesLoader()->getOrLoadCubeMap(cubeMapFileName, FilePaths::getPathToTexturesFolderWithTrailingSplitter() + cubeMapFolderName);
-		}
-		
 		glDepthFunc(GL_LEQUAL);
 		shader->use();
 		

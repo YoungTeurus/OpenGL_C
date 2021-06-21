@@ -19,7 +19,6 @@ private:
 	std::vector<BaseLight*> lights;
 
 	Camera *mainCamera;
-	TexturesLoader *texturesLoader = TexturesLoader::getInstance();
 
 	Renderer(const glm::ivec2& viewSize = {0, 0})
 	{
@@ -52,14 +51,9 @@ public:
 		return lights;
 	}
 
-	Camera *getMainCamera() const
+	Camera* getMainCamera() const
 	{
 		return mainCamera;
-	}
-
-	TexturesLoader* getTexturesLoader() const
-	{
-		return texturesLoader;
 	}
 
 	void updateViewAndProjection()

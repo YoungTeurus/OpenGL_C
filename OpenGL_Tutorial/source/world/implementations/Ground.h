@@ -7,8 +7,8 @@ class Ground : public PositionedObject, public DrawableObject
 {
 private:
 	VOsAndIndices* groundVOsAndIndices = VAOBuilder::getInstance()->getGroundQuad();
-	Texture* groundTexture = nullptr;
-	Texture* groundSpecularTexture = nullptr;
+	Texture* groundTexture;
+	Texture* groundSpecularTexture;
 	std::string textureFilename;
 	std::string textureSpecularFilename;
 public:
@@ -21,22 +21,13 @@ public:
 			}), DrawableObject(renderer, "groundQuad_mixLight"),
 		textureFilename(textureFilename), textureSpecularFilename(textureSpecularFilename)
 	{
+		groundTexture = TexturesLoader::getInstance()->getOrLoad2DTexture(textureFilename, FilePaths::getPathToTexturesFolder());
+		groundSpecularTexture = TexturesLoader::getInstance()->getOrLoad2DTexture(textureSpecularFilename, FilePaths::getPathToTexturesFolder());
 	}
 
 	void drawAction() override
 	{
-		// Отрисовка "земли".
-
-		// Проверка загруженности текстур:
-		if(groundTexture == nullptr)
-		{
-			groundTexture = getAttachedRenderer()->getTexturesLoader()->getOrLoad2DTexture(textureFilename, FilePaths::getPathToTexturesFolder());
-		}
-		if (groundSpecularTexture == nullptr)
-		{
-			groundSpecularTexture = getAttachedRenderer()->getTexturesLoader()->getOrLoad2DTexture(textureSpecularFilename, FilePaths::getPathToTexturesFolder());
-		}
-		
+		// Отрисовка "земли".		
 		glm::mat4 groundModel = transformations.createModelMatrixWithTransformations();
 		shader->use();
 		shader->setFloatMat4("projectionAndView", getAttachedRenderer()->getPV());
