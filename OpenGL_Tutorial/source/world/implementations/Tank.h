@@ -1,6 +1,7 @@
 #pragma once
 #include "../../model/ModelsLoader.h"
 #include "../../model/ModelTransformations.h"
+#include "../../renderer/Renderer.h"
 #include "../animations/AnimatedObject.h"
 #include "../interfaces/CollidableDrawableObject.h"
 
@@ -16,17 +17,10 @@ private:
 	ModelTransformations turretTransformations;
 	
 public:
-	Tank(Renderer* renderer)
-		:CollidableDrawableObject(renderer, {}, {glm::vec3(-1.0f, 0.0f, -1.0f), glm::vec3(2.0f)}, "model_mixLightWithExplosion", true),
+	Tank(Renderer* renderer, ModelTransformations transformations)
+		:CollidableDrawableObject(renderer, transformations, {glm::vec3(-1.0f, 0.0f, -1.0f), glm::vec3(2.0f)}, "model_mixLightWithExplosion", true),
 		 tankBase(ModelsLoader::getInstance()->getOrLoad("tank/base.obj", true)), tankTurret(ModelsLoader::getInstance()->getOrLoad("tank/turret.obj", true))
 	{
-	}
-
-	void setPosition(glm::vec3 pos) override
-	{
-		// TODO: избавиться от этого workaround-а.
-		CollidableDrawableObject::setPosition(pos);
-		calculateColliderTransformations();
 	}
 	
 	void drawAction() override

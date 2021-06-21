@@ -2,6 +2,9 @@
 #include <vector>
 #include <map>
 
+#include "../renderer/Scene.h"
+#include "../world/implementations/BrickWall.h"
+
 enum class LevelObject
 {
 	NOTHING = 0,
@@ -110,5 +113,31 @@ public:
 		:width(width), height(height)
 	{
 		clearAndCreateLevelObjectsGrid();
+	}
+
+	Scene* generateScene(Renderer* renderer, const glm::vec3& sceneOffset) const
+	{
+		Scene* returnScene = new Scene();
+
+		for(unsigned w = 0; w < width; w++)
+		{
+			for(unsigned h = 0; h < height; h++)
+			{
+				const LevelObject object = levelObjects[w][h];
+				const glm::vec3 objectCoords(sceneOffset.x + w * gridSize, sceneOffset.y, sceneOffset.z + h * gridSize);
+				switch (object)
+				{
+				case LevelObject::NOTHING: break;
+				case LevelObject::BRICK_WALL: returnScene->addCollidableDrawableObject(new BrickWall(renderer, {objectCoords})); break;
+				case LevelObject::STONE_WALL: returnScene->addCollidableDrawableObject(new BrickWall(renderer, {objectCoords})); break;
+				case LevelObject::PLAYER_SPAWN: break;
+				case LevelObject::ENEMY_SPAWN: returnScene->addTank(new Tank(renderer, {objectCoords})); break;
+				case LevelObject::PLAYER_BASE: break;
+				case LevelObject::UNKNOWN: throw exception("Level::generateScene: can't generate UNKNOWN object."); break;
+				}
+			}
+		}
+
+		return returnScene;
 	}
 };

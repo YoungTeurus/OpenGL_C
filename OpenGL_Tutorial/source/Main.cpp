@@ -445,10 +445,8 @@ int main()
 	);
 	renderer->addLight(flashlight);
 	
-	playerTank = new Tank(renderer);
-	playerTank->setPosition(glm::vec3(-5.0f, 0.0f, -15.0f));
-	Tank *backgroundTank2 = new Tank(renderer);
-	backgroundTank2->setPosition(glm::vec3(-15.0f, 0.0f, -30.0f));
+	playerTank = new Tank(renderer, {glm::vec3(-5.0f, 0.0f, -15.0f)});
+	Tank *backgroundTank2 = new Tank(renderer, {glm::vec3(-15.0f, 0.0f, -30.0f)});
 
 	std::vector<glm::vec3> wallsCoords = {
 		glm::vec3(-10.0f, 0.0f, 0.0f),

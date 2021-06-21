@@ -1,6 +1,7 @@
 #pragma once
 
 #include "WorldObject.h"
+#include "../../renderer/Renderer.h"
 #include "../../shader/ShaderLoader.h"
 
 class DrawableObject : public WorldObject

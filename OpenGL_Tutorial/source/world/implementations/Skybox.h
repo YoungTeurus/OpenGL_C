@@ -1,4 +1,6 @@
 #pragma once
+#include "../../model/VAOBuilder.h"
+#include "../../model/VOsAndIndices.h"
 #include "../interfaces/DrawableObject.h"
 #include "../interfaces/PositionedObject.h"
 

@@ -2,6 +2,8 @@
 #include "CollidableObject.h"
 #include "DrawableObject.h"
 #include "../../model/ModelTransformations.h"
+#include "../../model/VAOBuilder.h"
+#include "../../model/VOsAndIndices.h"
 
 class CollidableDrawableObject : public CollidableObject, public DrawableObject
 {
