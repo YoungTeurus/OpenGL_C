@@ -102,6 +102,9 @@
     <ClCompile Include="source\model\ModelsLoader.cpp">
       <Filter>Исходные файлы\model</Filter>
     </ClCompile>
+    <ClCompile Include="source\utility\TemplateString.cpp">
+      <Filter>Исходные файлы\utility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\stb_image.h">

@@ -165,6 +165,7 @@
     <ClCompile Include="source\text\Font.cpp" />
     <ClCompile Include="source\text\FontLoader.cpp" />
     <ClCompile Include="source\utility\FilePaths.cpp" />
+    <ClCompile Include="source\utility\TemplateString.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\stb_image.h" />

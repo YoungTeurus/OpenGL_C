@@ -1,4 +1,5 @@
 #pragma once
+#include <map>
 #include <regex>
 #include <string>
 #include <vector>
@@ -10,20 +11,44 @@ class TemplateString
 {
 private:
 	string templateString;
-	const string replacerTemplate = R"(%(KEY)%)";
-	const regex replacerTemplateRegex = regex("KEY");
+	static string replacerTemplate;
+	static regex replacerTemplateRegex;
 
-	string replaceKeyInString(const string& str, const pair<string, string>& keyValue) const
+	string currentStringWithSettedKeysAndValues;
+
+	map<string, string> settedKeysValues;
+		
+	static string replaceKeyInString(const string& str, const pair<string, string>& keyValue)
 	{
 		return replaceKeyInString(str, keyValue.first, keyValue.second);
 	}
 
-	string replaceKeyInString(const string& str, const string& key, const string& value) const
+	static string replaceKeyInString(const string& str, const string& key, const string& value)
 	{
 		const string keyReplacer = regex_replace(replacerTemplate, replacerTemplateRegex, key);
 		const regex keyReplacerRegex(keyReplacer);
 
 		return regex_replace(str, keyReplacerRegex, value);
+	}
+
+	void addOrReplaceKeyValue(const string& key, const string& value)
+	{
+		settedKeysValues.insert_or_assign(key, value);
+	}
+
+	string getTemplateStringReplacedUsingMap()
+	{
+		string tempString = templateString;
+		for (auto && settedKeysValue : settedKeysValues)
+		{
+			tempString = replaceKeyInString(tempString, settedKeysValue);
+		}
+		return tempString;
+	}
+
+	void updateCurrentString()
+	{
+		currentStringWithSettedKeysAndValues = getTemplateStringReplacedUsingMap();
 	}
 public:
 	TemplateString(const string& templateString)
@@ -31,28 +56,38 @@ public:
 	{
 	}
 
-	string replaceKeys(const vector<pair<string, string>>& keyValues) const
+	void setKeys(const vector<pair<string, string>>& keysValues)
 	{
-		string tempString = templateString;
-		for (auto && keyValue : keyValues)
+		for (auto && keyValue : keysValues)
 		{
-			tempString = replaceKeyInString(tempString, keyValue);
+			setKey(keyValue);
 		}
-		return tempString;
 	}
 
-	string replaceKey(const pair<string, string>& keyValue) const
+	void setKey(const pair<string, string>& keyValue)
 	{
-		return replaceKey(keyValue.first, keyValue.second);
+		return setKey(keyValue.first, keyValue.second);
 	}
 	
-	string replaceKey(const string& key, const string& value) const
+	void setKey(const string& key, const string& value)
 	{
-		return replaceKeyInString(templateString, key, value);
+		addOrReplaceKeyValue(key, value);
+		updateCurrentString();
+	}
+
+	void clearKeysValues()
+	{
+		settedKeysValues.clear();
 	}
 
 	string getString() const
 	{
-		return templateString;
+		return currentStringWithSettedKeysAndValues;
+	}
+
+	void setString(const string& string)
+	{
+		clearKeysValues();
+		templateString = string;
 	}
 };

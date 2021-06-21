@@ -12,7 +12,6 @@ private:
 	VOsAndIndices* fontVOsAndIndices = VAOBuilder::getInstance()->getFont();
 	Font* font;
 	TemplateString templateString;
-	string text;
 
 	glm::vec2 position;
 	float scale;
@@ -22,16 +21,16 @@ public:
 		:DrawableObject("font"),
 		 font(font), templateString(initialText), position(position),scale(scale), color(color)
 	{
-		text = templateString.getString();
 	}
 
 	void setKeysValues(const vector<pair<string, string>>& keysValues)
 	{
-		text = templateString.replaceKeys(keysValues);
+		templateString.setKeys(keysValues);
 	}
 
 	void drawAction(Renderer* renderer) override
 	{
+		string text = templateString.getString();
 		// activate corresponding render state	
 		shader->use();
 		shader->setFloatMat4("projection", renderer->getOrthoProjection());
@@ -109,12 +108,12 @@ public:
 
 	std::string getText() const
 	{
-		return text;
+		return templateString.getString();
 	}
 
 	void setText(const std::string& text)
 	{
-		this->text = text;
+		templateString.setString(text);
 	}
 
 	glm::vec2 getPosition() const

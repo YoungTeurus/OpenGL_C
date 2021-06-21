@@ -44,7 +44,6 @@ Camera *mainCamera = renderer->getMainCamera();
 Scene mainScene;
 Tank* playerTank;
 TextString* debugTextString;
-TextString* debugTextString2;
 ParticleGenerator* particleGenerator;
 BrickWall *brickWall;
 
@@ -360,10 +359,7 @@ int main()
 	Font *arialFont = FontLoader::getInstance()->getOrLoad("arial", 24);
 	Shader* fontShader = ShaderLoader::getInstance()->getOrLoad("font");
 	debugTextString = new TextString(arialFont,
-		"Wall = {%x%, %y%, %z%}",
-		glm::vec2(20.0f, 20.0f), 0.5f, glm::vec3(0.5f, 0.8f, 0.2f));
-	debugTextString2 = new TextString(arialFont,
-		"Text = {%x%, %y%, %z%}\nTest\nTEST",
+		"Text = {%tank.x%, %tank.y%, %tank.z%}\nWall = {%wall.x%, %wall.y%, %wall.z%}",
 		glm::vec2(20.0f, 50.0f), 0.5f, glm::vec3(0.5f, 0.8f, 0.2f));
 	
 	mainCamera->setViewSize({windowInitialWidth, windowInitialHeight});
@@ -519,9 +515,9 @@ int main()
 	}
 
 	debugTextString->setKeysValues({
-		{"x", to_string(brickWall->getPosition().x)},
-		{"y", to_string(brickWall->getPosition().y)},
-		{"z", to_string(brickWall->getPosition().z)},
+		{"wall.x", to_string(brickWall->getPosition().x)},
+		{"wall.y", to_string(brickWall->getPosition().y)},
+		{"wall.z", to_string(brickWall->getPosition().z)},
 	});
 	
 	mainScene.addDrawableObject(&ground);
@@ -685,20 +681,11 @@ int main()
 
 		// Отрисовка текста:
 
-		debugTextString2->setKeysValues(
-			{
-				{"x", to_string(playerTank->getPosition().x)},
-				{"y", to_string(playerTank->getPosition().y)},
-				{"z", to_string(playerTank->getPosition().z)},
-			}
-		);
-		// debugTextString2->setText(
-		// 	string("Tank: ") + playerTank->toString()
-		// );
-		debugTextString2->draw(renderer);
-		// debugTextString->setText(
-		// 	string("Wall: ") + brickWall->toString() 
-		// );
+		debugTextString->setKeysValues({
+			{"tank.x", to_string(playerTank->getPosition().x)},
+			{"tank.y", to_string(playerTank->getPosition().y)},
+			{"tank.z", to_string(playerTank->getPosition().z)},
+		});
 		debugTextString->draw(renderer);
 		
  		// Конец отрисовки в стандартный framebuffer.
