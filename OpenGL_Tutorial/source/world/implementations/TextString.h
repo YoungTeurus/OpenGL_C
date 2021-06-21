@@ -1,4 +1,9 @@
 #pragma once
+#include "../../model/VAOBuilder.h"
+#include "../../model/VOsAndIndices.h"
+#include "../../renderer/Renderer.h"
+#include "../../text/Font.h"
+#include "../../utility/TemplateString.h"
 #include "../interfaces/DrawableObject.h"
 
 class TextString : public DrawableObject
@@ -6,7 +11,8 @@ class TextString : public DrawableObject
 private:
 	VOsAndIndices* fontVOsAndIndices = VAOBuilder::getInstance()->getFont();
 	Font* font;
-	std::string text;
+	TemplateString templateString;
+	string text;
 
 	glm::vec2 position;
 	float scale;
@@ -14,8 +20,14 @@ private:
 public:
 	TextString(Font* font, const std::string& initialText, const glm::vec2& position, const float& scale, const glm::vec3& color)
 		:DrawableObject("font"),
-		 font(font), text(initialText), position(position),scale(scale), color(color)
+		 font(font), templateString(initialText), position(position),scale(scale), color(color)
 	{
+		text = templateString.getString();
+	}
+
+	void setKeysValues(const vector<pair<string, string>>& keysValues)
+	{
+		text = templateString.replaceKeys(keysValues);
 	}
 
 	void drawAction(Renderer* renderer) override

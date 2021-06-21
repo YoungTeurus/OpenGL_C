@@ -195,6 +195,7 @@
     <ClInclude Include="source\text\Font.h" />
     <ClInclude Include="source\text\FontLoader.h" />
     <ClInclude Include="source\utility\FilePaths.h" />
+    <ClInclude Include="source\utility\TemplateString.h" />
     <ClInclude Include="source\world\animations\AnimatedObject.h" />
     <ClInclude Include="source\world\animations\Animation.h" />
     <ClInclude Include="source\world\animations\Animations.h" />

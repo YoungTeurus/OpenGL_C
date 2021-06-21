@@ -358,8 +358,12 @@ int main()
 	// Загрузка шрифта:
 	Font *arialFont = FontLoader::getInstance()->getOrLoad("arial", 24);
 	Shader* fontShader = ShaderLoader::getInstance()->getOrLoad("font");
-	debugTextString = new TextString(arialFont, "", glm::vec2(20.0f, 20.0f), 0.5f, glm::vec3(0.5f, 0.8f, 0.2f));
-	debugTextString2 = new TextString(arialFont, "", glm::vec2(20.0f, 50.0f), 0.5f, glm::vec3(0.5f, 0.8f, 0.2f));
+	debugTextString = new TextString(arialFont,
+		"Wall = {%x%, %y%, %z%}",
+		glm::vec2(20.0f, 20.0f), 0.5f, glm::vec3(0.5f, 0.8f, 0.2f));
+	debugTextString2 = new TextString(arialFont,
+		"Text = {%x%, %y%, %z%}",
+		glm::vec2(20.0f, 50.0f), 0.5f, glm::vec3(0.5f, 0.8f, 0.2f));
 	
 	mainCamera->setViewSize({windowInitialWidth, windowInitialHeight});
 	// mainCamera->setPosition(glm::vec3(-7.3f, 40.0f, 17.0f));
@@ -442,8 +446,7 @@ int main()
  		"FlashLight"
 	);
 	renderer->addLight(flashlight);
-	 
-	Tank mainTank;
+	
 	playerTank = new Tank();
 	playerTank->setPosition(glm::vec3(-5.0f, 0.0f, -15.0f));
 	Tank backgroundTank2;
@@ -507,7 +510,6 @@ int main()
 	 
 	mainScene.addSkybox(&skybox);
 	
-	// mainScene.addTank(&mainTank);
 	mainScene.addTank(playerTank);
 	mainScene.addTank(&backgroundTank2);
 
@@ -516,6 +518,12 @@ int main()
 		brickWall = new BrickWall(ModelTransformations{wallsCoord});
 		mainScene.addCollidableDrawableObject(brickWall);
 	}
+
+	debugTextString->setKeysValues({
+		{"x", to_string(brickWall->getPosition().x)},
+		{"y", to_string(brickWall->getPosition().y)},
+		{"z", to_string(brickWall->getPosition().z)},
+	});
 	
 	mainScene.addDrawableObject(&ground);
 	
@@ -619,10 +627,6 @@ int main()
  			- mainCamera->up * 0.3f
  		);
  		flashlight->setDirection(mainCamera->front);
-	 
- 		mainTank.setPosition(glm::vec3(glm::cos(currentTime) * 2.5f, 0.0f, glm::cos(currentTime) * 2.5f));
- 		mainTank.setRotationAngleDegrees(glm::cos(currentTime) * 30.0f);
- 		mainTank.setTurretRotationAngleDegrees(glm::cos(currentTime) * 90.0f);
 
 		// Проверка столкновений:
 		mainScene.update(currentTime);
@@ -681,14 +685,21 @@ int main()
  		glDrawElements(GL_TRIANGLES, screenQuadVOsAndIndices->indices.size(), GL_UNSIGNED_INT, NULL);
 
 		// Отрисовка текста:
-		
-		debugTextString2->setText(
-			string("Tank: ") + playerTank->toString()
+
+		debugTextString2->setKeysValues(
+			{
+				{"x", to_string(playerTank->getPosition().x)},
+				{"y", to_string(playerTank->getPosition().y)},
+				{"z", to_string(playerTank->getPosition().z)},
+			}
 		);
+		// debugTextString2->setText(
+		// 	string("Tank: ") + playerTank->toString()
+		// );
 		debugTextString2->draw(renderer);
-		debugTextString->setText(
-			string("Wall: ") + brickWall->toString() 
-		);
+		// debugTextString->setText(
+		// 	string("Wall: ") + brickWall->toString() 
+		// );
 		debugTextString->draw(renderer);
 		
  		// Конец отрисовки в стандартный framebuffer.

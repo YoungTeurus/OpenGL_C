@@ -257,6 +257,9 @@
     <ClInclude Include="source\world\implementations\BrickWall.h">
       <Filter>Исходные файлы\world\implementations</Filter>
     </ClInclude>
+    <ClInclude Include="source\utility\TemplateString.h">
+      <Filter>Исходные файлы\utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\shaders\lightCube.vert">
