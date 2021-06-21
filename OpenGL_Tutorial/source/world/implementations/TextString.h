@@ -45,6 +45,12 @@ public:
 		std::string::const_iterator c;
 		for (c = text.begin(); c != text.end(); c++)
 		{
+			if(*c == '\n')
+			{
+				x = position.x;
+				y -= font->getHeight();
+				continue;
+			}
 		    Character ch = font->getCharacter(*c);
 
 		    float xpos = x + ch.bearing.x * scale;

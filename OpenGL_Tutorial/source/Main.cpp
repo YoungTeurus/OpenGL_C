@@ -216,11 +216,12 @@ void onKeyAction(GLFWwindow* window, int key, int scancode, int action, int mods
 			break;
 		case GLFW_KEY_9:
 			mainCamera->setPosition(glm::vec3(-7.3f, 40.0f, 17.0f));
-			mainCamera->yaw = -90.0f;
-			mainCamera->pitch = -50.0f;
+ 			mainCamera->setYawAndPitch(-90.0f, -50.0f);
  			break;
  		case GLFW_KEY_0:
 			playerTank->setPosition(glm::vec3(0.0f));
+ 			playerTank->setRotationAngleDegrees(0.0f);
+ 			playerTank->setTurretRotationAngleDegrees(0.0f);
  			playerTank->setExplosionMagnitude(0.0f);
  			playerTank->setTimeSinceExplosion(0.0f);
  			playerTank->setVisible(true);
@@ -362,14 +363,12 @@ int main()
 		"Wall = {%x%, %y%, %z%}",
 		glm::vec2(20.0f, 20.0f), 0.5f, glm::vec3(0.5f, 0.8f, 0.2f));
 	debugTextString2 = new TextString(arialFont,
-		"Text = {%x%, %y%, %z%}",
+		"Text = {%x%, %y%, %z%}\nTest\nTEST",
 		glm::vec2(20.0f, 50.0f), 0.5f, glm::vec3(0.5f, 0.8f, 0.2f));
 	
 	mainCamera->setViewSize({windowInitialWidth, windowInitialHeight});
-	// mainCamera->setPosition(glm::vec3(-7.3f, 40.0f, 17.0f));
-	// mainCamera->setYawAndPitch(-90.0f, -50.0f);
-	mainCamera->setPosition(glm::vec3(0.0f, 10.0f, 0.0f));
-	mainCamera->setYawAndPitch(-90.0f, -89.9f);
+	mainCamera->setPosition(glm::vec3(-7.3f, 40.0f, 17.0f));
+ 	mainCamera->setYawAndPitch(-90.0f, -50.0f);
 	 
 	// Загрузка внешних данных:
 	Shader* screenRenderQuadShaderWithBlur = ShaderLoader::getInstance()->getOrLoad("screenRenderQuadShaderWithBlur");

@@ -27,6 +27,7 @@ void Font::loadCharacters()
 			glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
 			face->glyph->advance.x
 		};
+		height = max(height, character.size.y);
 		characters.insert(std::pair<char, Character>(c, character));
 	}
 }

@@ -26,6 +26,7 @@ private:
 	std::string name;
 
 	std::map<char, Character> characters;
+	int height = 0;  // "Высота" шрифта - буквально, максимальное значение chartacters.size.y
 
 	void initializeLibrary();
 	void loadCharacters();
@@ -35,5 +36,10 @@ public:
 	Character getCharacter(const char& c) const
 	{
 		return characters.at(c);
+	}
+
+	int getHeight() const
+	{
+		return height;
 	}
 };
