@@ -124,7 +124,7 @@ public:
 			for(unsigned h = 0; h < height; h++)
 			{
 				const LevelObject object = levelObjects[w][h];
-				const glm::vec3 objectCoords(sceneOffset.x + w * gridSize, sceneOffset.y, sceneOffset.z + h * gridSize);
+				const glm::vec3 objectCoords(sceneOffset.x + h * gridSize, sceneOffset.y, sceneOffset.z + w * gridSize);
 				switch (object)
 				{
 				case LevelObject::NOTHING: break;

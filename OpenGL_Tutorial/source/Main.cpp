@@ -42,11 +42,10 @@ bool firstMouse = true;
 Renderer* renderer = Renderer::getInstance();
 Camera *mainCamera = renderer->getMainCamera();
 
-Scene mainScene;
+Scene* mainScene;
 Tank* playerTank;
 TextString* debugTextString;
 ParticleGenerator* particleGenerator;
-BrickWall *brickWall;
 
 bool wireframeMode = false;
  
@@ -246,7 +245,7 @@ void onKeyAction(GLFWwindow* window, int key, int scancode, int action, int mods
 			blowTank(playerTank, particleGenerator, 3.0f);
  			break;
 		case GLFW_KEY_I:
-			mainScene.toggleCollidersDrawing();
+			mainScene->toggleCollidersDrawing();
 			break;
  		default:
  			break;
@@ -360,7 +359,7 @@ int main()
 	Font *arialFont = FontLoader::getInstance()->getOrLoad("arial", 24);
 	Shader* fontShader = ShaderLoader::getInstance()->getOrLoad("font");
 	debugTextString = new TextString(renderer, arialFont,
-		"Text = {%tank.x%, %tank.y%, %tank.z%}\nWall = {%wall.x%, %wall.y%, %wall.z%}",
+		"Text = {%tank.x%, %tank.y%, %tank.z%}",
 		glm::vec2(20.0f, 50.0f), 0.5f, glm::vec3(0.5f, 0.8f, 0.2f));
 	
 	mainCamera->setViewSize({windowInitialWidth, windowInitialHeight});
@@ -372,6 +371,7 @@ int main()
 	Shader* screenRenderQuadWithHDRShader = ShaderLoader::getInstance()->getOrLoad("screenRenderQuadShaderWithHDR");
 
 	auto* level = LevelLoader::loadFromFile("level1.map", 5, 5);
+	mainScene = level->generateScene(renderer, glm::vec3(0.0f));
 	
 	// Подготовка источников освещения:
 	vector<PositionedLight*> positionedLights;
@@ -400,39 +400,6 @@ int main()
 	renderer->addLight(pointLight);
 	positionedLights.push_back(pointLight);
  		
-	pointLight = new PointLight(
- 			glm::vec3(0.0f),
- 			glm::vec3(0.1f, 0.0f, 0.0f),
- 			glm::vec3(0.1f, 0.0f, 0.0f),
- 			1.0f, 0.001f, 0.0009f,
- 			glm::vec3(0.0f, 3.0f, -5.0f),
- 			"Dim red lamp"
- 		);
-	renderer->addLight(pointLight);
-	positionedLights.push_back(pointLight);
- 		
-	pointLight = new PointLight(
- 			glm::vec3(0.0f),
- 			glm::vec3(0.0f, 0.0f, 0.2f),
- 			glm::vec3(0.0f, 0.0f, 0.2f),
- 			1.0f, 0.001f, 0.0009f,
- 			glm::vec3(0.0f, 3.0f, -3.0f),
- 			"Dim green lamp"
- 		);
-	renderer->addLight(pointLight);
-	positionedLights.push_back(pointLight);
- 		
-	pointLight = new PointLight(
- 			glm::vec3(0.0f),
- 			glm::vec3(0.0f, 0.1f, 0.0f),
- 			glm::vec3(0.0f, 0.1f, 0.0f),
- 			1.0f, 0.001f, 0.0009f,
- 			glm::vec3(0.0f, 3.0f, -1.0f),
- 			"Dim blue lamp"
- 		);
-	renderer->addLight(pointLight);
-	positionedLights.push_back(pointLight);
- 		
 	flashlight = new SpotLight(
  		glm::radians(10.f), glm::radians(20.f),
  		glm::vec3(0.0f, 0.0f, 0.0f),
@@ -446,19 +413,6 @@ int main()
 	renderer->addLight(flashlight);
 	
 	playerTank = new Tank(renderer, {glm::vec3(-5.0f, 0.0f, -15.0f)});
-	Tank *backgroundTank2 = new Tank(renderer, {glm::vec3(-15.0f, 0.0f, -30.0f)});
-
-	std::vector<glm::vec3> wallsCoords = {
-		glm::vec3(-10.0f, 0.0f, 0.0f),
-		glm::vec3(-8.0f, 0.0f, 0.0f),
-		glm::vec3(-6.0f, 0.0f, 0.0f),
-		glm::vec3(-4.0f, 0.0f, 0.0f),
-		glm::vec3(-10.0f, 0.0f, -6.0f),
-		glm::vec3(-10.0f, 0.0f, -4.0f),
-		glm::vec3(-10.0f, 0.0f, -2.0f),
-		glm::vec3(-6.0f, 0.0f, -2.0f),
-		glm::vec3(-4.0f, 0.0f, -2.0f),
-	};
 
 	particleGenerator = new ParticleGenerator(renderer, 
 		ModelTransformations{glm::vec3(-10.0f, 10.0f, -10.0f)},
@@ -504,34 +458,21 @@ int main()
 	Ground ground(renderer, "grass.png", "grass_specular.png", 100.f);
 	Skybox skybox(renderer, "skybox", "sky.jpg");
 	 
-	mainScene.addSkybox(&skybox);
+	mainScene->addSkybox(&skybox);
 	
-	mainScene.addTank(playerTank);
-	mainScene.addTank(backgroundTank2);
-
-	for (auto && wallsCoord : wallsCoords)
-	{
-		brickWall = new BrickWall(renderer, ModelTransformations{wallsCoord});
-		mainScene.addCollidableDrawableObject(brickWall);
-	}
-
-	debugTextString->setKeysValues({
-		{"wall.x", to_string(brickWall->getPosition().x)},
-		{"wall.y", to_string(brickWall->getPosition().y)},
-		{"wall.z", to_string(brickWall->getPosition().z)},
-	});
+	mainScene->addTank(playerTank);
 	
-	mainScene.addDrawableObject(&ground);
+	mainScene->addDrawableObject(&ground);
 	
 	for (auto *positionedLight : positionedLights)
 	{
- 		mainScene.addDrawableObject(new LightCube(renderer, positionedLight));
+ 		mainScene->addDrawableObject(new LightCube(renderer, positionedLight));
 	}
 	
-	mainScene.addDrawableUpdatableObject(particleGenerator);
-	mainScene.addDrawableUpdatableObject(xAxis);
-	mainScene.addDrawableUpdatableObject(yAxis);
-	mainScene.addDrawableUpdatableObject(zAxis);
+	mainScene->addDrawableUpdatableObject(particleGenerator);
+	mainScene->addDrawableUpdatableObject(xAxis);
+	mainScene->addDrawableUpdatableObject(yAxis);
+	mainScene->addDrawableUpdatableObject(zAxis);
 	 
 	#pragma region Инициализация Framebuffer-а и разных VAO
 	 
@@ -625,7 +566,7 @@ int main()
  		flashlight->setDirection(mainCamera->front);
 
 		// Проверка столкновений:
-		mainScene.update(currentTime);
+		mainScene->update(currentTime);
 		
 		// Подготовка к отрисовке:
 		renderer->updateViewAndProjection();
@@ -634,7 +575,7 @@ int main()
  		glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
  		glEnable(GL_DEPTH_TEST);
 	 
- 		mainScene.draw();
+ 		mainScene->draw();
  		// Конец отрисовки в framebuffer.
 	 
  		// Отрисовка в frambuffer для размытия:
