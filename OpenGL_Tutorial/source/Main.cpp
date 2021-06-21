@@ -293,20 +293,6 @@ void rotateTankTurretToWorldPoint(Tank* tank, const glm::vec3& worldPoint)
 void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
 	glm::vec3 worldPoint = mainCamera->screenCoordToWorldCoords(glm::vec2(xpos, ypos));
 	rotateTankTurretToWorldPoint(playerTank, worldPoint);
-	
-	// // Обработка первого движения камеры:
-	// if (firstMouse) {
- 	// 	lastCursorX = (float)xpos;
- 	// 	lastCursorY = (float)ypos;
- 	// 	firstMouse = false;
-	// }
-	//  
-	// // Подсчитываем смещение курсора относительно предыдущего кадра:
-	// float dx = (float)xpos - lastCursorX,
- 	// 		dy = lastCursorY - (float)ypos;  // Отражаем Y, так как в OpenGl ось Y идёт вверх, а в окнах - вниз
-	// lastCursorX = (float)xpos; lastCursorY = (float)ypos;
-	//  
-	// mainCamera->handleMouseMovement(dx, dy);
 }
 
 void onMouseClick(GLFWwindow* window, int button, int action, int mods)
@@ -315,14 +301,7 @@ void onMouseClick(GLFWwindow* window, int button, int action, int mods)
 	{
 		switch (button)
 		{
-		case GLFW_MOUSE_BUTTON_LEFT:
-			// double clickXPos, clickYPos;
-			// glfwGetCursorPos(window, &clickXPos, &clickYPos);
-			// glm::vec3 worldPoint = mainCamera->screenCoordToWorldCoords(glm::vec2(clickXPos, clickYPos));
-			// cout << "Clicked on: {" << worldPoint.x << "," << worldPoint.y << "," << worldPoint.z << "}" << std::endl;
-			// 
-			// rotateTankTurretToWorldPoint(playerTank, worldPoint);
-			
+		case GLFW_MOUSE_BUTTON_LEFT:			
 			break;
 		case GLFW_MOUSE_BUTTON_RIGHT:
 			break;
@@ -409,7 +388,19 @@ int main()
  			glm::vec3(20.0f, 20.0f, 5.0f),
  			1.0f, 0.01f, 0.009f,
  			glm::vec3(0.0f, 10.0f, -10.0f),
- 			"VERY bright white lamp"
+ 			"VERY bright yellow lamp"
+ 		);
+	 
+	renderer->addLight(pointLight);
+	positionedLights.push_back(pointLight);
+
+	pointLight = new PointLight(
+ 			glm::vec3(0.1f),
+ 			glm::vec3(5.0f, 20.0f, 20.0f),
+ 			glm::vec3(5.0f, 20.0f, 20.0f),
+ 			1.0f, 0.01f, 0.009f,
+ 			glm::vec3(-20.0f, 10.0f, -10.0f),
+ 			"VERY bright green lamp"
  		);
 	 
 	renderer->addLight(pointLight);
@@ -466,7 +457,17 @@ int main()
 	Tank backgroundTank2;
 	backgroundTank2.setPosition(glm::vec3(-15.0f, 0.0f, -30.0f));
 
-	brickWall = new BrickWall(ModelTransformations{glm::vec3(-10.0f, 0.0f, 0.0f)});
+	std::vector<glm::vec3> wallsCoords = {
+		glm::vec3(-10.0f, 0.0f, 0.0f),
+		glm::vec3(-8.0f, 0.0f, 0.0f),
+		glm::vec3(-6.0f, 0.0f, 0.0f),
+		glm::vec3(-4.0f, 0.0f, 0.0f),
+		glm::vec3(-10.0f, 0.0f, -6.0f),
+		glm::vec3(-10.0f, 0.0f, -4.0f),
+		glm::vec3(-10.0f, 0.0f, -2.0f),
+		glm::vec3(-6.0f, 0.0f, -2.0f),
+		glm::vec3(-4.0f, 0.0f, -2.0f),
+	};
 
 	particleGenerator = new ParticleGenerator(
 		ModelTransformations{glm::vec3(-10.0f, 10.0f, -10.0f)},
@@ -518,7 +519,11 @@ int main()
 	mainScene.addTank(playerTank);
 	mainScene.addTank(&backgroundTank2);
 
-	mainScene.addCollidableDrawableObject(brickWall);
+	for (auto && wallsCoord : wallsCoords)
+	{
+		brickWall = new BrickWall(ModelTransformations{wallsCoord});
+		mainScene.addCollidableDrawableObject(brickWall);
+	}
 	
 	mainScene.addDrawableObject(&ground);
 	
