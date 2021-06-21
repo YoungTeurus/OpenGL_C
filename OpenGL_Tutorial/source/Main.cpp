@@ -38,6 +38,8 @@ float lastCursorX = (float)windowInitialWidth / 2,
  	lastCursorY = (float)windowInitialHeight / 2;			 // Предыдущее положение курсора (стартовое - по центру окна)
  
 bool firstMouse = true;
+
+bool canMoveCamera = false;
  
 Renderer* renderer = Renderer::getInstance();
 Camera *mainCamera = renderer->getMainCamera();
@@ -51,14 +53,10 @@ bool wireframeMode = false;
  
 float globalExposure = 1.0f;
 float globalGamma = 2.2f;
- 
-void setPolygoneDrawMode() {
-	if (wireframeMode) {
- 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	}
-	else {
- 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	}
+
+void togglePolygoneDrawMode()
+{
+	wireframeMode = !wireframeMode;
 }
  
 void changeSpotlightState(SpotLight *spotLight)
@@ -84,7 +82,6 @@ struct Material
 // Callback функция, вызываемая при изменении размеров окна.
 void OnResize(GLFWwindow* window, int width, int height)
 {
-	mainCamera->aspectRatio = (float)width / height;
 	glViewport(0, 0, width, height);
 	renderer->setScreenWidthAndHeight(width, height);
 }
@@ -122,15 +119,6 @@ void processInput(GLFWwindow* window)
 	}
 	if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS) {
  		globalGamma = max( globalGamma - 0.5f * deltaTime, 0.01f );
-	}
-
-	if (glfwGetKey(window, GLFW_KEY_EQUAL) == GLFW_PRESS) {
-		float currentShininess = playerTank->getShininess();
-		playerTank->setShininess( min( currentShininess + 10.f * deltaTime, 256.0f ) );
-	}
-	if (glfwGetKey(window, GLFW_KEY_MINUS) == GLFW_PRESS) {
-		float currentShininess = playerTank->getShininess();
-		playerTank->setShininess( max( currentShininess - 10.f * deltaTime, 1.0f ) );
 	}
 
 	// Управление танком:
@@ -203,16 +191,31 @@ void onKeyAction(GLFWwindow* window, int key, int scancode, int action, int mods
 	if (action == GLFW_PRESS) {
  		switch (key)
  		{
- 		case GLFW_KEY_M:
- 			wireframeMode = !wireframeMode;
- 			setPolygoneDrawMode();
+		case GLFW_KEY_F1:
+			debugTextString->setVisible(!(debugTextString->isVisible()));
  			break;
- 		case GLFW_KEY_1:
-			playerTank->setShader(ShaderLoader::getInstance()->getOrLoad("model_mixLightWithExplosion", true));
+		case GLFW_KEY_F2:
+			mainScene->toggleCollidersDrawing();
 			break;
- 		case GLFW_KEY_2:
-			playerTank->setShader(ShaderLoader::getInstance()->reload("model_hotSwap", true));
+		case GLFW_KEY_F3:
+			canMoveCamera = !canMoveCamera;
+ 			if (canMoveCamera)
+ 			{
+ 				glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);  // Захватываем курсор
+ 			} else
+ 			{
+ 				glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);  // Захватываем курсор
+ 			}
 			break;
+ 		case GLFW_KEY_F4:
+			togglePolygoneDrawMode();
+ 			break;
+ 		case GLFW_KEY_F:
+ 			changeFlashlightState();
+ 			break;
+		case GLFW_KEY_B:
+			blowTank(playerTank, particleGenerator, 3.0f);
+ 			break;
 		case GLFW_KEY_9:
 			mainCamera->setPosition(glm::vec3(-7.3f, 40.0f, 17.0f));
  			mainCamera->setYawAndPitch(-90.0f, -50.0f);
@@ -226,9 +229,14 @@ void onKeyAction(GLFWwindow* window, int key, int scancode, int action, int mods
  			playerTank->setVisible(true);
  			particleGenerator->deactivate();
  			break;
- 		case GLFW_KEY_F:
- 			changeFlashlightState();
- 			break;
+ 		case GLFW_KEY_1:
+			playerTank->setShader(ShaderLoader::getInstance()->getOrLoad("model_mixLightWithExplosion", true));
+			break;
+ 		case GLFW_KEY_2:
+			playerTank->setShader(ShaderLoader::getInstance()->reload("model_hotSwap", true));
+			break;
+
+ 		// Поворот танка:
 		case GLFW_KEY_UP:
 			playerTank->setAnimation(Animations::rotateToAngle(playerTank, 0.15f, 180.0f), false);
 			break;
@@ -241,14 +249,6 @@ void onKeyAction(GLFWwindow* window, int key, int scancode, int action, int mods
  		case GLFW_KEY_RIGHT:
 			playerTank->setAnimation(Animations::rotateToAngle(playerTank, 0.15f, 90.0f), false);
 			break;
-		case GLFW_KEY_Y:
-			blowTank(playerTank, particleGenerator, 3.0f);
- 			break;
-		case GLFW_KEY_I:
-			mainScene->toggleCollidersDrawing();
-			break;
- 		default:
- 			break;
  		}
 	}
 }
@@ -283,8 +283,22 @@ void rotateTankTurretToWorldPoint(Tank* tank, const glm::vec3& worldPoint)
  
 // Обработка движения мыши
 void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
-	glm::vec3 worldPoint = mainCamera->screenCoordToWorldCoords(glm::vec2(xpos, ypos));
-	rotateTankTurretToWorldPoint(playerTank, worldPoint);
+	if (canMoveCamera)
+	{
+		if (firstMouse) {
+ 			lastCursorX = (float)xpos;
+ 			lastCursorY = (float)ypos;
+ 			firstMouse = false;
+		}
+		float dx = (float)xpos - lastCursorX,
+ 			  dy = lastCursorY - (float)ypos;
+		lastCursorX = (float)xpos; lastCursorY = (float)ypos;
+		 
+		mainCamera->handleMouseMovement(dx, dy);
+	} else {
+		glm::vec3 worldPoint = mainCamera->screenCoordToWorldCoords(glm::vec2(xpos, ypos));
+		rotateTankTurretToWorldPoint(playerTank, worldPoint);
+	}
 }
 
 void onMouseClick(GLFWwindow* window, int button, int action, int mods)
@@ -343,7 +357,6 @@ int main()
 	glfwSetScrollCallback(win, scrollCallback);
 	glfwSetKeyCallback(win, onKeyAction);
 	glfwSetMouseButtonCallback(win, onMouseClick);
-	setPolygoneDrawMode();
 	 
 	glfwSetFramebufferSizeCallback(win, OnResize);
 	 
@@ -359,8 +372,28 @@ int main()
 	Font *arialFont = FontLoader::getInstance()->getOrLoad("arial", 24);
 	Shader* fontShader = ShaderLoader::getInstance()->getOrLoad("font");
 	debugTextString = new TextString(renderer, arialFont,
-		"Text = {%tank.x%, %tank.y%, %tank.z%}",
-		glm::vec2(20.0f, 50.0f), 0.5f, glm::vec3(0.5f, 0.8f, 0.2f));
+		string(
+			"Player tank position: {%tank.x%, %tank.y%, %tank.z%}\n") + 
+			"Camera position: {%camera.x%, %camera.y%, %camera.z%}\n" +
+			"Camera rotations: yaw={%camera.yaw%}, pitch={%camera.pitch%}\n" +
+			"\n" +
+			"Controls:\n"+
+			"F1 - Show or hide this information.\n" +
+			"F2 - Show colliders.\n" +
+			"F3 - Turn on/off camera free mouse movement.\n" +
+			"F4 - Turn on/off wireframe mode.\n"
+			"'W','A','S','D', 'Space', 'Shift' and mouse - Move and rotate camera.\n" +
+			"Arrows - Mode player tank.\n" +
+			"'<' and '>' - Rotate player tank's turret.\n" +
+			"'K' and 'L' - Rotate player tank.\n" +
+			"'Q' and 'E' - Increase/decrease exposure.\n" +
+			"'Z' and 'C' - Increase/decrease gamma.\n" +
+			"'F' - Turn on/off flashlight.\n"
+			"'B' - Play exploding animation.\n" +
+			"'9' - Restore camera position.\n"
+			"'0' - Restore tank position and visibility.\n" +
+			"'1' and '2' - Turn on default shader/hot-swappable shader.",
+		  glm::vec2(20.0f, windowHeight / 2), 0.5f, glm::vec3(0.5f, 0.8f, 0.2f));
 	
 	mainCamera->setViewSize({windowInitialWidth, windowInitialHeight});
 	mainCamera->setPosition(glm::vec3(-7.3f, 40.0f, 17.0f));
@@ -574,9 +607,19 @@ int main()
  		// Отрисовка в framebuffer:
  		glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
  		glEnable(GL_DEPTH_TEST);
+
+		// Переключение wireframeMode:
+		if (wireframeMode) {
+ 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		}
+		else {
+ 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		}
 	 
  		mainScene->draw();
  		// Конец отрисовки в framebuffer.
+
+ 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	 
  		// Отрисовка в frambuffer для размытия:
  		bool horizontal = true, firstIteration = true;
