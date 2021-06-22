@@ -162,6 +162,13 @@ public:
 		};
 	}
 
+	inline static std::vector<unsigned> getLineIndices()
+	{
+		return std::vector<unsigned>{
+			0, 1
+		};
+	}
+
 	// inline static unsigned getLoadedCubeVAO()
 	// {
 	// 	using namespace std;

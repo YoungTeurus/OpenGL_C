@@ -24,6 +24,7 @@
 #include "world/implementations/BrickWall.h"
 #include "world/implementations/Ground.h"
 #include "world/implementations/LightCube.h"
+#include "world/implementations/LineStrip.h"
 #include "world/implementations/ParticleGenerator.h"
 #include "world/implementations/Skybox.h"
 #include "world/implementations/Tank.h"
@@ -503,9 +504,12 @@ int main()
 	}
 	
 	mainScene->addDrawableUpdatableObject(particleGenerator);
-	mainScene->addDrawableUpdatableObject(xAxis);
-	mainScene->addDrawableUpdatableObject(yAxis);
-	mainScene->addDrawableUpdatableObject(zAxis);
+	// mainScene->addDrawableUpdatableObject(xAxis);
+	// mainScene->addDrawableUpdatableObject(yAxis);
+	// mainScene->addDrawableUpdatableObject(zAxis);
+
+	// Отрисовка линии
+	mainScene->addDrawableObject(new LineStrip(renderer, glm::vec3(-5.0f, 5.0f, -5.0f), glm::vec3(5.0f, 5.0f, -5.0f)));
 	 
 	#pragma region Инициализация Framebuffer-а и разных VAO
 	 

@@ -272,6 +272,9 @@
     <ClInclude Include="source\level\LevelLoader.h">
       <Filter>Исходные файлы\level</Filter>
     </ClInclude>
+    <ClInclude Include="source\world\implementations\LineStrip.h">
+      <Filter>Исходные файлы\world\implementations</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\shaders\lightCube.vert">
@@ -381,6 +384,12 @@
     </None>
     <None Include="WorldObject Diagram.cd">
       <Filter>Исходные файлы\world</Filter>
+    </None>
+    <None Include="resources\shaders\lineStrip.frag">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\lineStrip.vert">
+      <Filter>Файлы ресурсов\shaders</Filter>
     </None>
   </ItemGroup>
 </Project>
