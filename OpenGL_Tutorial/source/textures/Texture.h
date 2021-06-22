@@ -46,24 +46,24 @@ public:
 	Texture() = default;
 
 	void loadFromFile(const std::string& fileName, const std::string& directory, const bool isUV_flipped = false)
-	{
-		if(isInitialized)
-	{
-		std::cout << "Texture::loadFromFile: There was an attempt to reload texture '" << directory << "/" << fileName << "'." << std::endl;
-		return;
-	}
+		{
+			if(isInitialized)
+		{
+			std::cout << "Texture::loadFromFile: There was an attempt to reload texture '" << directory << "/" << fileName << "'." << std::endl;
+			return;
+		}
 
-	if (isUV_flipped)
-	{
-		setSTBIFilpState(true);
-	}
+		if (isUV_flipped)
+		{
+			setSTBIFilpState(true);
+		}
 
-	loadTextureAndSetFields(fileName, directory);
+		loadTextureAndSetFields(fileName, directory);
 
-	if (isUV_flipped)
-	{
-		setSTBIFilpState(false);
-	}
+		if (isUV_flipped)
+		{
+			setSTBIFilpState(false);
+		}
 	}
 
 	void setType(TextureType type)

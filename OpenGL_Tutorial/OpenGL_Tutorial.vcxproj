@@ -224,6 +224,7 @@
     <ClInclude Include="source\world\interfaces\WorldObject.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="WorldObject Diagram.cd" />
     <None Include="resources\shaders\collider.frag" />
     <None Include="resources\shaders\collider.vert" />
     <None Include="resources\shaders\model_hotSwap.frag" />

@@ -379,5 +379,8 @@
     <None Include="resources\shaders\model_hotSwap.vert">
       <Filter>Файлы ресурсов\shaders</Filter>
     </None>
+    <None Include="WorldObject Diagram.cd">
+      <Filter>Исходные файлы\world</Filter>
+    </None>
   </ItemGroup>
 </Project>

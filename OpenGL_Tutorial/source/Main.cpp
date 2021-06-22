@@ -403,7 +403,7 @@ int main()
 	Shader* screenRenderQuadShaderWithBlur = ShaderLoader::getInstance()->getOrLoad("screenRenderQuadShaderWithBlur");
 	Shader* screenRenderQuadWithHDRShader = ShaderLoader::getInstance()->getOrLoad("screenRenderQuadShaderWithHDR");
 
-	auto* level = LevelLoader::loadFromFile("level1.map", 5, 5);
+	auto* level = LevelLoader::loadFromFile("level1.map", 16, 16);
 	mainScene = level->generateScene(renderer, glm::vec3(0.0f));
 	
 	// Подготовка источников освещения:
@@ -666,6 +666,11 @@ int main()
 			{"tank.x", to_string(playerTank->getPosition().x)},
 			{"tank.y", to_string(playerTank->getPosition().y)},
 			{"tank.z", to_string(playerTank->getPosition().z)},
+			{"camera.x", to_string(mainCamera->position.x)},
+			{"camera.y", to_string(mainCamera->position.y)},
+			{"camera.z", to_string(mainCamera->position.z)},
+			{"camera.yaw", to_string(mainCamera->yaw)},
+			{"camera.pitch", to_string(mainCamera->pitch)},
 		});
 		debugTextString->draw();
 		
