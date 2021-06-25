@@ -20,14 +20,6 @@ public:
 	{
 		setShininess(2.0f);
 	}
-
-	void setPosition(glm::vec3 pos) override
-	{
-		// TODO: избавитьс€ от этого workaround-а.
-		CollidableDrawableObject::setPosition(pos);
-		colliderCube.offsetPosition(glm::vec3(0.0f, 1.0f, 0.0f));  // ѕоправка коллайдера.
-		calculateColliderTransformations();
-	}
 	
 	void drawAction() override
 	{
