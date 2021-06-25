@@ -43,12 +43,12 @@ public:
 		}
 	}
 
-	void update(const float& currentTime)
+	void update(const float& deltaTime)
 	{
 		checkCollisions();
 		for(auto *updatableObject : updatableObjects)
 		{
-			updatableObject->update(currentTime);
+			updatableObject->update(deltaTime);
 		}
 	}
 

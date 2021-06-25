@@ -28,11 +28,11 @@ public:
 		return this;
 	}
 
-	void actCore(const float& currentTime) override
+	void actCore(const float& deltaTime) override
 	{
 		for (auto &&animation : animations)
 		{
-			animation->act(currentTime);
+			animation->act(deltaTime);
 		}
 	}
 

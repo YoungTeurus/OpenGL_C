@@ -13,9 +13,10 @@ public:
 	{
 	}
 
-	virtual void actCore(const float& currentTime) override
+	virtual void actCore(const float& deltaTime) override
 	{
-		if(currentTime - this->startTime > this->length)
+		this->remainedLength -= deltaTime;
+		if(this->remainedLength <= 0.0f)
 		{
 			performAction();
 		}

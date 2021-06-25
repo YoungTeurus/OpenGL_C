@@ -44,13 +44,13 @@ private:
 public:
 	AnimatedObject() = default;
 	
-	virtual void update(const float& currentTime) override
+	virtual void update(const float& deltaTime) override
 	{
-		UpdatableObject::update(currentTime);
+		UpdatableObject::update(deltaTime);
 
 		if (currentAnimation)
 		{
-			currentAnimation->act(currentTime);
+			currentAnimation->act(deltaTime);
 		
 			if (currentAnimation->isHasEnded())
 			{

@@ -84,7 +84,6 @@ private:
 	glm::vec3	particleVelocity;
 	glm::vec3	possibleVelocityDeviations;
 
-	float lastUpdateTime = 0.0f;
 	unsigned indexOfLastUsedParticle = 0;
 	unsigned getIndexOfFirstUnusedParticle()
 	{
@@ -212,14 +211,10 @@ public:
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
-	void update(const float& currentTime) override
+	void update(const float& deltaTime) override
 	{
-		DrawableUpdatableObject::update(currentTime);
-		AnimatedObject::update(currentTime);
-
-		// TODO: передавать в UpdatableObject-ы render, чтобы они сами выбирали формат времени?
-		const float deltaTime = currentTime - lastUpdateTime;
-		lastUpdateTime = currentTime;
+		DrawableUpdatableObject::update(deltaTime);
+		AnimatedObject::update(deltaTime);
 
 		if (isActive){
 			for(unsigned i = 0; i < updateNumOfNewParticles; i++)

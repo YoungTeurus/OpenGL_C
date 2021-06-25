@@ -4,8 +4,7 @@
 class UpdatableObject : WorldObject
 {
 public:
-	virtual void update(const float& currentTime)
+	virtual void update(const float& deltaTime)
 	{
-		
 	}
 };

@@ -5,7 +5,7 @@ template<class T>
 class InterpolationAnimation : public Animation<T>
 {
 protected:
-	virtual float getInterpolationValue(const float& currentTime) const = 0;
+	virtual float getInterpolationValue(const float& currentTime) = 0;
 public:
 	InterpolationAnimation(T* object, const float& length)
 		: Animation<T>(object, length)

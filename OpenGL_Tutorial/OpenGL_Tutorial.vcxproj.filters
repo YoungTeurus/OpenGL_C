@@ -275,6 +275,9 @@
     <ClInclude Include="source\world\implementations\LineStrip.h">
       <Filter>Исходные файлы\world\implementations</Filter>
     </ClInclude>
+    <ClInclude Include="source\world\implementations\TankBullet.h">
+      <Filter>Исходные файлы\world\implementations</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\shaders\lightCube.vert">

@@ -49,6 +49,7 @@ Scene* mainScene;
 Tank* playerTank;
 TextString* debugTextString;
 ParticleGenerator* particleGenerator;
+LineStrip* debugLine;
 
 bool wireframeMode = false;
  
@@ -311,6 +312,12 @@ void onMouseClick(GLFWwindow* window, int button, int action, int mods)
 		case GLFW_MOUSE_BUTTON_LEFT:			
 			break;
 		case GLFW_MOUSE_BUTTON_RIGHT:
+			double xpos, ypos;
+			glfwGetCursorPos(window, &xpos, &ypos);
+			glm::vec3 worldPoint = mainCamera->screenCoordToWorldCoords(glm::vec2(xpos, ypos));
+			debugLine->setStartPoint(mainCamera->position);
+			debugLine->setEndPoint(worldPoint);
+			debugLine->setVisible(true);
 			break;
 		}
 	}
@@ -491,6 +498,8 @@ int main()
 	 
 	Ground ground(renderer, "grass.png", "grass_specular.png", 100.f);
 	Skybox skybox(renderer, "skybox", "sky.jpg");
+	debugLine = new LineStrip(renderer, glm::vec3(-5.0f, 5.0f, -5.0f), glm::vec3(5.0f, 5.0f, -5.0f));
+	debugLine->setVisible(false);
 	 
 	mainScene->addSkybox(&skybox);
 	
@@ -504,12 +513,12 @@ int main()
 	}
 	
 	mainScene->addDrawableUpdatableObject(particleGenerator);
-	// mainScene->addDrawableUpdatableObject(xAxis);
-	// mainScene->addDrawableUpdatableObject(yAxis);
-	// mainScene->addDrawableUpdatableObject(zAxis);
+	mainScene->addDrawableUpdatableObject(xAxis);
+	mainScene->addDrawableUpdatableObject(yAxis);
+	mainScene->addDrawableUpdatableObject(zAxis);
 
 	// Отрисовка линии
-	mainScene->addDrawableObject(new LineStrip(renderer, glm::vec3(-5.0f, 5.0f, -5.0f), glm::vec3(5.0f, 5.0f, -5.0f)));
+	mainScene->addDrawableObject(debugLine);
 	 
 	#pragma region Инициализация Framebuffer-а и разных VAO
 	 
@@ -603,7 +612,7 @@ int main()
  		flashlight->setDirection(mainCamera->front);
 
 		// Проверка столкновений:
-		mainScene->update(currentTime);
+		mainScene->update(deltaTime);
 		
 		// Подготовка к отрисовке:
 		renderer->updateViewAndProjection();

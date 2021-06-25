@@ -6,16 +6,18 @@
 template<class T>
 class LinearAnimation : public InterpolationAnimation<T>
 {
+private:
+	float timeSinceStart = 0.0f;
 protected:
 	LinearAnimation(T *object, const float& length)
 		:InterpolationAnimation<T>(object, length)
 	{
 	}
 
-	float getInterpolationValue(const float& currentTime) const override
+	float getInterpolationValue(const float& deltaTime) override
 	{
-		const float timeSinceStart = currentTime - this->startTime;
-		const float interpolationValue = std::min(1.0f, std::max(0.0f, timeSinceStart/this->length));
+		this->timeSinceStart += deltaTime;
+		const float interpolationValue = std::min(1.0f, std::max(0.0f, this->timeSinceStart/this->length));
 		return interpolationValue;
 	}
 };

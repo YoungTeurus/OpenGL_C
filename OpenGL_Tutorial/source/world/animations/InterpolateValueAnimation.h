@@ -11,21 +11,21 @@ class InterpolateValueAnimation : public LinearAnimation<T>
 
 	void (T::* setValueFunction)(Value);
 
-	void setNewValue(const float& currentTime)
+	void setNewValueInterpolatedByPassedTime(const float& deltaTime)
 	{
-		const Value currentValue = getCurrentState(currentTime, startValue, endValue);
+		const Value currentValue = getCurrentState(deltaTime, startValue, endValue);
 		(this->object->*setValueFunction)(currentValue);
 	}
 
-	virtual Value getCurrentState(const float& currentTime, const Value& a, const Value& b) const
+	virtual Value getCurrentState(const float& deltaTime, const Value& a, const Value& b)
 	{
-		const Value interpolatedValue = (Value)((b - a) * this->getInterpolationValue(currentTime)) + a;
+		Value interpolatedValue = (Value)((b - a) * this->getInterpolationValue(deltaTime)) + a;
 		return interpolatedValue;
 	}
 
-	virtual void actCore(const float& currentTime) override
+	virtual void actCore(const float& deltaTime) override
 	{
-		setNewValue(currentTime);
+		setNewValueInterpolatedByPassedTime(deltaTime);
 	}
 public:
 	InterpolateValueAnimation(T *object, float length, Value startValue, Value endValue, void (T::* setValueFunction)(Value))
@@ -53,7 +53,7 @@ template<class T>
 class UnsignedAnimation : public InterpolateValueAnimation<T, unsigned>
 {
 private:
-	virtual unsigned getCurrentState(const float& currentTime, const unsigned& a, const unsigned& b) const override
+	virtual unsigned getCurrentState(const float& currentTime, const unsigned& a, const unsigned& b) override
 	{
 		const unsigned _b = std::max(a, b), _a = std::min(a, b);
 		const unsigned delta = _b - _a;
@@ -71,9 +71,9 @@ template<class T>
 class Vec3Animation : public InterpolateValueAnimation<T, glm::vec3>
 {
 private:
-	virtual glm::vec3 getCurrentState(const float& currentTime, const glm::vec3& a, const glm::vec3& b) const override
+	virtual glm::vec3 getCurrentState(const float& deltaTime, const glm::vec3& a, const glm::vec3& b) override
 	{
-		const float interValue = this->getInterpolationValue(currentTime);
+		const float interValue = this->getInterpolationValue(deltaTime);
 		const glm::vec3 delta = b - a;
 		const glm::vec3 deltaXInterValue = delta * interValue;
 		const glm::vec3 interpolatedValue = deltaXInterValue + a;

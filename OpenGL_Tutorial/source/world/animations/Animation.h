@@ -6,7 +6,7 @@ class Animation
 private:
 	void checkAndSetIfEnded(const float& currentTime)
 	{
-		if (currentTime - startTime > length)
+		if (remainedLength <= 0.0f)
 		{
 			hasEnded = true;
 		}
@@ -18,20 +18,19 @@ protected:
 
 	T *object;
 	float length;  // Длительность анимации
-	float startTime;  // Время начала анимации
+	float remainedLength;
 
 	Animation(T *object, const float& length)
-		:object(object), length(length), startTime(0.0f)
+		:object(object), length(length), remainedLength(length)
 	{
 	}
 
-	virtual void actCore(const float& currentTime) = 0;
+	virtual void actCore(const float& deltaTime) = 0;
 public:
-	void act(const float& currentTime)
+	void act(const float& deltaTime)
 	{
 		if (!this->hasStarted)
 		{
-			this->startTime = currentTime;
 			this->hasStarted = true;
 		}
 		if (this->hasEnded)
@@ -39,9 +38,9 @@ public:
 			return;
 		}
 
-		actCore(currentTime);
+		actCore(deltaTime);
 
-		checkAndSetIfEnded(currentTime);
+		checkAndSetIfEnded(deltaTime);
 	}
 	
 	virtual void endImmediately() = 0;
