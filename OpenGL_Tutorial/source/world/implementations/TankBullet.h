@@ -17,7 +17,6 @@ private:
 
 	glm::vec3 velocity;
 	float life = 10.0f;
-	float lifeStartTime;
 	
 public:
 	TankBullet(Renderer* renderer, ModelTransformations transformations, const glm::vec3& velocity)
@@ -25,6 +24,7 @@ public:
 		 bulletModel(ModelsLoader::getInstance()->getOrLoad("tank/base.obj", true)), velocity(velocity)
 	{
 		particleGenerator = new ParticleGenerator(renderer, transformations, 50, 3, 0.01, 3.0f, 1.0f, glm::vec3(2.0f, 2.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.5f), -velocity, glm::vec3(0.3f));
+		particleGenerator->activate();
 	}
 
 	~TankBullet()
@@ -67,5 +67,11 @@ public:
 		particleGenerator->update(deltaTime);
 
 		offsetPosition(velocity * deltaTime);
+		life -= deltaTime;
+		if (life <= 0)
+		{
+			this->setVisible(false);
+			particleGenerator->deactivate();
+		}
 	}
 };

@@ -1,4 +1,5 @@
 #pragma once
+#include "TankBullet.h"
 #include "../../model/ModelsLoader.h"
 #include "../../model/ModelTransformations.h"
 #include "../../renderer/Renderer.h"
@@ -56,6 +57,23 @@ public:
 		tankTurret->draw(*shader);
 	}
 
+	TankBullet* createBullet() const
+	{
+		const float bulletDegree = getTurretAbsoluteRotationAngleDegrees();
+
+		glm::mat4 rotationMatrix = glm::mat4(1.0f);
+		rotationMatrix = glm::rotate(rotationMatrix, glm::radians(bulletDegree), glm::vec3(0.0f, 1.0f, 0.0f));
+		
+		const glm::vec3 bulletVelocity = glm::vec3(rotationMatrix * glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
+		TankBullet* bullet = new TankBullet(getAttachedRenderer(),
+			ModelTransformations{getPosition(),
+			glm::vec3(0.0f, 1.0f, 0.0f),
+			bulletDegree, glm::vec3(1.0f)},
+			bulletVelocity);
+		
+		return bullet;
+	}
+
 	void setTurretRotationAngleDegrees(float angleDegrees)
 	{
 		turretTransformations.rotationAngleDegrees = angleDegrees;
@@ -69,6 +87,11 @@ public:
 	float getTurretRotationAngleDegrees() const
 	{
 		return turretTransformations.rotationAngleDegrees;
+	}
+
+	float getTurretAbsoluteRotationAngleDegrees() const
+	{
+		return clampAngleTo360( getRotationAngleDegrees() + getTurretRotationAngleDegrees() );
 	}
 
 

@@ -4,6 +4,7 @@
 
 #include "../../model/VAOBuilder.h"
 #include "../../renderer/Renderer.h"
+#include "../animations/AnimatedObject.h"
 #include "../interfaces/DrawableObject.h"
 #include "../interfaces/DrawableUpdatableObject.h"
 #include "../interfaces/PositionedObject.h"
