@@ -112,6 +112,12 @@ public:
 		updatableObjects.push_back(tankObject);
 	}
 
+	void addBullet(TankBullet* bulletObject)
+	{
+		addDynamicCollidableDrawableObjectObject(bulletObject);
+		updatableObjects.push_back(bulletObject);
+	}
+
 	void addSkybox(Skybox* skybox)
 	{
 		allObjects.push_back((PositionedObject*)skybox);

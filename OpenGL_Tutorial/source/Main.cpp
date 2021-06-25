@@ -252,7 +252,7 @@ void onKeyAction(GLFWwindow* window, int key, int scancode, int action, int mods
 			playerTank->setAnimation(Animations::rotateToAngle(playerTank, 0.15f, 90.0f), false);
 			break;
 		case GLFW_KEY_H:
-			playerTank->createBullet();
+ 			mainScene->addBullet(playerTank->createBullet());
 			break;
  		}
 

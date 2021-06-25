@@ -15,15 +15,16 @@ private:
 	Model *bulletModel;
 	ParticleGenerator *particleGenerator;
 
-	glm::vec3 velocity;
+	glm::vec3 velocityVector;
+	float speed = 5.0f;
 	float life = 10.0f;
 	
 public:
-	TankBullet(Renderer* renderer, ModelTransformations transformations, const glm::vec3& velocity)
+	TankBullet(Renderer* renderer, ModelTransformations transformations, const glm::vec3& velocityVector)
 		:CollidableDrawableObject(renderer, transformations, {glm::vec3(-1.0f, 0.0f, -1.0f), glm::vec3(2.0f)}, "model_mixLightWithExplosion", true),
-		 bulletModel(ModelsLoader::getInstance()->getOrLoad("tank/base.obj", true)), velocity(velocity)
+		 bulletModel(ModelsLoader::getInstance()->getOrLoad("tank/base.obj", true)), velocityVector(velocityVector)
 	{
-		particleGenerator = new ParticleGenerator(renderer, transformations, 50, 3, 0.01, 3.0f, 1.0f, glm::vec3(2.0f, 2.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.5f), -velocity, glm::vec3(0.3f));
+		particleGenerator = new ParticleGenerator(renderer, transformations, 50, 3, 0.01f, 10.0f, 3.0f, glm::vec3(2.0f, 2.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.5f), -velocityVector, glm::vec3(0.3f));
 		particleGenerator->activate();
 	}
 
@@ -66,7 +67,10 @@ public:
 		AnimatedObject::update(deltaTime);
 		particleGenerator->update(deltaTime);
 
-		offsetPosition(velocity * deltaTime);
+		const glm::vec3 offset = velocityVector * speed * deltaTime;
+
+		offsetPosition(offset);
+		particleGenerator->offsetPosition(offset);
 		life -= deltaTime;
 		if (life <= 0)
 		{
