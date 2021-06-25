@@ -4,12 +4,17 @@ template<class T>
 class Animation
 {
 private:
-	void checkAndSetIfEnded(const float& currentTime)
+	void checkAndSetIfEnded(const float& deltaTime)
 	{
-		if (remainedLength <= 0.0f)
+		if (timeSinceStart > length)
 		{
 			hasEnded = true;
 		}
+	}
+
+	void updateTimeSinceStart(const float& deltaTime)
+	{
+		timeSinceStart += deltaTime;
 	}
 
 protected:
@@ -18,10 +23,10 @@ protected:
 
 	T *object;
 	float length;  // Длительность анимации
-	float remainedLength;
+	float timeSinceStart = 0.0f;
 
 	Animation(T *object, const float& length)
-		:object(object), length(length), remainedLength(length)
+		:object(object), length(length)
 	{
 	}
 
@@ -37,6 +42,8 @@ public:
 		{
 			return;
 		}
+
+		updateTimeSinceStart(deltaTime);
 
 		actCore(deltaTime);
 

@@ -15,8 +15,7 @@ public:
 
 	virtual void actCore(const float& deltaTime) override
 	{
-		this->remainedLength -= deltaTime;
-		if(this->remainedLength <= 0.0f)
+		if (this->timeSinceStart > this->length)
 		{
 			performAction();
 		}
