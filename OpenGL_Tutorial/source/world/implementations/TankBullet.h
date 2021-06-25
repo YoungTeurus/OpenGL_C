@@ -72,7 +72,7 @@ public:
 		offsetPosition(offset);
 		particleGenerator->offsetPosition(offset);
 		life -= deltaTime;
-		if (life <= 0)
+		if (life <= 0.0f)
 		{
 			this->setVisible(false);
 			particleGenerator->deactivate();

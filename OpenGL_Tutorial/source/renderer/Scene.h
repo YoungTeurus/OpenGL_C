@@ -24,6 +24,7 @@ public:
 	std::vector<CollidableObject*> collidableObjects;
 	std::vector<CollidableDrawableObject*> collidableDrawableObjects;
 	std::vector<CollidableObject*> dynamicCollidableObjects;
+	std::vector<TankBullet*> bullets;
 	
 	Skybox* skybox = nullptr;
 	glm::vec4 backgroundColor = {0.25f, 0.25f, 0.25f, 1.f};
@@ -45,6 +46,7 @@ public:
 
 	void update(const float& deltaTime)
 	{
+		removeDeadObjects();
 		checkCollisions();
 		for(auto *updatableObject : updatableObjects)
 		{
@@ -116,6 +118,18 @@ public:
 	{
 		addDynamicCollidableDrawableObjectObject(bulletObject);
 		updatableObjects.push_back(bulletObject);
+		bullets.push_back(bulletObject);
+	}
+
+	void removeDeadObjects()
+	{
+		// remove_if(allObjects.begin(), allObjects.end(), WorldObject::isReadyToBeRemoved);
+		// remove_if(drawableObjects.begin(), drawableObjects.end(), DrawableObject::isReadyToBeRemoved);
+		// remove_if(updatableObjects.begin(), updatableObjects.end(), UpdatableObject::isReadyToBeRemoved);
+		// remove_if(collidableObjects.begin(), collidableObjects.end(), CollidableObject::isReadyToBeRemoved);
+		// remove_if(collidableDrawableObjects.begin(), collidableDrawableObjects.end(), CollidableDrawableObject::isReadyToBeRemoved);
+		// remove_if(dynamicCollidableObjects.begin(), dynamicCollidableObjects.end(), CollidableObject::isReadyToBeRemoved);
+		// remove_if(bullets.begin(), bullets.end(), TankBullet::isReadyToBeRemoved);
 	}
 
 	void addSkybox(Skybox* skybox)
